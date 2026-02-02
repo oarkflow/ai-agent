@@ -20,12 +20,12 @@ type Node struct {
 
 // Generator proposes new thoughts based on the current state.
 type Generator interface {
-	GenerateThoughts(ctx context.Context, state string, k int) ([]string, error)
+	GenerateThoughts(ctx context.Context, history []llm.Message, state string, k int) ([]string, error)
 }
 
 // Evaluator scores a state.
 type Evaluator interface {
-	Evaluate(ctx context.Context, state string) (float64, error)
+	Evaluate(ctx context.Context, history []llm.Message, state string) (float64, error)
 }
 
 // TreeOfThoughts implements the ToT search algorithm.
@@ -47,7 +47,8 @@ func NewTreeOfThoughts(gen Generator, eval Evaluator, maxDepth, breadth int) *Tr
 }
 
 // BFS executes Breadth-First Search to find the best thought path.
-func (t *TreeOfThoughts) BFS(ctx context.Context, initialPrompt string) (string, error) {
+// history is the context (e.g. user question + background)
+func (t *TreeOfThoughts) BFS(ctx context.Context, history []llm.Message, initialPrompt string) (string, error) {
 	root := &Node{State: initialPrompt, Value: 1.0, Depth: 0}
 	currentLevel := []*Node{root}
 
@@ -61,7 +62,7 @@ func (t *TreeOfThoughts) BFS(ctx context.Context, initialPrompt string) (string,
 		// Expand each node in current level
 		for _, node := range currentLevel {
 			// Generate thoughts
-			thoughts, err := t.Generator.GenerateThoughts(ctx, node.State, t.Breadth)
+			thoughts, err := t.Generator.GenerateThoughts(ctx, history, node.State, t.Breadth)
 			if err != nil {
 				return "", err
 			}
@@ -76,7 +77,7 @@ func (t *TreeOfThoughts) BFS(ctx context.Context, initialPrompt string) (string,
 					// Simple implementation: just append text
 					newState := parent.State + "\n" + th
 
-					score, err := t.Evaluator.Evaluate(ctx, newState)
+					score, err := t.Evaluator.Evaluate(ctx, history, newState)
 					if err != nil {
 						fmt.Printf("Eval error: %v\n", err)
 						return
@@ -131,9 +132,15 @@ type LLMGenerator struct {
 	Model    string
 }
 
-func (g *LLMGenerator) GenerateThoughts(ctx context.Context, state string, k int) ([]string, error) {
-	prompt := fmt.Sprintf("Given the current state:\n%s\n\nGenerate %d distinct next steps or thoughts to solve the problem. List them one by one.", state, k)
-	resp, err := g.Provider.Generate(ctx, prompt, &llm.GenerateOptions{Model: g.Model})
+func (g *LLMGenerator) GenerateThoughts(ctx context.Context, history []llm.Message, state string, k int) ([]string, error) {
+	// combine history + instruction
+	messages := make([]llm.Message, len(history))
+	copy(messages, history)
+
+	prompt := fmt.Sprintf("Given the current state/plan:\n%s\n\nGenerate %d distinct next steps or thoughts to solve the problem. List them one by one.", state, k)
+	messages = append(messages, llm.Message{Role: llm.RoleUser, Content: prompt})
+
+	resp, err := g.Provider.Chat(ctx, messages, &llm.GenerateOptions{Model: g.Model})
 	if err != nil {
 		return nil, err
 	}
@@ -159,9 +166,15 @@ type LLMEvaluator struct {
 	Model    string
 }
 
-func (e *LLMEvaluator) Evaluate(ctx context.Context, state string) (float64, error) {
+func (e *LLMEvaluator) Evaluate(ctx context.Context, history []llm.Message, state string) (float64, error) {
+	// combine history + instruction
+	messages := make([]llm.Message, len(history))
+	copy(messages, history)
+
 	prompt := fmt.Sprintf("Evaluate the following state for correctness and progress towards the solution (0.0 to 1.0):\n%s\n\nOutput only the number.", state)
-	resp, err := e.Provider.Generate(ctx, prompt, &llm.GenerateOptions{Model: e.Model})
+	messages = append(messages, llm.Message{Role: llm.RoleUser, Content: prompt})
+
+	resp, err := e.Provider.Chat(ctx, messages, &llm.GenerateOptions{Model: e.Model})
 	if err != nil {
 		return 0, err
 	}
