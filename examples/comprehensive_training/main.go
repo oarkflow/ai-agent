@@ -270,8 +270,8 @@ func demo5CompletePipeline() {
 	}
 
 	job, err := pipeline.CreateJob(domain.ID, training.JobConfig{
-		DataSource: "demo",
-		DataSplit:  training.DatasetSplit{Train: 0.7, Validation: 0.15, Test: 0.15},
+		DataSource:     "demo",
+		DataSplit:      training.DatasetSplit{Train: 0.7, Validation: 0.15, Test: 0.15},
 		CleaningConfig: *training.DefaultCleaningConfig(),
 		Hyperparams: &training.Hyperparameters{
 			LearningRate: 2e-5,

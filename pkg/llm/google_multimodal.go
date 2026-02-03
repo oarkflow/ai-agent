@@ -29,8 +29,8 @@ func NewGoogleMultimodalProvider(apiKey string, opts ...GoogleOption) *GoogleMul
 		BaseProvider: BaseProvider{
 			ProviderType: ProviderGoogle,
 			APIKey:       apiKey,
-			BaseURL:      "",  // Set via config or WithGoogleBaseURL option
-			DefaultModel: "", // Set via config or WithGoogleModel option
+			BaseURL:      "",                          // Set via config or WithGoogleBaseURL option
+			DefaultModel: "",                          // Set via config or WithGoogleModel option
 			Models:       make(map[string]*ModelInfo), // Loaded from config
 		},
 		Client: &http.Client{Timeout: 300 * time.Second}, // Longer timeout for video
@@ -131,8 +131,8 @@ func (p *GoogleMultimodalProvider) Generate(ctx context.Context, messages []*con
 	}
 
 	return &GenerationResponse{
-		Model: model,
-		Message: content.NewTextMessage(content.RoleAssistant, textContent),
+		Model:        model,
+		Message:      content.NewTextMessage(content.RoleAssistant, textContent),
 		FinishReason: candidate.FinishReason,
 		Usage: &Usage{
 			InputTokens:  resp.UsageMetadata.PromptTokenCount,

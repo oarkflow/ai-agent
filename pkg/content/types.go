@@ -44,14 +44,14 @@ const (
 	MediaWebMV MediaType = "video/webm"
 
 	// Documents
-	MediaPDF  MediaType = "application/pdf"
-	MediaDOCX MediaType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-	MediaXLSX MediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-	MediaPPTX MediaType = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-	MediaJSON MediaType = "application/json"
-	MediaXML  MediaType = "application/xml"
-	MediaCSV  MediaType = "text/csv"
-	MediaHTML MediaType = "text/html"
+	MediaPDF      MediaType = "application/pdf"
+	MediaDOCX     MediaType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+	MediaXLSX     MediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	MediaPPTX     MediaType = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+	MediaJSON     MediaType = "application/json"
+	MediaXML      MediaType = "application/xml"
+	MediaCSV      MediaType = "text/csv"
+	MediaHTML     MediaType = "text/html"
 	MediaMarkdown MediaType = "text/markdown"
 	MediaPlain    MediaType = "text/plain"
 
@@ -92,18 +92,18 @@ type Annotation struct {
 }
 
 type Content struct {
-	Type        ContentType        `json:"type"`
-	MediaType   MediaType          `json:"media_type,omitempty"`
-	Text        string             `json:"text,omitempty"`
-	Data        []byte             `json:"-"`
-	Base64Data  string             `json:"data,omitempty"`
-	URL         string             `json:"url,omitempty"`
-	FilePath    string             `json:"file_path,omitempty"`
-	FileName    string             `json:"file_name,omitempty"`
-	FileSize    int64              `json:"file_size,omitempty"`
-	Metadata    map[string]any     `json:"metadata,omitempty"`
-	Language    string             `json:"language,omitempty"`
-	Annotations []Annotation       `json:"annotations,omitempty"`
+	Type        ContentType    `json:"type"`
+	MediaType   MediaType      `json:"media_type,omitempty"`
+	Text        string         `json:"text,omitempty"`
+	Data        []byte         `json:"-"`
+	Base64Data  string         `json:"data,omitempty"`
+	URL         string         `json:"url,omitempty"`
+	FilePath    string         `json:"file_path,omitempty"`
+	FileName    string         `json:"file_name,omitempty"`
+	FileSize    int64          `json:"file_size,omitempty"`
+	Metadata    map[string]any `json:"metadata,omitempty"`
+	Language    string         `json:"language,omitempty"`
+	Annotations []Annotation   `json:"annotations,omitempty"`
 }
 
 //

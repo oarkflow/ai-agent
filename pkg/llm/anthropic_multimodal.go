@@ -33,8 +33,8 @@ func NewAnthropicMultimodalProvider(apiKey string, opts ...AnthropicOption) *Ant
 		BaseProvider: BaseProvider{
 			ProviderType: ProviderAnthropic,
 			APIKey:       apiKey,
-			BaseURL:      "",  // Set via config or WithAnthropicBaseURL option
-			DefaultModel: "", // Set via config or WithAnthropicModel option
+			BaseURL:      "",                          // Set via config or WithAnthropicBaseURL option
+			DefaultModel: "",                          // Set via config or WithAnthropicModel option
 			Models:       make(map[string]*ModelInfo), // Loaded from config
 		},
 		Client:     &http.Client{Timeout: 120 * time.Second},

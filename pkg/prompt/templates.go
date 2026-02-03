@@ -58,22 +58,22 @@ type TemplateVar struct {
 
 // PromptExample shows example usage.
 type PromptExample struct {
-	Input    map[string]any `json:"input"`
-	Output   string         `json:"output"`
-	Quality  float64        `json:"quality"`
-	Notes    string         `json:"notes,omitempty"`
+	Input   map[string]any `json:"input"`
+	Output  string         `json:"output"`
+	Quality float64        `json:"quality"`
+	Notes   string         `json:"notes,omitempty"`
 }
 
 // PromptConfig holds prompt-specific configuration.
 type PromptConfig struct {
-	PreferredModel   string             `json:"preferred_model,omitempty"`
-	PreferredProvider llm.ProviderType  `json:"preferred_provider,omitempty"`
-	Temperature       float64           `json:"temperature,omitempty"`
-	MaxTokens        int                `json:"max_tokens,omitempty"`
-	TopP             float64            `json:"top_p,omitempty"`
-	StopSequences    []string           `json:"stop_sequences,omitempty"`
-	SystemPrompt     string             `json:"system_prompt,omitempty"`
-	OutputFormat     OutputFormat       `json:"output_format,omitempty"`
+	PreferredModel    string           `json:"preferred_model,omitempty"`
+	PreferredProvider llm.ProviderType `json:"preferred_provider,omitempty"`
+	Temperature       float64          `json:"temperature,omitempty"`
+	MaxTokens         int              `json:"max_tokens,omitempty"`
+	TopP              float64          `json:"top_p,omitempty"`
+	StopSequences     []string         `json:"stop_sequences,omitempty"`
+	SystemPrompt      string           `json:"system_prompt,omitempty"`
+	OutputFormat      OutputFormat     `json:"output_format,omitempty"`
 }
 
 // OutputFormat specifies the expected output structure.
@@ -680,11 +680,11 @@ type PromptChain struct {
 
 // ChainStep represents a step in the prompt chain.
 type ChainStep struct {
-	Name         string
-	Template     *PromptTemplate
-	Variables    map[string]any
-	Transform    func(response string) map[string]any
-	Config       *llm.GenerationConfig
+	Name      string
+	Template  *PromptTemplate
+	Variables map[string]any
+	Transform func(response string) map[string]any
+	Config    *llm.GenerationConfig
 }
 
 // NewPromptChain creates a new prompt chain.

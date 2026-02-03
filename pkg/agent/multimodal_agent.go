@@ -34,9 +34,9 @@ type AgentConfig struct {
 	PreferredModels map[content.ContentType]string
 
 	// Generation settings
-	Temperature     float64
-	MaxTokens       int
-	TopP            float64
+	Temperature float64
+	MaxTokens   int
+	TopP        float64
 
 	// Behavior
 	EnableRAG       bool
@@ -45,14 +45,14 @@ type AgentConfig struct {
 	AutoPreprocess  bool // Auto-transcribe audio, extract PDF text, etc.
 
 	// Domain
-	DomainID        string
+	DomainID string
 
 	// Limits
 	MaxConversationLength int
 	MaxInputTokens        int
 
 	// Timeouts
-	Timeout         time.Duration
+	Timeout time.Duration
 
 	// Cost management
 	MaxCostPerRequest float64
@@ -107,15 +107,15 @@ func NewMultimodalAgent(name string, registry *llm.ProviderRegistry, opts ...Age
 	config := DefaultAgentConfig()
 
 	agent := &MultimodalAgent{
-		Name:          name,
-		Registry:      registry,
-		Router:        llm.NewSmartRouter(registry),
-		Conversation:  content.NewConversation(fmt.Sprintf("%s-%d", name, time.Now().UnixNano())),
-		Config:        config,
-		Preprocessors: make([]ContentPreprocessor, 0),
+		Name:           name,
+		Registry:       registry,
+		Router:         llm.NewSmartRouter(registry),
+		Conversation:   content.NewConversation(fmt.Sprintf("%s-%d", name, time.Now().UnixNano())),
+		Config:         config,
+		Preprocessors:  make([]ContentPreprocessor, 0),
 		Postprocessors: make([]ResponsePostprocessor, 0),
-		Tools:         make([]llm.Tool, 0),
-		EventHandlers: make(map[AgentEvent][]EventHandler),
+		Tools:          make([]llm.Tool, 0),
+		EventHandlers:  make(map[AgentEvent][]EventHandler),
 	}
 
 	for _, opt := range opts {
@@ -535,8 +535,8 @@ func (p *AudioTranscriptionPreprocessor) Process(ctx context.Context, c *content
 
 	// Return text content with transcription
 	return &content.Content{
-		Type:     content.TypeText,
-		Text:     fmt.Sprintf("[Transcribed Audio]\n%s", resp.Text),
+		Type: content.TypeText,
+		Text: fmt.Sprintf("[Transcribed Audio]\n%s", resp.Text),
 		Metadata: map[string]any{
 			"original_type": content.TypeAudio,
 			"duration":      resp.Duration,

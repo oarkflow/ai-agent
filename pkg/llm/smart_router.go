@@ -57,17 +57,17 @@ type RoutingConfig struct {
 func DefaultRoutingConfig() *RoutingConfig {
 	return &RoutingConfig{
 		// These are backward-compatible defaults; override via config/config.json
-		DefaultTextModel:       "",  // Will be set from config
-		DefaultVisionModel:     "",  // Will be set from config
-		DefaultAudioModel:      "",  // Will be set from config
-		DefaultVideoModel:      "",  // Will be set from config
-		DefaultDocumentModel:   "",  // Will be set from config
-		DefaultCodeModel:       "",  // Will be set from config
-		DefaultReasoningModel:  "",  // Will be set from config
-		DefaultEmbeddingModel:  "",  // Will be set from config
-		DefaultImageGenModel:   "",  // Will be set from config
-		DefaultSpeechModel:     "",  // Will be set from config
-		DefaultTranscribeModel: "",  // Will be set from config
+		DefaultTextModel:       "", // Will be set from config
+		DefaultVisionModel:     "", // Will be set from config
+		DefaultAudioModel:      "", // Will be set from config
+		DefaultVideoModel:      "", // Will be set from config
+		DefaultDocumentModel:   "", // Will be set from config
+		DefaultCodeModel:       "", // Will be set from config
+		DefaultReasoningModel:  "", // Will be set from config
+		DefaultEmbeddingModel:  "", // Will be set from config
+		DefaultImageGenModel:   "", // Will be set from config
+		DefaultSpeechModel:     "", // Will be set from config
+		DefaultTranscribeModel: "", // Will be set from config
 		PreferCheaperModels:    false,
 		DomainRoutes:           make(map[string]string),
 	}
@@ -156,27 +156,27 @@ func (r *ProviderRegistry) SelectModel(messages []*content.Message, requirements
 
 // ModelRequirements specifies requirements for model selection.
 type ModelRequirements struct {
-	Capabilities     []Capability
-	MinContextWindow int
-	MaxCostPer1K     float64
-	PreferredModel   string
+	Capabilities      []Capability
+	MinContextWindow  int
+	MaxCostPer1K      float64
+	PreferredModel    string
 	PreferredProvider ProviderType
-	Domain           string // For domain-specific routing
-	TaskType         TaskType
-	Speed            SpeedPreference
+	Domain            string // For domain-specific routing
+	TaskType          TaskType
+	Speed             SpeedPreference
 }
 
 // TaskType represents the type of task.
 type TaskType string
 
 const (
-	TaskGeneral    TaskType = "general"
-	TaskCoding     TaskType = "coding"
-	TaskReasoning  TaskType = "reasoning"
-	TaskCreative   TaskType = "creative"
-	TaskAnalysis   TaskType = "analysis"
-	TaskSummary    TaskType = "summary"
-	TaskTranslation TaskType = "translation"
+	TaskGeneral      TaskType = "general"
+	TaskCoding       TaskType = "coding"
+	TaskReasoning    TaskType = "reasoning"
+	TaskCreative     TaskType = "creative"
+	TaskAnalysis     TaskType = "analysis"
+	TaskSummary      TaskType = "summary"
+	TaskTranslation  TaskType = "translation"
 	TaskConversation TaskType = "conversation"
 )
 
@@ -184,9 +184,9 @@ const (
 type SpeedPreference string
 
 const (
-	SpeedFast    SpeedPreference = "fast"
+	SpeedFast     SpeedPreference = "fast"
 	SpeedBalanced SpeedPreference = "balanced"
-	SpeedQuality SpeedPreference = "quality"
+	SpeedQuality  SpeedPreference = "quality"
 )
 
 // ScoredModel represents a model with its score.
@@ -327,7 +327,7 @@ func (r *ProviderRegistry) scoreModels(candidates []*RegisteredModel, req *Model
 			}
 			// Claude and specialized coding models get bonus
 			if strings.Contains(strings.ToLower(model.Info.Name), "claude") ||
-			   strings.Contains(strings.ToLower(model.Info.Name), "sonnet") {
+				strings.Contains(strings.ToLower(model.Info.Name), "sonnet") {
 				score += 20
 			}
 		case TaskReasoning:
@@ -345,15 +345,15 @@ func (r *ProviderRegistry) scoreModels(candidates []*RegisteredModel, req *Model
 		case SpeedFast:
 			// Prefer smaller/faster models
 			if strings.Contains(strings.ToLower(model.Info.Name), "mini") ||
-			   strings.Contains(strings.ToLower(model.Info.Name), "flash") ||
-			   strings.Contains(strings.ToLower(model.Info.Name), "haiku") {
+				strings.Contains(strings.ToLower(model.Info.Name), "flash") ||
+				strings.Contains(strings.ToLower(model.Info.Name), "haiku") {
 				score += 40
 			}
 		case SpeedQuality:
 			// Prefer larger/smarter models
 			if strings.Contains(strings.ToLower(model.Info.Name), "opus") ||
-			   strings.Contains(strings.ToLower(model.Info.Name), "pro") ||
-			   strings.Contains(model.Info.ID, "4.5") {
+				strings.Contains(strings.ToLower(model.Info.Name), "pro") ||
+				strings.Contains(model.Info.ID, "4.5") {
 				score += 40
 			}
 		}

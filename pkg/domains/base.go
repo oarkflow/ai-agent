@@ -16,28 +16,28 @@ import (
 
 // BaseDomain provides common functionality for all domain trainers.
 type BaseDomain struct {
-	ID          string
-	Name        string
-	provider    llm.MultimodalProvider
-	storage     *storage.Storage
-	examples    *storage.TrainingExampleStore
-	config      *DomainConfig
-	mu          sync.RWMutex
+	ID       string
+	Name     string
+	provider llm.MultimodalProvider
+	storage  *storage.Storage
+	examples *storage.TrainingExampleStore
+	config   *DomainConfig
+	mu       sync.RWMutex
 }
 
 // DomainConfig holds configuration for a domain.
 type DomainConfig struct {
-	ID               string            `json:"id"`
-	Name             string            `json:"name"`
-	Description      string            `json:"description"`
-	SystemPrompt     string            `json:"system_prompt"`
-	Categories       []string          `json:"categories"`
-	DefaultModel     string            `json:"default_model"`
-	Temperature      float64           `json:"temperature"`
-	MaxTokens        int               `json:"max_tokens"`
-	FewShotCount     int               `json:"few_shot_count"`
-	EnabledFeatures  map[string]bool   `json:"enabled_features"`
-	CustomSettings   map[string]any    `json:"custom_settings"`
+	ID              string          `json:"id"`
+	Name            string          `json:"name"`
+	Description     string          `json:"description"`
+	SystemPrompt    string          `json:"system_prompt"`
+	Categories      []string        `json:"categories"`
+	DefaultModel    string          `json:"default_model"`
+	Temperature     float64         `json:"temperature"`
+	MaxTokens       int             `json:"max_tokens"`
+	FewShotCount    int             `json:"few_shot_count"`
+	EnabledFeatures map[string]bool `json:"enabled_features"`
+	CustomSettings  map[string]any  `json:"custom_settings"`
 }
 
 // FewShotExample represents a training example for few-shot learning.
@@ -322,21 +322,21 @@ func (d *BaseDomain) GetSystemPrompt() string {
 
 // TrainingSession represents an active training/feedback session.
 type TrainingSession struct {
-	ID          string           `json:"id"`
-	DomainID    string           `json:"domain_id"`
-	StartedAt   time.Time        `json:"started_at"`
-	Examples    []*FewShotExample `json:"examples"`
-	Feedback    []*Feedback      `json:"feedback"`
+	ID        string            `json:"id"`
+	DomainID  string            `json:"domain_id"`
+	StartedAt time.Time         `json:"started_at"`
+	Examples  []*FewShotExample `json:"examples"`
+	Feedback  []*Feedback       `json:"feedback"`
 }
 
 // Feedback represents user feedback on a generation.
 type Feedback struct {
-	Input       string    `json:"input"`
-	Output      string    `json:"output"`
-	Rating      int       `json:"rating"` // 1-5
-	Correction  string    `json:"correction,omitempty"`
-	Comments    string    `json:"comments,omitempty"`
-	CreatedAt   time.Time `json:"created_at"`
+	Input      string    `json:"input"`
+	Output     string    `json:"output"`
+	Rating     int       `json:"rating"` // 1-5
+	Correction string    `json:"correction,omitempty"`
+	Comments   string    `json:"comments,omitempty"`
+	CreatedAt  time.Time `json:"created_at"`
 }
 
 // StartTrainingSession begins a new training session.

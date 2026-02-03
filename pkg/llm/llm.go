@@ -16,10 +16,10 @@ const (
 
 // GenerateOptions contains optional parameters for LLM generation.
 type GenerateOptions struct {
-	Temperature float64
-	MaxTokens   int
+	Temperature   float64
+	MaxTokens     int
 	StopSequences []string
-	Model       string
+	Model         string
 }
 
 // Provider defines the interface for interacting with LLMs.

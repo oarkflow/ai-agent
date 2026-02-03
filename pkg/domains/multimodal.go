@@ -18,25 +18,25 @@ type MultimodalDomain struct {
 
 // AnalysisResult represents the result of multimodal analysis.
 type AnalysisResult struct {
-	Type         string         `json:"type"`          // image, document, file
-	Format       string         `json:"format"`        // jpg, png, pdf, etc.
-	Description  string         `json:"description"`   // Human-readable description
-	ExtractedText string        `json:"extracted_text,omitempty"`
+	Type           string         `json:"type"`        // image, document, file
+	Format         string         `json:"format"`      // jpg, png, pdf, etc.
+	Description    string         `json:"description"` // Human-readable description
+	ExtractedText  string         `json:"extracted_text,omitempty"`
 	StructuredData map[string]any `json:"structured_data,omitempty"`
-	Entities     []Entity       `json:"entities,omitempty"`
-	Tags         []string       `json:"tags,omitempty"`
-	Confidence   float64        `json:"confidence,omitempty"`
-	Metadata     map[string]any `json:"metadata,omitempty"`
+	Entities       []Entity       `json:"entities,omitempty"`
+	Tags           []string       `json:"tags,omitempty"`
+	Confidence     float64        `json:"confidence,omitempty"`
+	Metadata       map[string]any `json:"metadata,omitempty"`
 }
 
 // Entity represents an extracted entity from content.
 type Entity struct {
-	Type       string         `json:"type"`  // person, organization, location, date, amount, etc.
-	Value      string         `json:"value"`
-	Label      string         `json:"label,omitempty"`
-	Confidence float64        `json:"confidence,omitempty"`
+	Type       string          `json:"type"` // person, organization, location, date, amount, etc.
+	Value      string          `json:"value"`
+	Label      string          `json:"label,omitempty"`
+	Confidence float64         `json:"confidence,omitempty"`
 	Position   *EntityPosition `json:"position,omitempty"`
-	Metadata   map[string]any `json:"metadata,omitempty"`
+	Metadata   map[string]any  `json:"metadata,omitempty"`
 }
 
 // EntityPosition represents location in document/image.
@@ -52,10 +52,10 @@ type EntityPosition struct {
 
 // ExtractionSchema defines what to extract from content.
 type ExtractionSchema struct {
-	Name        string                `json:"name"`
-	Description string                `json:"description"`
-	Fields      []SchemaField         `json:"fields"`
-	OutputFormat string               `json:"output_format"` // json, text, markdown, csv
+	Name         string        `json:"name"`
+	Description  string        `json:"description"`
+	Fields       []SchemaField `json:"fields"`
+	OutputFormat string        `json:"output_format"` // json, text, markdown, csv
 }
 
 // SchemaField defines a field to extract.
@@ -352,8 +352,8 @@ func (d *MultimodalDomain) CompareContents(ctx context.Context, contents []*cont
 // InvoiceSchema returns a schema for invoice extraction.
 func InvoiceSchema() *ExtractionSchema {
 	return &ExtractionSchema{
-		Name:        "invoice",
-		Description: "Extract invoice data",
+		Name:         "invoice",
+		Description:  "Extract invoice data",
 		OutputFormat: "json",
 		Fields: []SchemaField{
 			{Name: "invoice_number", Type: "string", Description: "Invoice number/ID", Required: true},
@@ -373,8 +373,8 @@ func InvoiceSchema() *ExtractionSchema {
 // ReceiptSchema returns a schema for receipt extraction.
 func ReceiptSchema() *ExtractionSchema {
 	return &ExtractionSchema{
-		Name:        "receipt",
-		Description: "Extract receipt data",
+		Name:         "receipt",
+		Description:  "Extract receipt data",
 		OutputFormat: "json",
 		Fields: []SchemaField{
 			{Name: "merchant_name", Type: "string", Description: "Store/merchant name", Required: true},
@@ -392,8 +392,8 @@ func ReceiptSchema() *ExtractionSchema {
 // BusinessCardSchema returns a schema for business card extraction.
 func BusinessCardSchema() *ExtractionSchema {
 	return &ExtractionSchema{
-		Name:        "business_card",
-		Description: "Extract business card data",
+		Name:         "business_card",
+		Description:  "Extract business card data",
 		OutputFormat: "json",
 		Fields: []SchemaField{
 			{Name: "name", Type: "string", Description: "Person's full name", Required: true},

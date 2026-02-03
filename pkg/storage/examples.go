@@ -7,19 +7,19 @@ import (
 
 // TrainingExample represents a training example for domain-specific learning.
 type TrainingExample struct {
-	ID          string         `json:"id"`
-	Domain      string         `json:"domain"`
-	Category    string         `json:"category"`
-	Input       string         `json:"input"`
-	Output      string         `json:"output"`
-	InputType   string         `json:"input_type,omitempty"`  // text, image, document, multimodal
-	OutputType  string         `json:"output_type,omitempty"` // json, text, code, markdown
-	Quality     float64        `json:"quality,omitempty"`     // 0.0 to 1.0
-	Validated   bool           `json:"validated"`
-	Tags        []string       `json:"tags,omitempty"`
-	Metadata    map[string]any `json:"metadata,omitempty"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
+	ID         string         `json:"id"`
+	Domain     string         `json:"domain"`
+	Category   string         `json:"category"`
+	Input      string         `json:"input"`
+	Output     string         `json:"output"`
+	InputType  string         `json:"input_type,omitempty"`  // text, image, document, multimodal
+	OutputType string         `json:"output_type,omitempty"` // json, text, code, markdown
+	Quality    float64        `json:"quality,omitempty"`     // 0.0 to 1.0
+	Validated  bool           `json:"validated"`
+	Tags       []string       `json:"tags,omitempty"`
+	Metadata   map[string]any `json:"metadata,omitempty"`
+	CreatedAt  time.Time      `json:"created_at"`
+	UpdatedAt  time.Time      `json:"updated_at"`
 }
 
 // TrainingExampleStore manages training examples.

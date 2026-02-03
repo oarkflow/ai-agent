@@ -19,9 +19,9 @@ type Evaluator struct {
 // EvaluationConfig configures evaluation.
 type EvaluationConfig struct {
 	// Batch settings
-	BatchSize   int  `json:"batch_size"`
-	MaxSamples  int  `json:"max_samples"` // 0 = all
-	Shuffle     bool `json:"shuffle"`
+	BatchSize  int  `json:"batch_size"`
+	MaxSamples int  `json:"max_samples"` // 0 = all
+	Shuffle    bool `json:"shuffle"`
 
 	// Evaluation types
 	EvalClassification bool `json:"eval_classification"`
@@ -29,8 +29,8 @@ type EvaluationConfig struct {
 	EvalRetrieval      bool `json:"eval_retrieval"`
 
 	// Output
-	OutputDir     string `json:"output_dir"`
-	SavePredictions bool `json:"save_predictions"`
+	OutputDir       string `json:"output_dir"`
+	SavePredictions bool   `json:"save_predictions"`
 
 	// Statistical significance
 	BootstrapSamples int     `json:"bootstrap_samples"`
@@ -95,13 +95,13 @@ type EvaluationResult struct {
 
 // ClassReport detailed report for each class.
 type ClassReport struct {
-	Class       string  `json:"class"`
-	Precision   float64 `json:"precision"`
-	Recall      float64 `json:"recall"`
-	F1Score     float64 `json:"f1_score"`
-	Support     int     `json:"support"`
-	ErrorRate   float64 `json:"error_rate"`
-	TopErrors   []ErrorExample `json:"top_errors,omitempty"`
+	Class     string         `json:"class"`
+	Precision float64        `json:"precision"`
+	Recall    float64        `json:"recall"`
+	F1Score   float64        `json:"f1_score"`
+	Support   int            `json:"support"`
+	ErrorRate float64        `json:"error_rate"`
+	TopErrors []ErrorExample `json:"top_errors,omitempty"`
 }
 
 // ErrorExample represents a misclassified example.
@@ -285,7 +285,7 @@ func (e *Evaluator) bootstrapConfidenceIntervals(predictions []Prediction) map[s
 		// Bootstrap sample
 		sample := make([]Prediction, n)
 		for i := range sample {
-			idx := int(float64(n) * pseudoRandom(int64(b*1000 + i)))
+			idx := int(float64(n) * pseudoRandom(int64(b*1000+i)))
 			if idx >= n {
 				idx = n - 1
 			}
@@ -352,15 +352,15 @@ func (e *Evaluator) savePredictions(predictions []Prediction, modelID, datasetID
 
 // ABTestResult holds A/B test results.
 type ABTestResult struct {
-	ModelA     string  `json:"model_a"`
-	ModelB     string  `json:"model_b"`
-	MetricName string  `json:"metric_name"`
-	ScoreA     float64 `json:"score_a"`
-	ScoreB     float64 `json:"score_b"`
-	Difference float64 `json:"difference"` // B - A
-	PValue     float64 `json:"p_value"`
-	Significant bool   `json:"significant"`
-	Winner     string  `json:"winner"`
+	ModelA      string  `json:"model_a"`
+	ModelB      string  `json:"model_b"`
+	MetricName  string  `json:"metric_name"`
+	ScoreA      float64 `json:"score_a"`
+	ScoreB      float64 `json:"score_b"`
+	Difference  float64 `json:"difference"` // B - A
+	PValue      float64 `json:"p_value"`
+	Significant bool    `json:"significant"`
+	Winner      string  `json:"winner"`
 }
 
 // CompareModels performs A/B comparison between two models.

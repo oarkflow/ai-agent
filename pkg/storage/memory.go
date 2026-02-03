@@ -7,17 +7,17 @@ import (
 
 // ConversationMemory represents a stored conversation for training/reference.
 type ConversationMemory struct {
-	ID          string            `json:"id"`
-	Domain      string            `json:"domain"`
-	SessionID   string            `json:"session_id"`
-	Messages    []MemoryMessage   `json:"messages"`
-	Summary     string            `json:"summary,omitempty"`
-	Quality     float64           `json:"quality,omitempty"`
-	Outcome     string            `json:"outcome,omitempty"` // success, failure, partial
-	Tags        []string          `json:"tags,omitempty"`
-	Metadata    map[string]any    `json:"metadata,omitempty"`
-	CreatedAt   time.Time         `json:"created_at"`
-	UpdatedAt   time.Time         `json:"updated_at"`
+	ID        string          `json:"id"`
+	Domain    string          `json:"domain"`
+	SessionID string          `json:"session_id"`
+	Messages  []MemoryMessage `json:"messages"`
+	Summary   string          `json:"summary,omitempty"`
+	Quality   float64         `json:"quality,omitempty"`
+	Outcome   string          `json:"outcome,omitempty"` // success, failure, partial
+	Tags      []string        `json:"tags,omitempty"`
+	Metadata  map[string]any  `json:"metadata,omitempty"`
+	CreatedAt time.Time       `json:"created_at"`
+	UpdatedAt time.Time       `json:"updated_at"`
 }
 
 // MemoryMessage represents a message in a conversation.

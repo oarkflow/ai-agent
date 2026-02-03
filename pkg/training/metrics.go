@@ -23,17 +23,17 @@ type Metrics struct {
 	ClassMetrics map[string]*ClassMetrics `json:"class_metrics,omitempty"`
 
 	// Generation metrics
-	BLEU       float64 `json:"bleu,omitempty"`
-	ROUGE1     float64 `json:"rouge_1,omitempty"`
-	ROUGE2     float64 `json:"rouge_2,omitempty"`
-	ROUGEL     float64 `json:"rouge_l,omitempty"`
-	Coherence  float64 `json:"coherence,omitempty"`
-	Fluency    float64 `json:"fluency,omitempty"`
+	BLEU      float64 `json:"bleu,omitempty"`
+	ROUGE1    float64 `json:"rouge_1,omitempty"`
+	ROUGE2    float64 `json:"rouge_2,omitempty"`
+	ROUGEL    float64 `json:"rouge_l,omitempty"`
+	Coherence float64 `json:"coherence,omitempty"`
+	Fluency   float64 `json:"fluency,omitempty"`
 
 	// Retrieval metrics
-	MRR      float64 `json:"mrr,omitempty"`       // Mean Reciprocal Rank
-	NDCG     float64 `json:"ndcg,omitempty"`      // Normalized Discounted Cumulative Gain
-	MAP      float64 `json:"map,omitempty"`       // Mean Average Precision
+	MRR      float64         `json:"mrr,omitempty"`       // Mean Reciprocal Rank
+	NDCG     float64         `json:"ndcg,omitempty"`      // Normalized Discounted Cumulative Gain
+	MAP      float64         `json:"map,omitempty"`       // Mean Average Precision
 	RecallAt map[int]float64 `json:"recall_at,omitempty"` // Recall@K
 
 	// Timing
@@ -41,12 +41,12 @@ type Metrics struct {
 	TokensPerSecond float64 `json:"tokens_per_second,omitempty"`
 
 	// Counts
-	TotalSamples    int `json:"total_samples"`
-	CorrectSamples  int `json:"correct_samples"`
-	TruePositives   int `json:"true_positives"`
-	TrueNegatives   int `json:"true_negatives"`
-	FalsePositives  int `json:"false_positives"`
-	FalseNegatives  int `json:"false_negatives"`
+	TotalSamples   int `json:"total_samples"`
+	CorrectSamples int `json:"correct_samples"`
+	TruePositives  int `json:"true_positives"`
+	TrueNegatives  int `json:"true_negatives"`
+	FalsePositives int `json:"false_positives"`
+	FalseNegatives int `json:"false_negatives"`
 
 	// Custom metrics
 	Custom map[string]float64 `json:"custom,omitempty"`
@@ -54,20 +54,20 @@ type Metrics struct {
 
 // ClassMetrics holds metrics for a single class.
 type ClassMetrics struct {
-	Class      string  `json:"class"`
-	Precision  float64 `json:"precision"`
-	Recall     float64 `json:"recall"`
-	F1Score    float64 `json:"f1_score"`
-	Support    int     `json:"support"`
-	TruePos    int     `json:"true_positives"`
-	FalsePos   int     `json:"false_positives"`
-	FalseNeg   int     `json:"false_negatives"`
+	Class     string  `json:"class"`
+	Precision float64 `json:"precision"`
+	Recall    float64 `json:"recall"`
+	F1Score   float64 `json:"f1_score"`
+	Support   int     `json:"support"`
+	TruePos   int     `json:"true_positives"`
+	FalsePos  int     `json:"false_positives"`
+	FalseNeg  int     `json:"false_negatives"`
 }
 
 // ConfusionMatrix represents a confusion matrix.
 type ConfusionMatrix struct {
-	Labels []string  `json:"labels"`
-	Matrix [][]int   `json:"matrix"`
+	Labels []string `json:"labels"`
+	Matrix [][]int  `json:"matrix"`
 }
 
 // MetricsCalculator calculates various metrics.
@@ -78,16 +78,16 @@ type MetricsCalculator struct {
 
 // Prediction represents a single prediction with ground truth.
 type Prediction struct {
-	ID             string         `json:"id"`
-	Input          string         `json:"input"`
-	Predicted      string         `json:"predicted"`
-	Expected       string         `json:"expected"`
-	PredictedClass string         `json:"predicted_class,omitempty"`
-	ExpectedClass  string         `json:"expected_class,omitempty"`
-	Confidence     float64        `json:"confidence"`
+	ID             string             `json:"id"`
+	Input          string             `json:"input"`
+	Predicted      string             `json:"predicted"`
+	Expected       string             `json:"expected"`
+	PredictedClass string             `json:"predicted_class,omitempty"`
+	ExpectedClass  string             `json:"expected_class,omitempty"`
+	Confidence     float64            `json:"confidence"`
 	Scores         map[string]float64 `json:"scores,omitempty"` // Class probabilities
-	Latency        time.Duration  `json:"latency"`
-	Metadata       map[string]any `json:"metadata,omitempty"`
+	Latency        time.Duration      `json:"latency"`
+	Metadata       map[string]any     `json:"metadata,omitempty"`
 }
 
 // NewMetricsCalculator creates a new calculator.
@@ -443,10 +443,10 @@ func (a *MetricsAggregator) Aggregate() *AggregatedMetrics {
 
 // AggregatedMetrics holds aggregate statistics.
 type AggregatedMetrics struct {
-	NumRuns   int          `json:"num_runs"`
-	Loss      *MetricStats `json:"loss"`
-	Accuracy  *MetricStats `json:"accuracy"`
-	F1Score   *MetricStats `json:"f1_score"`
+	NumRuns  int          `json:"num_runs"`
+	Loss     *MetricStats `json:"loss"`
+	Accuracy *MetricStats `json:"accuracy"`
+	F1Score  *MetricStats `json:"f1_score"`
 }
 
 // MetricStats holds statistics for a single metric.

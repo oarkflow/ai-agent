@@ -18,25 +18,25 @@ type ReactFlowDomain struct {
 
 // ReactFlowNode represents a node in ReactFlow format.
 type ReactFlowNode struct {
-	ID         string            `json:"id"`
-	Type       string            `json:"type,omitempty"`
-	Position   XYPosition        `json:"position"`
-	Data       map[string]any    `json:"data"`
-	Style      map[string]any    `json:"style,omitempty"`
-	ClassName  string            `json:"className,omitempty"`
-	SourcePosition string        `json:"sourcePosition,omitempty"`
-	TargetPosition string        `json:"targetPosition,omitempty"`
-	Hidden     bool              `json:"hidden,omitempty"`
-	Selected   bool              `json:"selected,omitempty"`
-	Dragging   bool              `json:"dragging,omitempty"`
-	Selectable bool              `json:"selectable,omitempty"`
-	Connectable bool             `json:"connectable,omitempty"`
-	Deletable  bool              `json:"deletable,omitempty"`
-	Width      float64           `json:"width,omitempty"`
-	Height     float64           `json:"height,omitempty"`
-	ParentId   string            `json:"parentId,omitempty"`
-	Extent     string            `json:"extent,omitempty"`
-	AriaLabel  string            `json:"ariaLabel,omitempty"`
+	ID             string         `json:"id"`
+	Type           string         `json:"type,omitempty"`
+	Position       XYPosition     `json:"position"`
+	Data           map[string]any `json:"data"`
+	Style          map[string]any `json:"style,omitempty"`
+	ClassName      string         `json:"className,omitempty"`
+	SourcePosition string         `json:"sourcePosition,omitempty"`
+	TargetPosition string         `json:"targetPosition,omitempty"`
+	Hidden         bool           `json:"hidden,omitempty"`
+	Selected       bool           `json:"selected,omitempty"`
+	Dragging       bool           `json:"dragging,omitempty"`
+	Selectable     bool           `json:"selectable,omitempty"`
+	Connectable    bool           `json:"connectable,omitempty"`
+	Deletable      bool           `json:"deletable,omitempty"`
+	Width          float64        `json:"width,omitempty"`
+	Height         float64        `json:"height,omitempty"`
+	ParentId       string         `json:"parentId,omitempty"`
+	Extent         string         `json:"extent,omitempty"`
+	AriaLabel      string         `json:"ariaLabel,omitempty"`
 }
 
 // XYPosition represents x,y coordinates.
@@ -47,24 +47,24 @@ type XYPosition struct {
 
 // ReactFlowEdge represents an edge in ReactFlow format.
 type ReactFlowEdge struct {
-	ID           string         `json:"id"`
-	Source       string         `json:"source"`
-	Target       string         `json:"target"`
-	Type         string         `json:"type,omitempty"`
-	SourceHandle string         `json:"sourceHandle,omitempty"`
-	TargetHandle string         `json:"targetHandle,omitempty"`
-	Animated     bool           `json:"animated,omitempty"`
-	Label        string         `json:"label,omitempty"`
-	LabelStyle   map[string]any `json:"labelStyle,omitempty"`
-	LabelBgStyle map[string]any `json:"labelBgStyle,omitempty"`
-	MarkerStart  *EdgeMarker    `json:"markerStart,omitempty"`
-	MarkerEnd    *EdgeMarker    `json:"markerEnd,omitempty"`
-	Style        map[string]any `json:"style,omitempty"`
-	ClassName    string         `json:"className,omitempty"`
-	Hidden       bool           `json:"hidden,omitempty"`
-	Data         map[string]any `json:"data,omitempty"`
-	Selected     bool           `json:"selected,omitempty"`
-	Interactionwidth float64    `json:"interactionWidth,omitempty"`
+	ID               string         `json:"id"`
+	Source           string         `json:"source"`
+	Target           string         `json:"target"`
+	Type             string         `json:"type,omitempty"`
+	SourceHandle     string         `json:"sourceHandle,omitempty"`
+	TargetHandle     string         `json:"targetHandle,omitempty"`
+	Animated         bool           `json:"animated,omitempty"`
+	Label            string         `json:"label,omitempty"`
+	LabelStyle       map[string]any `json:"labelStyle,omitempty"`
+	LabelBgStyle     map[string]any `json:"labelBgStyle,omitempty"`
+	MarkerStart      *EdgeMarker    `json:"markerStart,omitempty"`
+	MarkerEnd        *EdgeMarker    `json:"markerEnd,omitempty"`
+	Style            map[string]any `json:"style,omitempty"`
+	ClassName        string         `json:"className,omitempty"`
+	Hidden           bool           `json:"hidden,omitempty"`
+	Data             map[string]any `json:"data,omitempty"`
+	Selected         bool           `json:"selected,omitempty"`
+	Interactionwidth float64        `json:"interactionWidth,omitempty"`
 }
 
 // EdgeMarker represents edge markers (arrows, etc.).
@@ -80,11 +80,11 @@ type EdgeMarker struct {
 
 // ReactFlowGraph represents a complete ReactFlow graph.
 type ReactFlowGraph struct {
-	Nodes       []ReactFlowNode   `json:"nodes"`
-	Edges       []ReactFlowEdge   `json:"edges"`
-	Viewport    *Viewport         `json:"viewport,omitempty"`
-	NodeTypes   map[string]string `json:"nodeTypes,omitempty"`
-	EdgeTypes   map[string]string `json:"edgeTypes,omitempty"`
+	Nodes     []ReactFlowNode   `json:"nodes"`
+	Edges     []ReactFlowEdge   `json:"edges"`
+	Viewport  *Viewport         `json:"viewport,omitempty"`
+	NodeTypes map[string]string `json:"nodeTypes,omitempty"`
+	EdgeTypes map[string]string `json:"edgeTypes,omitempty"`
 }
 
 // Viewport represents the viewport state.

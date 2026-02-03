@@ -75,18 +75,18 @@ type PromptVariable struct {
 
 // SchemaDefinition defines input/output structure.
 type SchemaDefinition struct {
-	Type        string                        `json:"type"`
-	Properties  map[string]*SchemaDefinition  `json:"properties,omitempty"`
-	Items       *SchemaDefinition             `json:"items,omitempty"`
-	Required    []string                      `json:"required,omitempty"`
-	EnumValues  []any                         `json:"enum_values,omitempty"`
-	Format      string                        `json:"format,omitempty"`
-	MinLength   int                           `json:"min_length,omitempty"`
-	MaxLength   int                           `json:"max_length,omitempty"`
-	Minimum     float64                       `json:"minimum,omitempty"`
-	Maximum     float64                       `json:"maximum,omitempty"`
-	Pattern     string                        `json:"pattern,omitempty"`
-	Description string                        `json:"description,omitempty"`
+	Type        string                       `json:"type"`
+	Properties  map[string]*SchemaDefinition `json:"properties,omitempty"`
+	Items       *SchemaDefinition            `json:"items,omitempty"`
+	Required    []string                     `json:"required,omitempty"`
+	EnumValues  []any                        `json:"enum_values,omitempty"`
+	Format      string                       `json:"format,omitempty"`
+	MinLength   int                          `json:"min_length,omitempty"`
+	MaxLength   int                          `json:"max_length,omitempty"`
+	Minimum     float64                      `json:"minimum,omitempty"`
+	Maximum     float64                      `json:"maximum,omitempty"`
+	Pattern     string                       `json:"pattern,omitempty"`
+	Description string                       `json:"description,omitempty"`
 }
 
 // FlexibleTrainingConfig configures domain-specific training.
@@ -145,9 +145,9 @@ type ProcessorRule struct {
 
 // DomainRegistry manages multiple domain definitions.
 type DomainRegistry struct {
-	domains   map[string]*FlexibleDomain
-	dataDir   string
-	mu        sync.RWMutex
+	domains map[string]*FlexibleDomain
+	dataDir string
+	mu      sync.RWMutex
 }
 
 // NewDomainRegistry creates a new registry.
@@ -647,9 +647,9 @@ func NewClassificationDomain(id, name string, classes []string) *FlexibleDomain 
 	}
 
 	return &FlexibleDomain{
-		ID:       id,
-		Name:     name,
-		Category: CategoryClassification,
+		ID:          id,
+		Name:        name,
+		Category:    CategoryClassification,
 		Description: fmt.Sprintf("Classify input into one of: %s", classesStr),
 		SystemPrompt: fmt.Sprintf(`You are a classification assistant.
 Classify the given input into exactly one of these categories: %s
@@ -668,14 +668,14 @@ Respond with ONLY the category name, nothing else.`, classesStr),
 			{Type: "trim"},
 		},
 		Training: FlexibleTrainingConfig{
-			MinExamples:     10,
-			TrainRatio:      0.8,
-			ValidationRatio: 0.1,
-			TestRatio:       0.1,
-			DefaultFewShot:  3,
-			MaxFewShot:      5,
+			MinExamples:      10,
+			TrainRatio:       0.8,
+			ValidationRatio:  0.1,
+			TestRatio:        0.1,
+			DefaultFewShot:   3,
+			MaxFewShot:       5,
 			OptimizationGoal: "accuracy",
-			MetricsToTrack:  []string{"accuracy", "f1_score", "precision", "recall"},
+			MetricsToTrack:   []string{"accuracy", "f1_score", "precision", "recall"},
 		},
 	}
 }
@@ -683,11 +683,11 @@ Respond with ONLY the category name, nothing else.`, classesStr),
 // NewGenerationDomain creates a text generation domain.
 func NewGenerationDomain(id, name, description, systemPrompt string) *FlexibleDomain {
 	return &FlexibleDomain{
-		ID:          id,
-		Name:        name,
-		Category:    CategoryGeneration,
-		Description: description,
-		SystemPrompt: systemPrompt,
+		ID:                 id,
+		Name:               name,
+		Category:           CategoryGeneration,
+		Description:        description,
+		SystemPrompt:       systemPrompt,
 		UserPromptTemplate: "{{input}}",
 		Validators: []ValidatorRule{
 			{Type: "not_empty"},
@@ -697,14 +697,14 @@ func NewGenerationDomain(id, name, description, systemPrompt string) *FlexibleDo
 			{Type: "trim"},
 		},
 		Training: FlexibleTrainingConfig{
-			MinExamples:     20,
-			TrainRatio:      0.8,
-			ValidationRatio: 0.1,
-			TestRatio:       0.1,
-			DefaultFewShot:  2,
-			MaxFewShot:      5,
+			MinExamples:      20,
+			TrainRatio:       0.8,
+			ValidationRatio:  0.1,
+			TestRatio:        0.1,
+			DefaultFewShot:   2,
+			MaxFewShot:       5,
 			OptimizationGoal: "balanced",
-			MetricsToTrack:  []string{"bleu", "coherence"},
+			MetricsToTrack:   []string{"bleu", "coherence"},
 		},
 	}
 }
@@ -740,14 +740,14 @@ Respond in valid JSON format with these exact field names.`, strings.Join(fields
 			{Type: "extract_json"},
 		},
 		Training: FlexibleTrainingConfig{
-			MinExamples:     15,
-			TrainRatio:      0.8,
-			ValidationRatio: 0.1,
-			TestRatio:       0.1,
-			DefaultFewShot:  3,
-			MaxFewShot:      5,
+			MinExamples:      15,
+			TrainRatio:       0.8,
+			ValidationRatio:  0.1,
+			TestRatio:        0.1,
+			DefaultFewShot:   3,
+			MaxFewShot:       5,
 			OptimizationGoal: "accuracy",
-			MetricsToTrack:  []string{"accuracy", "exact_match"},
+			MetricsToTrack:   []string{"accuracy", "exact_match"},
 		},
 	}
 }
@@ -807,14 +807,14 @@ Keep summaries under %d characters while retaining key information.`, maxLength)
 			{Type: "trim"},
 		},
 		Training: FlexibleTrainingConfig{
-			MinExamples:     20,
-			TrainRatio:      0.8,
-			ValidationRatio: 0.1,
-			TestRatio:       0.1,
-			DefaultFewShot:  2,
-			MaxFewShot:      3,
+			MinExamples:      20,
+			TrainRatio:       0.8,
+			ValidationRatio:  0.1,
+			TestRatio:        0.1,
+			DefaultFewShot:   2,
+			MaxFewShot:       3,
 			OptimizationGoal: "balanced",
-			MetricsToTrack:  []string{"rouge_1", "rouge_2", "rouge_l"},
+			MetricsToTrack:   []string{"rouge_1", "rouge_2", "rouge_l"},
 		},
 	}
 }
@@ -839,14 +839,14 @@ Include comments explaining complex logic.`, language, language),
 			{Type: "trim"},
 		},
 		Training: FlexibleTrainingConfig{
-			MinExamples:     30,
-			TrainRatio:      0.8,
-			ValidationRatio: 0.1,
-			TestRatio:       0.1,
-			DefaultFewShot:  2,
-			MaxFewShot:      5,
+			MinExamples:      30,
+			TrainRatio:       0.8,
+			ValidationRatio:  0.1,
+			TestRatio:        0.1,
+			DefaultFewShot:   2,
+			MaxFewShot:       5,
 			OptimizationGoal: "balanced",
-			MetricsToTrack:  []string{"bleu", "exact_match"},
+			MetricsToTrack:   []string{"bleu", "exact_match"},
 		},
 	}
 }
@@ -861,14 +861,14 @@ func NewCustomDomain(id, name, description, systemPrompt, userTemplate string) *
 		SystemPrompt:       systemPrompt,
 		UserPromptTemplate: userTemplate,
 		Training: FlexibleTrainingConfig{
-			MinExamples:     10,
-			TrainRatio:      0.8,
-			ValidationRatio: 0.1,
-			TestRatio:       0.1,
-			DefaultFewShot:  3,
-			MaxFewShot:      10,
+			MinExamples:      10,
+			TrainRatio:       0.8,
+			ValidationRatio:  0.1,
+			TestRatio:        0.1,
+			DefaultFewShot:   3,
+			MaxFewShot:       10,
 			OptimizationGoal: "balanced",
-			MetricsToTrack:  []string{"accuracy"},
+			MetricsToTrack:   []string{"accuracy"},
 		},
 	}
 }

@@ -45,17 +45,17 @@ type ProvidersConfig map[string]*ProviderCfg
 
 // ProviderCfg represents a single provider's configuration.
 type ProviderCfg struct {
-	Enabled        bool                     `json:"enabled"`
-	APIKeyEnv      string                   `json:"api_key_env"`
-	BaseURL        string                   `json:"base_url"`
-	APIVersion     string                   `json:"api_version,omitempty"`
-	TimeoutSeconds int                      `json:"timeout_seconds"`
-	MaxRetries     int                      `json:"max_retries"`
-	Headers        map[string]string        `json:"headers,omitempty"`
-	BetaFeatures   []string                 `json:"beta_features,omitempty"`
-	VertexAI       *VertexAICfg             `json:"vertex_ai,omitempty"`
-	Models         map[string]*ModelCfg     `json:"models"`
-	RateLimit      *ProviderRateLimitCfg    `json:"rate_limit,omitempty"`
+	Enabled        bool                  `json:"enabled"`
+	APIKeyEnv      string                `json:"api_key_env"`
+	BaseURL        string                `json:"base_url"`
+	APIVersion     string                `json:"api_version,omitempty"`
+	TimeoutSeconds int                   `json:"timeout_seconds"`
+	MaxRetries     int                   `json:"max_retries"`
+	Headers        map[string]string     `json:"headers,omitempty"`
+	BetaFeatures   []string              `json:"beta_features,omitempty"`
+	VertexAI       *VertexAICfg          `json:"vertex_ai,omitempty"`
+	Models         map[string]*ModelCfg  `json:"models"`
+	RateLimit      *ProviderRateLimitCfg `json:"rate_limit,omitempty"`
 }
 
 // VertexAICfg contains Vertex AI specific configuration.
@@ -118,14 +118,14 @@ type GenerationDefaultsCfg struct {
 
 // MemoryCfg contains memory configuration.
 type MemoryCfg struct {
-	Enabled         bool              `json:"enabled"`
-	Strategy        string            `json:"strategy"`
-	MaxMessages     int               `json:"max_messages"`
-	MaxTokens       int               `json:"max_tokens"`
-	SummaryInterval int               `json:"summary_interval"`
-	KeepSystemPrompt bool             `json:"keep_system_prompt"`
-	PersistPath     string            `json:"persist_path"`
-	SemanticMemory  SemanticMemoryCfg `json:"semantic_memory"`
+	Enabled          bool              `json:"enabled"`
+	Strategy         string            `json:"strategy"`
+	MaxMessages      int               `json:"max_messages"`
+	MaxTokens        int               `json:"max_tokens"`
+	SummaryInterval  int               `json:"summary_interval"`
+	KeepSystemPrompt bool              `json:"keep_system_prompt"`
+	PersistPath      string            `json:"persist_path"`
+	SemanticMemory   SemanticMemoryCfg `json:"semantic_memory"`
 }
 
 // SemanticMemoryCfg contains semantic memory configuration.
@@ -199,14 +199,14 @@ type PromptsConfig struct {
 
 // PromptCfg represents a prompt template configuration.
 type PromptCfg struct {
-	ID          string               `json:"id"`
-	Name        string               `json:"name"`
-	Description string               `json:"description"`
-	Version     string               `json:"version"`
-	Category    string               `json:"category"`
-	Template    string               `json:"template"`
-	Variables   []PromptVariableCfg  `json:"variables"`
-	Config      *PromptSettingsCfg   `json:"config,omitempty"`
+	ID          string              `json:"id"`
+	Name        string              `json:"name"`
+	Description string              `json:"description"`
+	Version     string              `json:"version"`
+	Category    string              `json:"category"`
+	Template    string              `json:"template"`
+	Variables   []PromptVariableCfg `json:"variables"`
+	Config      *PromptSettingsCfg  `json:"config,omitempty"`
 }
 
 // PromptVariableCfg represents a template variable.
@@ -240,23 +240,23 @@ type ToolsConfig struct {
 
 // ToolCfg represents a tool configuration.
 type ToolCfg struct {
-	Name        string                 `json:"name"`
-	Description string                 `json:"description"`
-	Enabled     bool                   `json:"enabled"`
-	Parameters  *ToolParametersCfg     `json:"parameters"`
-	Handler     string                 `json:"handler,omitempty"`
-	Endpoint    *ToolEndpointCfg       `json:"endpoint,omitempty"`
-	Security    *ToolSecurityCfg       `json:"security,omitempty"`
-	Sandbox     *ToolSandboxCfg        `json:"sandbox,omitempty"`
-	Provider    string                 `json:"provider,omitempty"`
-	Model       string                 `json:"model,omitempty"`
+	Name        string             `json:"name"`
+	Description string             `json:"description"`
+	Enabled     bool               `json:"enabled"`
+	Parameters  *ToolParametersCfg `json:"parameters"`
+	Handler     string             `json:"handler,omitempty"`
+	Endpoint    *ToolEndpointCfg   `json:"endpoint,omitempty"`
+	Security    *ToolSecurityCfg   `json:"security,omitempty"`
+	Sandbox     *ToolSandboxCfg    `json:"sandbox,omitempty"`
+	Provider    string             `json:"provider,omitempty"`
+	Model       string             `json:"model,omitempty"`
 }
 
 // ToolParametersCfg represents tool parameters schema.
 type ToolParametersCfg struct {
-	Type       string                        `json:"type"`
-	Properties map[string]*ToolPropertyCfg   `json:"properties,omitempty"`
-	Required   []string                      `json:"required,omitempty"`
+	Type       string                      `json:"type"`
+	Properties map[string]*ToolPropertyCfg `json:"properties,omitempty"`
+	Required   []string                    `json:"required,omitempty"`
 }
 
 // ToolPropertyCfg represents a tool property schema.
@@ -330,13 +330,13 @@ type DomainCfg struct {
 
 // DomainSettingsCfg contains domain settings.
 type DomainSettingsCfg struct {
-	StoragePath           string  `json:"storage_path"`
-	ChunkSize             int     `json:"chunk_size"`
-	ChunkOverlap          int     `json:"chunk_overlap"`
-	EmbeddingModel        string  `json:"embedding_model"`
-	SimilarityThreshold   float64 `json:"similarity_threshold"`
-	MaxContextDocuments   int     `json:"max_context_documents"`
-	AutoDetectDomain      bool    `json:"auto_detect_domain"`
+	StoragePath         string  `json:"storage_path"`
+	ChunkSize           int     `json:"chunk_size"`
+	ChunkOverlap        int     `json:"chunk_overlap"`
+	EmbeddingModel      string  `json:"embedding_model"`
+	SimilarityThreshold float64 `json:"similarity_threshold"`
+	MaxContextDocuments int     `json:"max_context_documents"`
+	AutoDetectDomain    bool    `json:"auto_detect_domain"`
 }
 
 // ------------------------------
@@ -345,9 +345,9 @@ type DomainSettingsCfg struct {
 
 // ConfigLoader handles loading and managing configuration files.
 type ConfigLoader struct {
-	basePath   string
-	config     *Config
-	mu         sync.RWMutex
+	basePath    string
+	config      *Config
+	mu          sync.RWMutex
 	watcherStop chan struct{}
 }
 

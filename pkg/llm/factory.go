@@ -235,17 +235,17 @@ func (f *ProviderFactory) convertModels(models map[string]*config.ModelCfg, prov
 
 	for id, cfg := range models {
 		result[id] = &ModelInfo{
-			ID:              cfg.ID,
-			Name:            cfg.Name,
-			Provider:        provider,
-			Capabilities:    f.convertCapabilities(cfg.Capabilities),
-			ContextWindow:   cfg.ContextWindow,
-			MaxOutputTokens: cfg.MaxOutputTokens,
-			InputCostPer1K:  cfg.InputCostPer1K,
-			OutputCostPer1K: cfg.OutputCostPer1K,
+			ID:               cfg.ID,
+			Name:             cfg.Name,
+			Provider:         provider,
+			Capabilities:     f.convertCapabilities(cfg.Capabilities),
+			ContextWindow:    cfg.ContextWindow,
+			MaxOutputTokens:  cfg.MaxOutputTokens,
+			InputCostPer1K:   cfg.InputCostPer1K,
+			OutputCostPer1K:  cfg.OutputCostPer1K,
 			SupportedFormats: f.convertMediaTypes(cfg.SupportedFormats),
-			Deprecated:      cfg.Deprecated,
-			ReplacedBy:      cfg.ReplacedBy,
+			Deprecated:       cfg.Deprecated,
+			ReplacedBy:       cfg.ReplacedBy,
 		}
 	}
 

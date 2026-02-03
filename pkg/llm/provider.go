@@ -55,20 +55,20 @@ const (
 
 // ModelInfo contains metadata about a model.
 type ModelInfo struct {
-	ID                string            `json:"id"`
-	Name              string            `json:"name"`
-	Provider          ProviderType      `json:"provider"`
-	Version           string            `json:"version,omitempty"`
-	Capabilities      []Capability      `json:"capabilities"`
-	ContextWindow     int               `json:"context_window"`
-	MaxOutputTokens   int               `json:"max_output_tokens"`
-	InputCostPer1K    float64           `json:"input_cost_per_1k"`
-	OutputCostPer1K   float64           `json:"output_cost_per_1k"`
-	SupportedFormats  []content.MediaType `json:"supported_formats,omitempty"`
-	Deprecated        bool              `json:"deprecated,omitempty"`
-	ReplacedBy        string            `json:"replaced_by,omitempty"`
-	ReleaseDate       string            `json:"release_date,omitempty"`
-	Metadata          map[string]any    `json:"metadata,omitempty"`
+	ID               string              `json:"id"`
+	Name             string              `json:"name"`
+	Provider         ProviderType        `json:"provider"`
+	Version          string              `json:"version,omitempty"`
+	Capabilities     []Capability        `json:"capabilities"`
+	ContextWindow    int                 `json:"context_window"`
+	MaxOutputTokens  int                 `json:"max_output_tokens"`
+	InputCostPer1K   float64             `json:"input_cost_per_1k"`
+	OutputCostPer1K  float64             `json:"output_cost_per_1k"`
+	SupportedFormats []content.MediaType `json:"supported_formats,omitempty"`
+	Deprecated       bool                `json:"deprecated,omitempty"`
+	ReplacedBy       string              `json:"replaced_by,omitempty"`
+	ReleaseDate      string              `json:"release_date,omitempty"`
+	Metadata         map[string]any      `json:"metadata,omitempty"`
 }
 
 // HasCapability checks if a model has a specific capability.
@@ -93,32 +93,32 @@ func (m *ModelInfo) SupportsFormat(format content.MediaType) bool {
 
 // GenerationConfig holds configuration for text generation.
 type GenerationConfig struct {
-	Model           string            `json:"model,omitempty"`
-	Temperature     float64           `json:"temperature,omitempty"`
-	TopP            float64           `json:"top_p,omitempty"`
-	TopK            int               `json:"top_k,omitempty"`
-	MaxTokens       int               `json:"max_tokens,omitempty"`
-	StopSequences   []string          `json:"stop_sequences,omitempty"`
-	PresencePenalty float64           `json:"presence_penalty,omitempty"`
-	FrequencyPenalty float64          `json:"frequency_penalty,omitempty"`
-	Seed            *int              `json:"seed,omitempty"`
-	ResponseFormat  *ResponseFormat   `json:"response_format,omitempty"`
-	Tools           []Tool            `json:"tools,omitempty"`
-	ToolChoice      any               `json:"tool_choice,omitempty"`
+	Model             string          `json:"model,omitempty"`
+	Temperature       float64         `json:"temperature,omitempty"`
+	TopP              float64         `json:"top_p,omitempty"`
+	TopK              int             `json:"top_k,omitempty"`
+	MaxTokens         int             `json:"max_tokens,omitempty"`
+	StopSequences     []string        `json:"stop_sequences,omitempty"`
+	PresencePenalty   float64         `json:"presence_penalty,omitempty"`
+	FrequencyPenalty  float64         `json:"frequency_penalty,omitempty"`
+	Seed              *int            `json:"seed,omitempty"`
+	ResponseFormat    *ResponseFormat `json:"response_format,omitempty"`
+	Tools             []Tool          `json:"tools,omitempty"`
+	ToolChoice        any             `json:"tool_choice,omitempty"`
 	ParallelToolCalls *bool           `json:"parallel_tool_calls,omitempty"`
-	SystemPrompt    string            `json:"system_prompt,omitempty"`
-	Stream          bool              `json:"stream,omitempty"`
-	Timeout         int               `json:"timeout,omitempty"` // Seconds
-	RetryAttempts   int               `json:"retry_attempts,omitempty"`
-	CacheControl    *CacheControl     `json:"cache_control,omitempty"`
-	SafetySettings  []SafetySetting   `json:"safety_settings,omitempty"`
-	Metadata        map[string]any    `json:"metadata,omitempty"`
+	SystemPrompt      string          `json:"system_prompt,omitempty"`
+	Stream            bool            `json:"stream,omitempty"`
+	Timeout           int             `json:"timeout,omitempty"` // Seconds
+	RetryAttempts     int             `json:"retry_attempts,omitempty"`
+	CacheControl      *CacheControl   `json:"cache_control,omitempty"`
+	SafetySettings    []SafetySetting `json:"safety_settings,omitempty"`
+	Metadata          map[string]any  `json:"metadata,omitempty"`
 }
 
 // ResponseFormat specifies the output format.
 type ResponseFormat struct {
-	Type       string         `json:"type"` // "text", "json_object", "json_schema"
-	JSONSchema *JSONSchema    `json:"json_schema,omitempty"`
+	Type       string      `json:"type"` // "text", "json_object", "json_schema"
+	JSONSchema *JSONSchema `json:"json_schema,omitempty"`
 }
 
 // JSONSchema defines the schema for structured outputs.
@@ -156,26 +156,26 @@ type SafetySetting struct {
 
 // GenerationResponse represents the response from generation.
 type GenerationResponse struct {
-	ID              string                  `json:"id,omitempty"`
-	Model           string                  `json:"model"`
-	Message         *content.Message        `json:"message"`
-	FinishReason    string                  `json:"finish_reason,omitempty"`
-	Usage           *Usage                  `json:"usage,omitempty"`
-	ToolCalls       []content.ToolCall      `json:"tool_calls,omitempty"`
-	Citations       []Citation              `json:"citations,omitempty"`
-	Metadata        map[string]any          `json:"metadata,omitempty"`
+	ID           string             `json:"id,omitempty"`
+	Model        string             `json:"model"`
+	Message      *content.Message   `json:"message"`
+	FinishReason string             `json:"finish_reason,omitempty"`
+	Usage        *Usage             `json:"usage,omitempty"`
+	ToolCalls    []content.ToolCall `json:"tool_calls,omitempty"`
+	Citations    []Citation         `json:"citations,omitempty"`
+	Metadata     map[string]any     `json:"metadata,omitempty"`
 }
 
 // Usage contains token usage information.
 type Usage struct {
-	InputTokens      int     `json:"input_tokens"`
-	OutputTokens     int     `json:"output_tokens"`
-	TotalTokens      int     `json:"total_tokens"`
-	CachedTokens     int     `json:"cached_tokens,omitempty"`
-	ReasoningTokens  int     `json:"reasoning_tokens,omitempty"`
-	InputCost        float64 `json:"input_cost,omitempty"`
-	OutputCost       float64 `json:"output_cost,omitempty"`
-	TotalCost        float64 `json:"total_cost,omitempty"`
+	InputTokens     int     `json:"input_tokens"`
+	OutputTokens    int     `json:"output_tokens"`
+	TotalTokens     int     `json:"total_tokens"`
+	CachedTokens    int     `json:"cached_tokens,omitempty"`
+	ReasoningTokens int     `json:"reasoning_tokens,omitempty"`
+	InputCost       float64 `json:"input_cost,omitempty"`
+	OutputCost      float64 `json:"output_cost,omitempty"`
+	TotalCost       float64 `json:"total_cost,omitempty"`
 }
 
 // Citation for grounded responses.
@@ -189,12 +189,12 @@ type Citation struct {
 
 // StreamChunk represents a chunk in a streaming response.
 type StreamChunk struct {
-	ID           string              `json:"id,omitempty"`
-	Delta        string              `json:"delta"`
-	FinishReason string              `json:"finish_reason,omitempty"`
-	Usage        *Usage              `json:"usage,omitempty"`
-	ToolCall     *content.ToolCall   `json:"tool_call,omitempty"`
-	Error        error               `json:"error,omitempty"`
+	ID           string            `json:"id,omitempty"`
+	Delta        string            `json:"delta"`
+	FinishReason string            `json:"finish_reason,omitempty"`
+	Usage        *Usage            `json:"usage,omitempty"`
+	ToolCall     *content.ToolCall `json:"tool_call,omitempty"`
+	Error        error             `json:"error,omitempty"`
 }
 
 // EmbeddingRequest represents an embedding request.
@@ -214,13 +214,13 @@ type EmbeddingResponse struct {
 
 // TranscriptionRequest for audio transcription.
 type TranscriptionRequest struct {
-	Audio         *content.Content `json:"audio"`
-	Model         string           `json:"model,omitempty"`
-	Language      string           `json:"language,omitempty"`
-	Prompt        string           `json:"prompt,omitempty"`
-	ResponseFormat string          `json:"response_format,omitempty"` // "json", "text", "srt", "vtt"
-	Temperature   float64          `json:"temperature,omitempty"`
-	Timestamps    bool             `json:"timestamps,omitempty"`
+	Audio          *content.Content `json:"audio"`
+	Model          string           `json:"model,omitempty"`
+	Language       string           `json:"language,omitempty"`
+	Prompt         string           `json:"prompt,omitempty"`
+	ResponseFormat string           `json:"response_format,omitempty"` // "json", "text", "srt", "vtt"
+	Temperature    float64          `json:"temperature,omitempty"`
+	Timestamps     bool             `json:"timestamps,omitempty"`
 }
 
 // TranscriptionResponse contains transcription results.
@@ -234,11 +234,11 @@ type TranscriptionResponse struct {
 
 // TranscriptSegment represents a segment of transcribed audio.
 type TranscriptSegment struct {
-	ID        int     `json:"id"`
-	Start     float64 `json:"start"`
-	End       float64 `json:"end"`
-	Text      string  `json:"text"`
-	Tokens    []int   `json:"tokens,omitempty"`
+	ID         int     `json:"id"`
+	Start      float64 `json:"start"`
+	End        float64 `json:"end"`
+	Text       string  `json:"text"`
+	Tokens     []int   `json:"tokens,omitempty"`
 	AvgLogProb float64 `json:"avg_logprob,omitempty"`
 }
 
@@ -262,9 +262,9 @@ type ImageGenerationRequest struct {
 
 // ImageGenerationResponse contains generated images.
 type ImageGenerationResponse struct {
-	Images  []*content.Content `json:"images"`
-	Model   string             `json:"model"`
-	Usage   *Usage             `json:"usage,omitempty"`
+	Images []*content.Content `json:"images"`
+	Model  string             `json:"model"`
+	Usage  *Usage             `json:"usage,omitempty"`
 }
 
 // SpeechRequest for text-to-speech.
@@ -336,12 +336,12 @@ func (b *BaseProvider) GetModelInfo(model string) (*ModelInfo, error) {
 
 // Common errors
 var (
-	ErrModelNotFound    = NewLLMError("model not found", "")
+	ErrModelNotFound          = NewLLMError("model not found", "")
 	ErrCapabilityNotSupported = NewLLMError("capability not supported", "")
-	ErrInvalidInput     = NewLLMError("invalid input", "")
-	ErrRateLimited      = NewLLMError("rate limited", "")
-	ErrContextTooLong   = NewLLMError("context too long", "")
-	ErrContentFiltered  = NewLLMError("content filtered", "")
+	ErrInvalidInput           = NewLLMError("invalid input", "")
+	ErrRateLimited            = NewLLMError("rate limited", "")
+	ErrContextTooLong         = NewLLMError("context too long", "")
+	ErrContentFiltered        = NewLLMError("content filtered", "")
 )
 
 // LLMError represents an error from an LLM provider.

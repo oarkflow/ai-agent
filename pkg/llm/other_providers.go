@@ -26,8 +26,8 @@ func NewDeepSeekProvider(apiKey string) *DeepSeekProvider {
 			ProviderType: ProviderDeepSeek,
 			APIKey:       apiKey,
 			BaseURL:      "https://api.deepseek.com/v1", // Default, override via config
-			DefaultModel: "deepseek-chat",              // Default, override via config
-			Models:       make(map[string]*ModelInfo),  // Loaded from config
+			DefaultModel: "deepseek-chat",               // Default, override via config
+			Models:       make(map[string]*ModelInfo),   // Loaded from config
 		},
 		Client: &http.Client{Timeout: 120 * time.Second},
 	}
@@ -99,9 +99,9 @@ func (p *DeepSeekProvider) Generate(ctx context.Context, messages []*content.Mes
 	}
 
 	return &GenerationResponse{
-		ID:    resp.ID,
-		Model: resp.Model,
-		Message: content.NewTextMessage(content.RoleAssistant, responseText),
+		ID:           resp.ID,
+		Model:        resp.Model,
+		Message:      content.NewTextMessage(content.RoleAssistant, responseText),
 		FinishReason: choice.FinishReason,
 		Usage: &Usage{
 			InputTokens:  resp.Usage.PromptTokens,
@@ -219,9 +219,9 @@ func NewMistralProvider(apiKey string) *MistralProvider {
 		BaseProvider: BaseProvider{
 			ProviderType: ProviderMistral,
 			APIKey:       apiKey,
-			BaseURL:      "https://api.mistral.ai/v1",    // Default, override via config
-			DefaultModel: "mistral-large-latest",         // Default, override via config
-			Models:       make(map[string]*ModelInfo),    // Loaded from config
+			BaseURL:      "https://api.mistral.ai/v1", // Default, override via config
+			DefaultModel: "mistral-large-latest",      // Default, override via config
+			Models:       make(map[string]*ModelInfo), // Loaded from config
 		},
 		Client: &http.Client{Timeout: 120 * time.Second},
 	}
@@ -284,9 +284,9 @@ func (p *MistralProvider) Generate(ctx context.Context, messages []*content.Mess
 
 	choice := resp.Choices[0]
 	return &GenerationResponse{
-		ID:    resp.ID,
-		Model: resp.Model,
-		Message: content.NewTextMessage(content.RoleAssistant, choice.Message.Content),
+		ID:           resp.ID,
+		Model:        resp.Model,
+		Message:      content.NewTextMessage(content.RoleAssistant, choice.Message.Content),
 		FinishReason: choice.FinishReason,
 		Usage: &Usage{
 			InputTokens:  resp.Usage.PromptTokens,
@@ -475,9 +475,9 @@ func NewXAIProvider(apiKey string) *XAIProvider {
 		BaseProvider: BaseProvider{
 			ProviderType: ProviderXAI,
 			APIKey:       apiKey,
-			BaseURL:      "https://api.x.ai/v1",         // Default, override via config
-			DefaultModel: "grok-2",                       // Default, override via config
-			Models:       make(map[string]*ModelInfo),    // Loaded from config
+			BaseURL:      "https://api.x.ai/v1",       // Default, override via config
+			DefaultModel: "grok-2",                    // Default, override via config
+			Models:       make(map[string]*ModelInfo), // Loaded from config
 		},
 		Client: &http.Client{Timeout: 120 * time.Second},
 	}
@@ -537,9 +537,9 @@ func (p *XAIProvider) Generate(ctx context.Context, messages []*content.Message,
 
 	choice := resp.Choices[0]
 	return &GenerationResponse{
-		ID:    resp.ID,
-		Model: resp.Model,
-		Message: content.NewTextMessage(content.RoleAssistant, choice.Message.Content),
+		ID:           resp.ID,
+		Model:        resp.Model,
+		Message:      content.NewTextMessage(content.RoleAssistant, choice.Message.Content),
 		FinishReason: choice.FinishReason,
 		Usage: &Usage{
 			InputTokens:  resp.Usage.PromptTokens,

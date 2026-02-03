@@ -32,11 +32,11 @@ type Domain interface {
 
 // DomainInfo provides metadata about a registered domain.
 type DomainInfo struct {
-	ID          string   `json:"id"`
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	Categories  []string `json:"categories"`
-	ExampleCount int     `json:"example_count"`
+	ID           string   `json:"id"`
+	Name         string   `json:"name"`
+	Description  string   `json:"description"`
+	Categories   []string `json:"categories"`
+	ExampleCount int      `json:"example_count"`
 }
 
 // NewDomainRegistry creates a new domain registry.

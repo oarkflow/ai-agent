@@ -92,14 +92,14 @@ type LegacyRateLimitConfig struct {
 
 // LegacyLoggingConfig configures logging behavior.
 type LegacyLoggingConfig struct {
-	Level        string   `json:"level"`
-	Format       string   `json:"format"`
-	Output       string   `json:"output"`
-	LogRequests  bool     `json:"log_requests"`
-	LogResponses bool     `json:"log_responses"`
-	LogTokens    bool     `json:"log_tokens"`
-	LogCosts     bool     `json:"log_costs"`
-	Redact       bool     `json:"redact"`
+	Level        string `json:"level"`
+	Format       string `json:"format"`
+	Output       string `json:"output"`
+	LogRequests  bool   `json:"log_requests"`
+	LogResponses bool   `json:"log_responses"`
+	LogTokens    bool   `json:"log_tokens"`
+	LogCosts     bool   `json:"log_costs"`
+	Redact       bool   `json:"redact"`
 }
 
 // LegacySecurityConfig configures security settings.

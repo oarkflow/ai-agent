@@ -25,35 +25,35 @@ type PipelineConfig struct {
 	LogDir        string `json:"log_dir"`
 
 	// Stages
-	EnableDataCleaning   bool `json:"enable_data_cleaning"`
-	EnableValidation     bool `json:"enable_validation"`
+	EnableDataCleaning     bool `json:"enable_data_cleaning"`
+	EnableValidation       bool `json:"enable_validation"`
 	EnableHyperparamSearch bool `json:"enable_hyperparam_search"`
-	EnableEvaluation     bool `json:"enable_evaluation"`
+	EnableEvaluation       bool `json:"enable_evaluation"`
 
 	// Parallelism
 	MaxParallelJobs int `json:"max_parallel_jobs"`
 
 	// Logging
 	Verbose      bool `json:"verbose"`
-	LogInterval  int  `json:"log_interval"` // Steps
+	LogInterval  int  `json:"log_interval"`  // Steps
 	SaveInterval int  `json:"save_interval"` // Steps
 }
 
 // DefaultPipelineConfig returns default configuration.
 func DefaultPipelineConfig() PipelineConfig {
 	return PipelineConfig{
-		DataDir:              "data",
-		OutputDir:            "output",
-		CheckpointDir:        "checkpoints",
-		LogDir:               "logs",
-		EnableDataCleaning:   true,
-		EnableValidation:     true,
+		DataDir:                "data",
+		OutputDir:              "output",
+		CheckpointDir:          "checkpoints",
+		LogDir:                 "logs",
+		EnableDataCleaning:     true,
+		EnableValidation:       true,
 		EnableHyperparamSearch: false,
-		EnableEvaluation:     true,
-		MaxParallelJobs:      1,
-		Verbose:              true,
-		LogInterval:          100,
-		SaveInterval:         1000,
+		EnableEvaluation:       true,
+		MaxParallelJobs:        1,
+		Verbose:                true,
+		LogInterval:            100,
+		SaveInterval:           1000,
 	}
 }
 
@@ -131,17 +131,17 @@ const (
 // JobConfig configures a training job.
 type JobConfig struct {
 	// Data settings
-	DataSource       string        `json:"data_source"`
-	DataSplit        DatasetSplit  `json:"data_split"`
-	CleaningConfig   CleaningConfig `json:"cleaning_config,omitempty"`
+	DataSource     string         `json:"data_source"`
+	DataSplit      DatasetSplit   `json:"data_split"`
+	CleaningConfig CleaningConfig `json:"cleaning_config,omitempty"`
 
 	// Training settings
-	Hyperparams      *Hyperparameters   `json:"hyperparams"`
-	TrainerConfig    TrainerConfig      `json:"trainer_config"`
-	EvaluationConfig EvaluationConfig   `json:"evaluation_config"`
+	Hyperparams      *Hyperparameters `json:"hyperparams"`
+	TrainerConfig    TrainerConfig    `json:"trainer_config"`
+	EvaluationConfig EvaluationConfig `json:"evaluation_config"`
 
 	// Hyperparameter search
-	SearchConfig     *HyperparameterSearchConfig `json:"search_config,omitempty"`
+	SearchConfig *HyperparameterSearchConfig `json:"search_config,omitempty"`
 }
 
 // StageResult holds the result of a pipeline stage.
@@ -336,8 +336,13 @@ func (p *Pipeline) RunJob(ctx context.Context, job *PipelineJob, data []DataPoin
 			}
 
 			return map[string]any{
-				"best_metric": func() float64 { if best != nil && best.Metrics != nil { return best.Metrics.Accuracy }; return 0 }(),
-				"trials_run":  len(search.GetTrials()),
+				"best_metric": func() float64 {
+					if best != nil && best.Metrics != nil {
+						return best.Metrics.Accuracy
+					}
+					return 0
+				}(),
+				"trials_run": len(search.GetTrials()),
 			}, nil
 		})
 		job.Stages = append(job.Stages, stage)
@@ -466,8 +471,8 @@ func (p *Pipeline) QuickTrain(domainID string, data []DataPoint, trainFn TrainFu
 	runner := NewDomainRunner(domain)
 
 	job, err := p.CreateJob(domainID, JobConfig{
-		DataSource:       "direct",
-		DataSplit:        DatasetSplit{
+		DataSource: "direct",
+		DataSplit: DatasetSplit{
 			Train:      domain.Training.TrainRatio,
 			Validation: domain.Training.ValidationRatio,
 			Test:       domain.Training.TestRatio,

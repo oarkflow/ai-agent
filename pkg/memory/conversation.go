@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sort"
+	"strings"
 	"sync"
 	"time"
 
@@ -19,19 +21,25 @@ type ConversationMemory struct {
 	maxTokens       int
 	strategy        MemoryStrategy
 	summaryProvider llm.MultimodalProvider
-	metadata        *ConversationMetadata
+	// Extensible components
+	tokenEstimator TokenEstimator
+	scorer         MessageScorer
+	// Use cache for LLM-based scorers
+	useScorerCache bool
+
+	metadata *ConversationMetadata
 }
 
 // ConversationMetadata stores metadata about the conversation.
 type ConversationMetadata struct {
-	ID           string                 `json:"id"`
-	StartedAt    time.Time              `json:"started_at"`
-	UpdatedAt    time.Time              `json:"updated_at"`
-	MessageCount int                    `json:"message_count"`
-	TotalTokens  int                    `json:"total_tokens"`
-	Topics       []string               `json:"topics"`
-	Entities     map[string]string      `json:"entities"`
-	CustomData   map[string]any         `json:"custom_data"`
+	ID           string            `json:"id"`
+	StartedAt    time.Time         `json:"started_at"`
+	UpdatedAt    time.Time         `json:"updated_at"`
+	MessageCount int               `json:"message_count"`
+	TotalTokens  int               `json:"total_tokens"`
+	Topics       []string          `json:"topics"`
+	Entities     map[string]string `json:"entities"`
+	CustomData   map[string]any    `json:"custom_data"`
 }
 
 // MemoryStrategy defines how to handle memory limits.
@@ -50,21 +58,24 @@ const (
 
 // MemoryConfig configures conversation memory.
 type MemoryConfig struct {
-	MaxMessages     int            `json:"max_messages"`
-	MaxTokens       int            `json:"max_tokens"`
-	Strategy        MemoryStrategy `json:"strategy"`
-	SummaryInterval int            `json:"summary_interval"`
-	KeepSystemPrompt bool          `json:"keep_system_prompt"`
+	MaxMessages      int            `json:"max_messages"`
+	MaxTokens        int            `json:"max_tokens"`
+	Strategy         MemoryStrategy `json:"strategy"`
+	SummaryInterval  int            `json:"summary_interval"`
+	KeepSystemPrompt bool           `json:"keep_system_prompt"`
+	// UseScorerCache enables caching for LLM-based message scorers
+	UseScorerCache bool `json:"use_scorer_cache"`
 }
 
 // DefaultMemoryConfig returns a default configuration.
 func DefaultMemoryConfig() *MemoryConfig {
 	return &MemoryConfig{
-		MaxMessages:     50,
-		MaxTokens:       100000,
-		Strategy:        StrategyHybrid,
-		SummaryInterval: 20,
+		MaxMessages:      50,
+		MaxTokens:        100000,
+		Strategy:         StrategyHybrid,
+		SummaryInterval:  20,
 		KeepSystemPrompt: true,
+		UseScorerCache:   true,
 	}
 }
 
@@ -72,38 +83,105 @@ func DefaultMemoryConfig() *MemoryConfig {
 func NewConversationMemory(config *MemoryConfig) *ConversationMemory {
 	if config == nil {
 		config = DefaultMemoryConfig()
+	} else {
+		// Fill defaults for missing values
+		defaultCfg := DefaultMemoryConfig()
+		if config.Strategy == "" {
+			config.Strategy = defaultCfg.Strategy
+		}
+		if config.MaxMessages == 0 {
+			config.MaxMessages = defaultCfg.MaxMessages
+		}
+		if config.MaxTokens == 0 {
+			config.MaxTokens = defaultCfg.MaxTokens
+		}
 	}
-	return &ConversationMemory{
-		messages:    make([]*content.Message, 0),
-		maxMessages: config.MaxMessages,
-		maxTokens:   config.MaxTokens,
-		strategy:    config.Strategy,
+
+	cm := &ConversationMemory{
+		messages:       make([]*content.Message, 0),
+		maxMessages:    config.MaxMessages,
+		maxTokens:      config.MaxTokens,
+		strategy:       config.Strategy,
+		useScorerCache: config.UseScorerCache,
 		metadata: &ConversationMetadata{
-			ID:        generateID(),
-			StartedAt: time.Now(),
-			UpdatedAt: time.Now(),
-			Entities:  make(map[string]string),
+			ID:         generateID(),
+			StartedAt:  time.Now(),
+			UpdatedAt:  time.Now(),
+			Entities:   make(map[string]string),
 			CustomData: make(map[string]any),
 		},
 	}
+
+	// Default token estimator: prefer tiktoken but fall back to heuristic
+	if enc, err := NewTiktokenEstimator("cl100k_base"); err == nil {
+		cm.tokenEstimator = enc
+	} else {
+		cm.tokenEstimator = DefaultTokenEstimator{}
+	}
+
+	return cm
 }
 
 // SetSummaryProvider sets the provider used for summarization.
+// If an importance scorer is not set, the summary provider will be used to
+// create an LLM-based importance scorer (and cache it when configured).
 func (cm *ConversationMemory) SetSummaryProvider(provider llm.MultimodalProvider) {
 	cm.summaryProvider = provider
+	// If no scorer configured, wire an LLM scorer using this provider
+	if cm.scorer == nil && provider != nil {
+		cm.SetImportanceProvider(provider, "")
+	}
+}
+
+// SetTokenEstimator sets a custom token estimator.
+func (cm *ConversationMemory) SetTokenEstimator(est TokenEstimator) {
+	cm.mu.Lock()
+	defer cm.mu.Unlock()
+	cm.tokenEstimator = est
+}
+
+// SetMessageScorer sets the scorer used by importance strategy.
+func (cm *ConversationMemory) SetMessageScorer(scorer MessageScorer) {
+	cm.mu.Lock()
+	defer cm.mu.Unlock()
+	cm.scorer = scorer
+}
+
+// SetImportanceProvider configures the importance scorer from an LLM provider.
+// If useCache is not provided, it uses the memory config default.
+func (cm *ConversationMemory) SetImportanceProvider(provider llm.MultimodalProvider, model string) {
+	if provider == nil {
+		return
+	}
+	// Create LLM scorer
+	llmScorer := NewLLMScorer(provider, model)
+	if cm.useScorerCache {
+		cm.SetMessageScorer(NewLLMScorerCache(llmScorer))
+	} else {
+		cm.SetMessageScorer(llmScorer)
+	}
+}
+
+// estimateTokens is the instance-aware token estimator wrapper.
+func (cm *ConversationMemory) estimateTokens(msg *content.Message) int {
+	if cm.tokenEstimator != nil {
+		return cm.tokenEstimator.EstimateMessage(msg)
+	}
+	var d DefaultTokenEstimator
+	return d.EstimateMessage(msg)
 }
 
 // Add adds a message to the conversation.
 func (cm *ConversationMemory) Add(msg *content.Message) {
 	cm.mu.Lock()
-	defer cm.mu.Unlock()
-
 	cm.messages = append(cm.messages, msg)
 	cm.metadata.MessageCount++
 	cm.metadata.UpdatedAt = time.Now()
+	needTrim := cm.shouldTrim()
+	cm.mu.Unlock()
 
-	// Apply memory strategy if needed
-	if cm.shouldTrim() {
+	// Apply memory strategy if needed (outside lock to avoid deadlocks with strategies that lock)
+	if needTrim {
 		cm.applyStrategy()
 	}
 }
@@ -156,7 +234,7 @@ func (cm *ConversationMemory) GetContext(maxTokens int) []*content.Message {
 
 	for i := len(cm.messages) - 1; i >= 0; i-- {
 		msg := cm.messages[i]
-		msgTokens := estimateTokens(msg)
+		msgTokens := cm.estimateTokens(msg)
 
 		if estimatedTokens+msgTokens > maxTokens && len(result) > 0 {
 			break
@@ -339,30 +417,238 @@ func (cm *ConversationMemory) applyWindowStrategy() {
 }
 
 func (cm *ConversationMemory) applySummaryStrategy() {
-	// This would require async summarization
-	// For now, fall back to window strategy
-	cm.applyWindowStrategy()
+	// If no summary provider is configured, fall back to window strategy
+	if cm.summaryProvider == nil {
+		cm.applyWindowStrategy()
+		return
+	}
+
+	// If we're within limits, nothing to do
+	if len(cm.messages) <= cm.maxMessages {
+		return
+	}
+
+	// Identify system prompt (if any) and calculate how many recent messages to keep
+	var systemPrompt *content.Message
+	start := 0
+	if len(cm.messages) > 0 && cm.messages[0].Role == content.RoleSystem {
+		systemPrompt = cm.messages[0]
+		start = 1
+	}
+
+	keepCount := cm.maxMessages
+	if systemPrompt != nil {
+		keepCount--
+	}
+	if keepCount < 1 {
+		keepCount = 1
+	}
+
+	if len(cm.messages)-start <= keepCount {
+		return
+	}
+
+	// Messages to summarize: from start up to the oldest messages that will be kept out
+	summarizeEnd := len(cm.messages) - keepCount
+	oldMessages := make([]*content.Message, summarizeEnd-start)
+	copy(oldMessages, cm.messages[start:summarizeEnd])
+
+	// Insert a placeholder summary message synchronously so context remains compact
+	placeholderText := "Summarizing previous conversation..."
+	placeholder := content.NewSystemMessage(placeholderText)
+
+	newMsgs := make([]*content.Message, 0, 1+1+keepCount)
+	if systemPrompt != nil {
+		newMsgs = append(newMsgs, systemPrompt)
+	}
+	newMsgs = append(newMsgs, placeholder)
+	newMsgs = append(newMsgs, cm.messages[summarizeEnd:]...)
+	cm.messages = newMsgs
+
+	// Generate the summary asynchronously and replace the placeholder
+	go func(old []*content.Message) {
+		// Build the text to summarize
+		var convText strings.Builder
+		for _, m := range old {
+			convText.WriteString(fmt.Sprintf("%s: %s\n", m.Role, m.GetText()))
+		}
+
+		prompt := fmt.Sprintf(`Summarize the following conversation concisely, capturing:
+1. Main topics discussed
+2. Key decisions or conclusions
+3. Important facts or entities mentioned
+4. Any pending questions or action items
+
+Conversation:
+%s
+
+Provide a clear, structured summary.`, convText.String())
+
+		resp, err := cm.summaryProvider.Generate(context.Background(), []*content.Message{
+			content.NewSystemMessage("You are a conversation summarizer. Create clear, concise summaries."),
+			content.NewUserMessage(prompt),
+		}, &llm.GenerationConfig{Temperature: 0.2, MaxTokens: 500})
+
+		summaryText := ""
+		if err != nil {
+			summaryText = fmt.Sprintf("[Summary generation failed: %v]", err)
+		} else if resp != nil && resp.Message != nil {
+			summaryText = resp.Message.GetText()
+		} else {
+			summaryText = "[No summary generated]"
+		}
+
+		summaryMessage := content.NewSystemMessage("Summary of earlier conversation:\n" + summaryText)
+
+		// Replace placeholder with the final summary
+		cm.mu.Lock()
+		defer cm.mu.Unlock()
+		for i, m := range cm.messages {
+			if m.Role == content.RoleSystem && strings.HasPrefix(m.GetText(), placeholderText) {
+				cm.messages[i] = summaryMessage
+				break
+			}
+		}
+	}(oldMessages)
 }
 
 func (cm *ConversationMemory) applyImportanceStrategy() {
-	// Keep messages marked as important
-	// For now, fall back to window strategy
-	cm.applyWindowStrategy()
+	cm.mu.Lock()
+	if len(cm.messages) <= cm.maxMessages {
+		cm.mu.Unlock()
+		return
+	}
+	// we'll build new messages while locked, but scoring may use network calls, so copy candidates while locked
+	var systemPrompt *content.Message
+	start := 0
+	if len(cm.messages) > 0 && cm.messages[0].Role == content.RoleSystem {
+		systemPrompt = cm.messages[0]
+		start = 1
+	}
+	candidates := make([]*content.Message, len(cm.messages[start:]))
+	copy(candidates, cm.messages[start:])
+	keepCount := cm.maxMessages
+	if systemPrompt != nil {
+		keepCount--
+	}
+	if keepCount < 1 {
+		keepCount = 1
+	}
+	cm.mu.Unlock()
+
+	// Score each candidate; allow scorer to use context
+	type scored struct {
+		idx   int
+		score float64
+	}
+
+	scores := make([]scored, 0, len(candidates))
+	for i, m := range candidates {
+		var s float64
+		if cm.scorer != nil {
+			s = cm.scorer.Score(context.Background(), m)
+		} else {
+			var h HeuristicScorer
+			s = h.Score(context.Background(), m)
+		}
+		scores = append(scores, scored{idx: i, score: s})
+	}
+
+	// Sort by score desc
+	sort.Slice(scores, func(i, j int) bool {
+		return scores[i].score > scores[j].score
+	})
+
+	// Pick top keepCount indices
+	if keepCount > len(scores) {
+		keepCount = len(scores)
+	}
+	sel := scores[:keepCount]
+
+	// Restore original chronological order among selected
+	sort.Slice(sel, func(i, j int) bool {
+		return sel[i].idx < sel[j].idx
+	})
+
+	// Build new messages: system prompt (if any) + selected
+	newMsgs := make([]*content.Message, 0, 1+keepCount)
+	if systemPrompt != nil {
+		newMsgs = append(newMsgs, systemPrompt)
+	}
+	for _, s := range sel {
+		newMsgs = append(newMsgs, candidates[s.idx])
+	}
+
+	cm.mu.Lock()
+	cm.messages = newMsgs
+	cm.mu.Unlock()
 }
 
 func (cm *ConversationMemory) applyHybridStrategy() {
 	// Combine window with summarization of older messages
-	cm.applyWindowStrategy()
+	// Prefer summarization when provider is available, otherwise fall back to window.
+	if cm.summaryProvider == nil {
+		cm.applyWindowStrategy()
+		return
+	}
+	cm.applySummaryStrategy()
 }
 
-// estimateTokens estimates the token count for a message.
-func estimateTokens(msg *content.Message) int {
-	// Rough estimation: ~4 characters per token
-	text := msg.GetText()
+// TokenEstimator estimates tokens for messages or text.
+type TokenEstimator interface {
+	EstimateMessage(msg *content.Message) int
+	EstimateText(text string) int
+}
+
+// DefaultTokenEstimator uses a simple heuristic (~4 chars per token).
+type DefaultTokenEstimator struct{}
+
+func (d DefaultTokenEstimator) EstimateMessage(msg *content.Message) int {
+	return d.EstimateText(msg.GetText())
+}
+
+func (d DefaultTokenEstimator) EstimateText(text string) int {
+	if text == "" {
+		return 0
+	}
 	return len(text) / 4
 }
 
-// generateID generates a unique ID.
+// MessageScorer assigns importance scores to messages (0..1 range, higher is more important).
+// The scorer accepts a context to allow LLM-based scorers to make network calls.
+type MessageScorer interface {
+	Score(ctx context.Context, msg *content.Message) float64
+}
+
+// MessageScorerFunc helper to allow using functions as scorers.
+type MessageScorerFunc func(ctx context.Context, msg *content.Message) float64
+
+func (f MessageScorerFunc) Score(ctx context.Context, msg *content.Message) float64 {
+	return f(ctx, msg)
+}
+
+// HeuristicScorer is a simple fallback scorer that prioritizes assistant messages and longer content.
+type HeuristicScorer struct{}
+
+func (h HeuristicScorer) Score(ctx context.Context, msg *content.Message) float64 {
+	_ = ctx
+	text := msg.GetText()
+	if text == "" {
+		return 0.0
+	}
+	// base score by length
+	score := float64(len(text)) / 100.0
+	// boost assistant messages
+	if msg.Role == content.RoleAssistant {
+		score += 1.0
+	}
+	// normalize roughly
+	if score > 1.0 {
+		score = 1.0
+	}
+	return score
+}
+
 func generateID() string {
 	return fmt.Sprintf("conv_%d", time.Now().UnixNano())
 }
@@ -377,15 +663,15 @@ type SemanticMemory struct {
 
 // MemoryItem represents a single memory item.
 type MemoryItem struct {
-	ID        string     `json:"id"`
-	Content   string     `json:"content"`
-	Type      MemoryType `json:"type"`
-	Embedding []float64  `json:"embedding,omitempty"`
-	Metadata  map[string]any `json:"metadata"`
-	CreatedAt time.Time  `json:"created_at"`
-	AccessCount int      `json:"access_count"`
-	LastAccess time.Time `json:"last_access"`
-	Importance float64   `json:"importance"`
+	ID          string         `json:"id"`
+	Content     string         `json:"content"`
+	Type        MemoryType     `json:"type"`
+	Embedding   []float64      `json:"embedding,omitempty"`
+	Metadata    map[string]any `json:"metadata"`
+	CreatedAt   time.Time      `json:"created_at"`
+	AccessCount int            `json:"access_count"`
+	LastAccess  time.Time      `json:"last_access"`
+	Importance  float64        `json:"importance"`
 }
 
 // MemoryType categorizes memories.
@@ -440,12 +726,12 @@ func (sm *SemanticMemory) Store(ctx context.Context, content string, memType Mem
 	}
 
 	memory := &MemoryItem{
-		ID:        generateID(),
-		Content:   content,
-		Type:      memType,
-		Embedding: embResp.Embeddings[0],
-		Metadata:  metadata,
-		CreatedAt: time.Now(),
+		ID:         generateID(),
+		Content:    content,
+		Type:       memType,
+		Embedding:  embResp.Embeddings[0],
+		Metadata:   metadata,
+		CreatedAt:  time.Now(),
 		Importance: 0.5,
 	}
 

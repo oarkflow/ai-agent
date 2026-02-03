@@ -45,65 +45,65 @@ type CPTCode struct {
 
 // MedicalCodingResult represents the result of medical coding analysis.
 type MedicalCodingResult struct {
-	DiagnosisCodes  []ICD10Code       `json:"diagnosis_codes"`
-	ProcedureCodes  []CPTCode         `json:"procedure_codes"`
-	Modifiers       []string          `json:"modifiers,omitempty"`
-	PrimaryDiagnosis string           `json:"primary_diagnosis,omitempty"`
+	DiagnosisCodes     []ICD10Code    `json:"diagnosis_codes"`
+	ProcedureCodes     []CPTCode      `json:"procedure_codes"`
+	Modifiers          []string       `json:"modifiers,omitempty"`
+	PrimaryDiagnosis   string         `json:"primary_diagnosis,omitempty"`
 	SecondaryDiagnoses []string       `json:"secondary_diagnoses,omitempty"`
-	PlaceOfService  string            `json:"place_of_service,omitempty"`
-	Notes           []string          `json:"notes,omitempty"`
-	Confidence      float64           `json:"confidence,omitempty"`
-	Metadata        map[string]any    `json:"metadata,omitempty"`
+	PlaceOfService     string         `json:"place_of_service,omitempty"`
+	Notes              []string       `json:"notes,omitempty"`
+	Confidence         float64        `json:"confidence,omitempty"`
+	Metadata           map[string]any `json:"metadata,omitempty"`
 }
 
 // ClaimData represents billing claim data.
 type ClaimData struct {
-	ClaimID          string            `json:"claim_id"`
-	PatientID        string            `json:"patient_id"`
-	ProviderNPI      string            `json:"provider_npi"`
-	FacilityNPI      string            `json:"facility_npi,omitempty"`
-	DateOfService    time.Time         `json:"date_of_service"`
-	PlaceOfService   string            `json:"place_of_service"`
-	DiagnosisCodes   []string          `json:"diagnosis_codes"`
-	ProcedureCodes   []ClaimProcedure  `json:"procedure_codes"`
-	TotalCharges     float64           `json:"total_charges"`
+	ClaimID           string           `json:"claim_id"`
+	PatientID         string           `json:"patient_id"`
+	ProviderNPI       string           `json:"provider_npi"`
+	FacilityNPI       string           `json:"facility_npi,omitempty"`
+	DateOfService     time.Time        `json:"date_of_service"`
+	PlaceOfService    string           `json:"place_of_service"`
+	DiagnosisCodes    []string         `json:"diagnosis_codes"`
+	ProcedureCodes    []ClaimProcedure `json:"procedure_codes"`
+	TotalCharges      float64          `json:"total_charges"`
 	ExpectedReimburse float64          `json:"expected_reimbursement,omitempty"`
-	PayerInfo        *PayerInfo        `json:"payer_info,omitempty"`
-	Status           string            `json:"status"` // pending, submitted, approved, denied, partial
-	DenialReason     string            `json:"denial_reason,omitempty"`
+	PayerInfo         *PayerInfo       `json:"payer_info,omitempty"`
+	Status            string           `json:"status"` // pending, submitted, approved, denied, partial
+	DenialReason      string           `json:"denial_reason,omitempty"`
 }
 
 // ClaimProcedure represents a procedure on a claim.
 type ClaimProcedure struct {
-	CPTCode     string   `json:"cpt_code"`
-	Modifiers   []string `json:"modifiers,omitempty"`
-	Units       int      `json:"units"`
-	ChargeAmount float64 `json:"charge_amount"`
-	DiagPointers []int   `json:"diagnosis_pointers"` // 1-based index to diagnosis codes
+	CPTCode      string   `json:"cpt_code"`
+	Modifiers    []string `json:"modifiers,omitempty"`
+	Units        int      `json:"units"`
+	ChargeAmount float64  `json:"charge_amount"`
+	DiagPointers []int    `json:"diagnosis_pointers"` // 1-based index to diagnosis codes
 }
 
 // PayerInfo represents insurance payer information.
 type PayerInfo struct {
-	PayerID      string `json:"payer_id"`
-	PayerName    string `json:"payer_name"`
-	PlanType     string `json:"plan_type"` // commercial, medicare, medicaid, tricare
-	MemberID     string `json:"member_id"`
-	GroupNumber  string `json:"group_number,omitempty"`
+	PayerID       string `json:"payer_id"`
+	PayerName     string `json:"payer_name"`
+	PlanType      string `json:"plan_type"` // commercial, medicare, medicaid, tricare
+	MemberID      string `json:"member_id"`
+	GroupNumber   string `json:"group_number,omitempty"`
 	Authorization string `json:"authorization,omitempty"`
 }
 
 // ClinicalNote represents clinical documentation.
 type ClinicalNote struct {
-	NoteType       string         `json:"note_type"` // HPI, ROS, PE, A/P, progress
-	Provider       string         `json:"provider"`
-	DateOfService  time.Time      `json:"date_of_service"`
-	ChiefComplaint string         `json:"chief_complaint,omitempty"`
-	HPI            string         `json:"hpi,omitempty"`
+	NoteType       string            `json:"note_type"` // HPI, ROS, PE, A/P, progress
+	Provider       string            `json:"provider"`
+	DateOfService  time.Time         `json:"date_of_service"`
+	ChiefComplaint string            `json:"chief_complaint,omitempty"`
+	HPI            string            `json:"hpi,omitempty"`
 	ROS            map[string]string `json:"ros,omitempty"`
 	PhysicalExam   map[string]string `json:"physical_exam,omitempty"`
-	Assessment     string         `json:"assessment,omitempty"`
-	Plan           string         `json:"plan,omitempty"`
-	RawText        string         `json:"raw_text,omitempty"`
+	Assessment     string            `json:"assessment,omitempty"`
+	Plan           string            `json:"plan,omitempty"`
+	RawText        string            `json:"raw_text,omitempty"`
 }
 
 // NewHealthcareDomain creates a new healthcare domain trainer.
@@ -206,12 +206,12 @@ Respond with a JSON object containing:
 // GenerateClaimData generates billing claim data from coding results.
 func (d *HealthcareDomain) GenerateClaimData(ctx context.Context, coding *MedicalCodingResult, patientID, providerNPI string, dateOfService time.Time) (*ClaimData, error) {
 	claim := &ClaimData{
-		ClaimID:       fmt.Sprintf("CLM%d", time.Now().UnixNano()),
-		PatientID:     patientID,
-		ProviderNPI:   providerNPI,
-		DateOfService: dateOfService,
+		ClaimID:        fmt.Sprintf("CLM%d", time.Now().UnixNano()),
+		PatientID:      patientID,
+		ProviderNPI:    providerNPI,
+		DateOfService:  dateOfService,
 		PlaceOfService: coding.PlaceOfService,
-		Status:        "pending",
+		Status:         "pending",
 	}
 
 	// Add diagnosis codes

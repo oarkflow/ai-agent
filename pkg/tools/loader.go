@@ -207,16 +207,16 @@ func (tl *ToolLoader) registerBuiltinHandlers() {
 		switch operation {
 		case "now":
 			return map[string]any{
-				"datetime":  now.Format(time.RFC3339),
-				"unix":      now.Unix(),
-				"timezone":  timezone,
-				"year":      now.Year(),
-				"month":     int(now.Month()),
-				"day":       now.Day(),
-				"hour":      now.Hour(),
-				"minute":    now.Minute(),
-				"second":    now.Second(),
-				"weekday":   now.Weekday().String(),
+				"datetime": now.Format(time.RFC3339),
+				"unix":     now.Unix(),
+				"timezone": timezone,
+				"year":     now.Year(),
+				"month":    int(now.Month()),
+				"day":      now.Day(),
+				"hour":     now.Hour(),
+				"minute":   now.Minute(),
+				"second":   now.Second(),
+				"weekday":  now.Weekday().String(),
 			}, nil
 
 		case "format":

@@ -11,10 +11,10 @@ type ToolHandler func(ctx context.Context, params map[string]any) (any, error)
 
 // ParameterSchema defines the JSON Schema for tool parameters.
 type ParameterSchema struct {
-	Type       string                       `json:"type"`
-	Properties map[string]*PropertySchema   `json:"properties,omitempty"`
-	Required   []string                     `json:"required,omitempty"`
-	Items      *PropertySchema              `json:"items,omitempty"`
+	Type       string                     `json:"type"`
+	Properties map[string]*PropertySchema `json:"properties,omitempty"`
+	Required   []string                   `json:"required,omitempty"`
+	Items      *PropertySchema            `json:"items,omitempty"`
 }
 
 // PropertySchema defines a single property in the schema.
@@ -34,11 +34,11 @@ type PropertySchema struct {
 
 // Tool represents a callable tool/function for function calling.
 type Tool struct {
-	Name        string                 `json:"name"`
-	Description string                 `json:"description"`
-	Parameters  *ParameterSchema       `json:"parameters"`
-	Handler     ToolHandler            `json:"-"`
-	Metadata    map[string]any         `json:"metadata,omitempty"`
+	Name        string           `json:"name"`
+	Description string           `json:"description"`
+	Parameters  *ParameterSchema `json:"parameters"`
+	Handler     ToolHandler      `json:"-"`
+	Metadata    map[string]any   `json:"metadata,omitempty"`
 }
 
 // ToolCall represents an AI's request to call a tool.

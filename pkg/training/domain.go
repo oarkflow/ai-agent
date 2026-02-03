@@ -20,16 +20,16 @@ import (
 //
 
 type DomainKnowledge struct {
-	ID          string                 `json:"id"`
-	Name        string                 `json:"name"`
-	Description string                 `json:"description"`
-	Documents   []Document             `json:"documents"`
-	Examples    []TrainingExample      `json:"examples"`
-	Guidelines  []string               `json:"guidelines"`
-	Terminology map[string]string      `json:"terminology"`
-	Metadata    map[string]any         `json:"metadata"`
-	CreatedAt   time.Time              `json:"created_at"`
-	UpdatedAt   time.Time              `json:"updated_at"`
+	ID          string            `json:"id"`
+	Name        string            `json:"name"`
+	Description string            `json:"description"`
+	Documents   []Document        `json:"documents"`
+	Examples    []TrainingExample `json:"examples"`
+	Guidelines  []string          `json:"guidelines"`
+	Terminology map[string]string `json:"terminology"`
+	Metadata    map[string]any    `json:"metadata"`
+	CreatedAt   time.Time         `json:"created_at"`
+	UpdatedAt   time.Time         `json:"updated_at"`
 }
 
 type Document struct {
@@ -68,9 +68,9 @@ type TrainingExample struct {
 //
 
 type VectorResult struct {
-	ID      string         `json:"id"`
-	Score   float64        `json:"score"`
-	Content string         `json:"content,omitempty"`
+	ID       string         `json:"id"`
+	Score    float64        `json:"score"`
+	Content  string         `json:"content,omitempty"`
 	Metadata map[string]any `json:"metadata,omitempty"`
 }
 

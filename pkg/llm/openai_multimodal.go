@@ -32,8 +32,8 @@ func NewOpenAIMultimodalProvider(apiKey string, opts ...OpenAIOption) *OpenAIMul
 		BaseProvider: BaseProvider{
 			ProviderType: ProviderOpenAI,
 			APIKey:       apiKey,
-			BaseURL:      "",  // Set via config or WithOpenAIBaseURL option
-			DefaultModel: "", // Set via config or WithOpenAIModel option
+			BaseURL:      "",                          // Set via config or WithOpenAIBaseURL option
+			DefaultModel: "",                          // Set via config or WithOpenAIModel option
 			Models:       make(map[string]*ModelInfo), // Loaded from config
 		},
 		Client: &http.Client{Timeout: 120 * time.Second},
@@ -226,9 +226,9 @@ func (p *OpenAIMultimodalProvider) Generate(ctx context.Context, messages []*con
 		Model   string `json:"model"`
 		Choices []struct {
 			Message struct {
-				Role       string `json:"role"`
-				Content    string `json:"content"`
-				ToolCalls  []struct {
+				Role      string `json:"role"`
+				Content   string `json:"content"`
+				ToolCalls []struct {
 					ID       string `json:"id"`
 					Type     string `json:"type"`
 					Function struct {
@@ -260,9 +260,9 @@ func (p *OpenAIMultimodalProvider) Generate(ctx context.Context, messages []*con
 	var toolCalls []content.ToolCall
 	for _, tc := range choice.Message.ToolCalls {
 		toolCalls = append(toolCalls, content.ToolCall{
-			ID:        tc.ID,
-			Type:      tc.Type,
-			Function:  content.FunctionCall{Name: tc.Function.Name, Arguments: tc.Function.Arguments},
+			ID:       tc.ID,
+			Type:     tc.Type,
+			Function: content.FunctionCall{Name: tc.Function.Name, Arguments: tc.Function.Arguments},
 		})
 	}
 

@@ -271,7 +271,7 @@ type AnalysisResult struct {
 	Type          content.ContentType `json:"type"`
 	Description   string              `json:"description"`
 	Analysis      string              `json:"analysis,omitempty"`
-	Usage         *llm.Usage         `json:"usage,omitempty"`
+	Usage         *llm.Usage          `json:"usage,omitempty"`
 	Model         string              `json:"model"`
 	FileName      string              `json:"file_name,omitempty"`
 	Language      string              `json:"language,omitempty"`

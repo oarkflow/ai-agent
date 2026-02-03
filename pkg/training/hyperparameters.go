@@ -33,26 +33,26 @@ type Hyperparameters struct {
 	EarlyStoppingDelta float64 `json:"early_stopping_delta"`
 
 	// Model-specific
-	Temperature     float64 `json:"temperature"`
-	TopP            float64 `json:"top_p"`
-	TopK            int     `json:"top_k"`
-	MaxTokens       int     `json:"max_tokens"`
-	ContextLength   int     `json:"context_length"`
+	Temperature      float64 `json:"temperature"`
+	TopP             float64 `json:"top_p"`
+	TopK             int     `json:"top_k"`
+	MaxTokens        int     `json:"max_tokens"`
+	ContextLength    int     `json:"context_length"`
 	FrequencyPenalty float64 `json:"frequency_penalty"`
 	PresencePenalty  float64 `json:"presence_penalty"`
 
 	// Regularization
-	Dropout       float64 `json:"dropout"`
+	Dropout        float64 `json:"dropout"`
 	LabelSmoothing float64 `json:"label_smoothing"`
 
 	// Few-shot specific
-	NumFewShot      int  `json:"num_few_shot"`
+	NumFewShot      int    `json:"num_few_shot"`
 	FewShotStrategy string `json:"few_shot_strategy"` // random, similar, diverse
 
 	// Fine-tuning specific
-	LoraRank       int     `json:"lora_rank,omitempty"`
-	LoraAlpha      float64 `json:"lora_alpha,omitempty"`
-	LoraDropout    float64 `json:"lora_dropout,omitempty"`
+	LoraRank    int     `json:"lora_rank,omitempty"`
+	LoraAlpha   float64 `json:"lora_alpha,omitempty"`
+	LoraDropout float64 `json:"lora_dropout,omitempty"`
 
 	// Custom parameters
 	Custom map[string]any `json:"custom,omitempty"`
@@ -97,42 +97,42 @@ func DefaultHyperparameters() *Hyperparameters {
 
 // HyperparameterRange defines a range for hyperparameter search.
 type HyperparameterRange struct {
-	Name   string    `json:"name"`
-	Type   string    `json:"type"` // float, int, choice
-	Min    float64   `json:"min,omitempty"`
-	Max    float64   `json:"max,omitempty"`
-	Step   float64   `json:"step,omitempty"`
-	Log    bool      `json:"log,omitempty"` // Log scale for search
-	Values []any     `json:"values,omitempty"` // For choice type
+	Name   string  `json:"name"`
+	Type   string  `json:"type"` // float, int, choice
+	Min    float64 `json:"min,omitempty"`
+	Max    float64 `json:"max,omitempty"`
+	Step   float64 `json:"step,omitempty"`
+	Log    bool    `json:"log,omitempty"`    // Log scale for search
+	Values []any   `json:"values,omitempty"` // For choice type
 }
 
 // HyperparameterSearchConfig defines search configuration.
 type HyperparameterSearchConfig struct {
-	Strategy      string                 `json:"strategy"` // grid, random, bayesian
-	MaxTrials     int                    `json:"max_trials"`
-	MaxTime       time.Duration          `json:"max_time"`
-	Metric        string                 `json:"metric"` // loss, accuracy, f1, etc.
-	Direction     string                 `json:"direction"` // minimize, maximize
-	Ranges        []*HyperparameterRange `json:"ranges"`
-	Seed          int64                  `json:"seed"`
+	Strategy  string                 `json:"strategy"` // grid, random, bayesian
+	MaxTrials int                    `json:"max_trials"`
+	MaxTime   time.Duration          `json:"max_time"`
+	Metric    string                 `json:"metric"`    // loss, accuracy, f1, etc.
+	Direction string                 `json:"direction"` // minimize, maximize
+	Ranges    []*HyperparameterRange `json:"ranges"`
+	Seed      int64                  `json:"seed"`
 }
 
 // HyperparameterTrial represents one trial in hyperparameter search.
 type HyperparameterTrial struct {
-	ID           int                `json:"id"`
-	Params       *Hyperparameters   `json:"params"`
-	Metrics      *Metrics           `json:"metrics"`
-	Status       string             `json:"status"` // pending, running, completed, failed
-	StartTime    time.Time          `json:"start_time"`
-	EndTime      time.Time          `json:"end_time"`
-	Duration     time.Duration      `json:"duration"`
+	ID        int              `json:"id"`
+	Params    *Hyperparameters `json:"params"`
+	Metrics   *Metrics         `json:"metrics"`
+	Status    string           `json:"status"` // pending, running, completed, failed
+	StartTime time.Time        `json:"start_time"`
+	EndTime   time.Time        `json:"end_time"`
+	Duration  time.Duration    `json:"duration"`
 }
 
 // HyperparameterSearch manages hyperparameter optimization.
 type HyperparameterSearch struct {
-	config  *HyperparameterSearchConfig
-	trials  []*HyperparameterTrial
-	best    *HyperparameterTrial
+	config *HyperparameterSearchConfig
+	trials []*HyperparameterTrial
+	best   *HyperparameterTrial
 }
 
 // NewHyperparameterSearch creates a new search.

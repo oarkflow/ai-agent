@@ -57,28 +57,28 @@ type WorkflowEdge struct {
 
 // WorkflowDefinition represents a complete workflow.
 type WorkflowDefinition struct {
-	ID          string            `json:"id"`
-	Name        string            `json:"name"`
-	Description string            `json:"description"`
-	Version     string            `json:"version"`
-	Nodes       []WorkflowNode    `json:"nodes"`
-	Edges       []WorkflowEdge    `json:"edges"`
-	Variables   map[string]any    `json:"variables,omitempty"`
-	Settings    map[string]any    `json:"settings,omitempty"`
-	Metadata    map[string]any    `json:"metadata,omitempty"`
-	CreatedAt   time.Time         `json:"created_at"`
-	UpdatedAt   time.Time         `json:"updated_at"`
+	ID          string         `json:"id"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Version     string         `json:"version"`
+	Nodes       []WorkflowNode `json:"nodes"`
+	Edges       []WorkflowEdge `json:"edges"`
+	Variables   map[string]any `json:"variables,omitempty"`
+	Settings    map[string]any `json:"settings,omitempty"`
+	Metadata    map[string]any `json:"metadata,omitempty"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
 }
 
 // NodeType defines available node types in the workflow.
 type NodeType struct {
-	ID          string     `json:"id"`
-	Name        string     `json:"name"`
-	Category    string     `json:"category"`
-	Description string     `json:"description"`
-	Icon        string     `json:"icon,omitempty"`
-	Inputs      []NodePort `json:"inputs"`
-	Outputs     []NodePort `json:"outputs"`
+	ID           string         `json:"id"`
+	Name         string         `json:"name"`
+	Category     string         `json:"category"`
+	Description  string         `json:"description"`
+	Icon         string         `json:"icon,omitempty"`
+	Inputs       []NodePort     `json:"inputs"`
+	Outputs      []NodePort     `json:"outputs"`
 	ConfigSchema map[string]any `json:"config_schema,omitempty"`
 }
 

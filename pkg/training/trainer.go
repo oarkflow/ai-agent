@@ -33,14 +33,14 @@ type Trainer struct {
 // TrainerConfig configures the trainer.
 type TrainerConfig struct {
 	// Directories
-	OutputDir      string `json:"output_dir"`
-	CheckpointDir  string `json:"checkpoint_dir"`
+	OutputDir     string `json:"output_dir"`
+	CheckpointDir string `json:"checkpoint_dir"`
 
 	// Training settings
-	Epochs              int     `json:"epochs"`
-	StepsPerEpoch       int     `json:"steps_per_epoch"` // 0 = auto
-	ValidationFrequency int     `json:"validation_frequency"` // Every N epochs
-	LoggingSteps        int     `json:"logging_steps"`
+	Epochs              int `json:"epochs"`
+	StepsPerEpoch       int `json:"steps_per_epoch"`      // 0 = auto
+	ValidationFrequency int `json:"validation_frequency"` // Every N epochs
+	LoggingSteps        int `json:"logging_steps"`
 
 	// Early stopping
 	EarlyStopping         bool    `json:"early_stopping"`
@@ -50,9 +50,9 @@ type TrainerConfig struct {
 	MinDelta              float64 `json:"min_delta"`
 
 	// Checkpointing
-	SaveBestOnly     bool   `json:"save_best_only"`
-	SaveEveryNEpochs int    `json:"save_every_n_epochs"`
-	MaxCheckpoints   int    `json:"max_checkpoints"`
+	SaveBestOnly     bool `json:"save_best_only"`
+	SaveEveryNEpochs int  `json:"save_every_n_epochs"`
+	MaxCheckpoints   int  `json:"max_checkpoints"`
 
 	// Resume
 	ResumeFromCheckpoint string `json:"resume_from_checkpoint,omitempty"`
@@ -101,34 +101,34 @@ type TrainingRun struct {
 	EndedAt   time.Time `json:"ended_at"`
 
 	// Configuration
-	Config      TrainerConfig   `json:"config"`
+	Config      TrainerConfig    `json:"config"`
 	Hyperparams *Hyperparameters `json:"hyperparams"`
 
 	// Results
-	FinalMetrics      *Metrics        `json:"final_metrics"`
-	BestMetrics       *Metrics        `json:"best_metrics"`
-	BestEpoch         int             `json:"best_epoch"`
-	TotalSteps        int             `json:"total_steps"`
-	TrainingHistory   []EpochHistory  `json:"training_history"`
+	FinalMetrics    *Metrics       `json:"final_metrics"`
+	BestMetrics     *Metrics       `json:"best_metrics"`
+	BestEpoch       int            `json:"best_epoch"`
+	TotalSteps      int            `json:"total_steps"`
+	TrainingHistory []EpochHistory `json:"training_history"`
 
 	// Status
-	Status       string   `json:"status"` // "running", "completed", "failed", "stopped"
-	ErrorMessage string   `json:"error_message,omitempty"`
+	Status       string `json:"status"` // "running", "completed", "failed", "stopped"
+	ErrorMessage string `json:"error_message,omitempty"`
 
 	// Artifacts
-	Checkpoints []string `json:"checkpoints"`
-	BestCheckpoint string `json:"best_checkpoint"`
+	Checkpoints    []string `json:"checkpoints"`
+	BestCheckpoint string   `json:"best_checkpoint"`
 }
 
 // EpochHistory stores metrics for each epoch.
 type EpochHistory struct {
-	Epoch            int       `json:"epoch"`
-	TrainingLoss     float64   `json:"training_loss"`
-	ValidationLoss   float64   `json:"validation_loss,omitempty"`
-	Metrics          *Metrics  `json:"metrics,omitempty"`
-	LearningRate     float64   `json:"learning_rate"`
-	Duration         float64   `json:"duration_secs"`
-	Timestamp        time.Time `json:"timestamp"`
+	Epoch          int       `json:"epoch"`
+	TrainingLoss   float64   `json:"training_loss"`
+	ValidationLoss float64   `json:"validation_loss,omitempty"`
+	Metrics        *Metrics  `json:"metrics,omitempty"`
+	LearningRate   float64   `json:"learning_rate"`
+	Duration       float64   `json:"duration_secs"`
+	Timestamp      time.Time `json:"timestamp"`
 }
 
 // NewTrainer creates a new trainer.
@@ -441,13 +441,13 @@ func (t *Trainer) logStep(step int, loss, lr float64) {
 
 // Checkpoint represents a saved model state.
 type Checkpoint struct {
-	RunID       string          `json:"run_id"`
-	Epoch       int             `json:"epoch"`
-	Step        int             `json:"step"`
-	Metrics     *Metrics        `json:"metrics,omitempty"`
+	RunID       string           `json:"run_id"`
+	Epoch       int              `json:"epoch"`
+	Step        int              `json:"step"`
+	Metrics     *Metrics         `json:"metrics,omitempty"`
 	Hyperparams *Hyperparameters `json:"hyperparams"`
-	SavedAt     time.Time       `json:"saved_at"`
-	ModelPath   string          `json:"model_path,omitempty"`
+	SavedAt     time.Time        `json:"saved_at"`
+	ModelPath   string           `json:"model_path,omitempty"`
 }
 
 // LoadCheckpoint loads a checkpoint from file.
@@ -528,11 +528,11 @@ func NewProgressBarCallback(width int) *ProgressBarCallback {
 	return &ProgressBarCallback{width: width}
 }
 
-func (c *ProgressBarCallback) OnTrainBegin(trainer *Trainer) {}
-func (c *ProgressBarCallback) OnTrainEnd(trainer *Trainer)   { fmt.Println() }
-func (c *ProgressBarCallback) OnEpochBegin(trainer *Trainer, epoch int) {}
+func (c *ProgressBarCallback) OnTrainBegin(trainer *Trainer)                            {}
+func (c *ProgressBarCallback) OnTrainEnd(trainer *Trainer)                              { fmt.Println() }
+func (c *ProgressBarCallback) OnEpochBegin(trainer *Trainer, epoch int)                 {}
 func (c *ProgressBarCallback) OnEpochEnd(trainer *Trainer, epoch int, metrics *Metrics) {}
-func (c *ProgressBarCallback) OnBatchBegin(trainer *Trainer, batch int) {}
+func (c *ProgressBarCallback) OnBatchBegin(trainer *Trainer, batch int)                 {}
 
 func (c *ProgressBarCallback) OnBatchEnd(trainer *Trainer, batch int, loss float64) {
 	progress := float64(batch+1) / float64(trainer.config.StepsPerEpoch)

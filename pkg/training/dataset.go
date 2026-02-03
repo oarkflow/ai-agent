@@ -52,15 +52,15 @@ type DataPoint struct {
 
 // DatasetStats holds statistics about the dataset.
 type DatasetStats struct {
-	TotalSamples      int                `json:"total_samples"`
-	TrainSamples      int                `json:"train_samples"`
-	ValidationSamples int                `json:"validation_samples"`
-	TestSamples       int                `json:"test_samples"`
-	Categories        map[string]int     `json:"categories"`
-	AvgInputLength    float64            `json:"avg_input_length"`
-	AvgOutputLength   float64            `json:"avg_output_length"`
-	QualityDistribution map[string]int   `json:"quality_distribution"`
-	WeightStats       *WeightStats       `json:"weight_stats"`
+	TotalSamples        int            `json:"total_samples"`
+	TrainSamples        int            `json:"train_samples"`
+	ValidationSamples   int            `json:"validation_samples"`
+	TestSamples         int            `json:"test_samples"`
+	Categories          map[string]int `json:"categories"`
+	AvgInputLength      float64        `json:"avg_input_length"`
+	AvgOutputLength     float64        `json:"avg_output_length"`
+	QualityDistribution map[string]int `json:"quality_distribution"`
+	WeightStats         *WeightStats   `json:"weight_stats"`
 }
 
 // WeightStats holds weight statistics.
@@ -73,19 +73,19 @@ type WeightStats struct {
 
 // CleaningConfig defines data cleaning parameters.
 type CleaningConfig struct {
-	RemoveEmptyInputs      bool     `json:"remove_empty_inputs"`
-	RemoveEmptyOutputs     bool     `json:"remove_empty_outputs"`
-	RemoveDuplicates       bool     `json:"remove_duplicates"`
-	TrimWhitespace         bool     `json:"trim_whitespace"`
-	NormalizeUnicode       bool     `json:"normalize_unicode"`
-	RemoveHTMLTags         bool     `json:"remove_html_tags"`
-	MinInputLength         int      `json:"min_input_length"`
-	MaxInputLength         int      `json:"max_input_length"`
-	MinOutputLength        int      `json:"min_output_length"`
-	MaxOutputLength        int      `json:"max_output_length"`
-	MinQuality             float64  `json:"min_quality"`
-	AllowedCategories      []string `json:"allowed_categories,omitempty"`
-	CustomFilters          []string `json:"custom_filters,omitempty"` // Regex patterns to remove
+	RemoveEmptyInputs  bool     `json:"remove_empty_inputs"`
+	RemoveEmptyOutputs bool     `json:"remove_empty_outputs"`
+	RemoveDuplicates   bool     `json:"remove_duplicates"`
+	TrimWhitespace     bool     `json:"trim_whitespace"`
+	NormalizeUnicode   bool     `json:"normalize_unicode"`
+	RemoveHTMLTags     bool     `json:"remove_html_tags"`
+	MinInputLength     int      `json:"min_input_length"`
+	MaxInputLength     int      `json:"max_input_length"`
+	MinOutputLength    int      `json:"min_output_length"`
+	MaxOutputLength    int      `json:"max_output_length"`
+	MinQuality         float64  `json:"min_quality"`
+	AllowedCategories  []string `json:"allowed_categories,omitempty"`
+	CustomFilters      []string `json:"custom_filters,omitempty"` // Regex patterns to remove
 }
 
 // DefaultCleaningConfig returns sensible defaults.
@@ -398,11 +398,11 @@ func calculateWeights(data []*DataPoint) []*DataPoint {
 
 func calculateDatasetStats(ds *Dataset) *DatasetStats {
 	stats := &DatasetStats{
-		TotalSamples:      len(ds.Train) + len(ds.Validation) + len(ds.Test),
-		TrainSamples:      len(ds.Train),
-		ValidationSamples: len(ds.Validation),
-		TestSamples:       len(ds.Test),
-		Categories:        make(map[string]int),
+		TotalSamples:        len(ds.Train) + len(ds.Validation) + len(ds.Test),
+		TrainSamples:        len(ds.Train),
+		ValidationSamples:   len(ds.Validation),
+		TestSamples:         len(ds.Test),
+		Categories:          make(map[string]int),
 		QualityDistribution: make(map[string]int),
 	}
 
