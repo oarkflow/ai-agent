@@ -12,6 +12,7 @@ import (
 	"github.com/sujit/ai-agent/pkg/cot"
 	"github.com/sujit/ai-agent/pkg/llm"
 	"github.com/sujit/ai-agent/pkg/memory"
+	"github.com/sujit/ai-agent/pkg/orchestrator"
 	"github.com/sujit/ai-agent/pkg/prompt"
 	"github.com/sujit/ai-agent/pkg/tot"
 )
@@ -112,6 +113,32 @@ func main() {
 			fmt.Printf("AI: %s\n", resp)
 		}
 		response = "Conversation finished."
+
+	case "orchestrator":
+		// Best AI Agent mode
+		// We mock a "Fast" provider with the same key/model just for demo if user only has one key.
+		// In production, you'd instantiate two different providers.
+		// Note: Requires OPENAI_API_KEY. For Anthropic tiers, you'd need ANTHROPIC_API_KEY.
+		// Use environment variables to set these up real providers.
+
+		apiKeyEx := os.Getenv("OPENAI_API_KEY")
+		fastProvider := llm.NewOpenAIProvider(apiKeyEx, "gpt-4o-mini") // assuming exists or falls back
+		smartProvider := llm.NewOpenAIProvider(apiKeyEx, "gpt-4o")
+
+		// For demo purposes, we reuse smart provider for reasoning/coding if no specific keys
+		// Ideally:
+		// reasoningProvider := llm.NewOpenAIProvider(apiKey, "o1-preview")
+		// codingProvider := llm.NewAnthropicProvider(os.Getenv("ANTHROPIC_API_KEY"), "claude-3-5-sonnet")
+
+		router := llm.NewRouter(llm.RouterConfig{
+			Fast:      fastProvider,
+			Smart:     smartProvider,
+			Reasoning: smartProvider, // Fallback to smart for demo
+			Coding:    smartProvider, // Fallback to smart for demo
+		})
+		orch := orchestrator.NewOrchestrator(router)
+
+		response, err = orch.SmartExecute(ctx, *input)
 
 	default:
 		log.Fatalf("Unknown mode: %s", *mode)

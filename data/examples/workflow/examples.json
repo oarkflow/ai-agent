@@ -1,0 +1,41 @@
+[
+    {
+        "id": "workflow_001",
+        "domain": "workflow",
+        "category": "webhook_trigger",
+        "input": "Create a workflow that receives webhook data and stores it in a database",
+        "output": "{\n  \"id\": \"webhook-to-db\",\n  \"name\": \"Webhook to Database\",\n  \"description\": \"Receives webhook data and stores it in PostgreSQL\",\n  \"nodes\": [\n    {\n      \"id\": \"trigger_1\",\n      \"type\": \"webhook\",\n      \"name\": \"Receive Webhook\",\n      \"position\": {\"x\": 100, \"y\": 200},\n      \"config\": {\n        \"method\": \"POST\",\n        \"path\": \"/webhook/data\",\n        \"authentication\": \"none\"\n      },\n      \"outputs\": [\"output_main\"]\n    },\n    {\n      \"id\": \"action_1\",\n      \"type\": \"database\",\n      \"name\": \"Insert Record\",\n      \"position\": {\"x\": 400, \"y\": 200},\n      \"config\": {\n        \"operation\": \"insert\",\n        \"table\": \"webhook_data\",\n        \"columns\": [\"payload\", \"received_at\"]\n      },\n      \"inputs\": [\"input_main\"],\n      \"outputs\": [\"output_main\"]\n    }\n  ],\n  \"edges\": [\n    {\n      \"id\": \"edge_1\",\n      \"source\": \"trigger_1\",\n      \"target\": \"action_1\",\n      \"sourceHandle\": \"output_main\",\n      \"targetHandle\": \"input_main\"\n    }\n  ]\n}",
+        "quality": 0.95,
+        "validated": true,
+        "metadata": {
+            "complexity": "simple",
+            "nodes_count": "2"
+        }
+    },
+    {
+        "id": "workflow_002",
+        "domain": "workflow",
+        "category": "scheduled_job",
+        "input": "Create a scheduled workflow that runs every hour to sync data between two APIs",
+        "output": "{\n  \"id\": \"api-sync-hourly\",\n  \"name\": \"Hourly API Sync\",\n  \"description\": \"Syncs data between source and destination APIs every hour\",\n  \"nodes\": [\n    {\n      \"id\": \"trigger_1\",\n      \"type\": \"schedule\",\n      \"name\": \"Hourly Trigger\",\n      \"position\": {\"x\": 100, \"y\": 200},\n      \"config\": {\n        \"cron\": \"0 * * * *\",\n        \"timezone\": \"UTC\"\n      },\n      \"outputs\": [\"output_main\"]\n    },\n    {\n      \"id\": \"action_1\",\n      \"type\": \"http_request\",\n      \"name\": \"Fetch Source Data\",\n      \"position\": {\"x\": 350, \"y\": 200},\n      \"config\": {\n        \"method\": \"GET\",\n        \"url\": \"{{$env.SOURCE_API_URL}}/data\",\n        \"headers\": {\"Authorization\": \"Bearer {{$env.SOURCE_API_KEY}}\"}\n      },\n      \"inputs\": [\"input_main\"],\n      \"outputs\": [\"output_main\"]\n    },\n    {\n      \"id\": \"logic_1\",\n      \"type\": \"transform\",\n      \"name\": \"Map Data\",\n      \"position\": {\"x\": 600, \"y\": 200},\n      \"config\": {\n        \"expression\": \"items.map(item => ({id: item.id, name: item.title, updated: new Date()}))\"\n      },\n      \"inputs\": [\"input_main\"],\n      \"outputs\": [\"output_main\"]\n    },\n    {\n      \"id\": \"action_2\",\n      \"type\": \"http_request\",\n      \"name\": \"Push to Destination\",\n      \"position\": {\"x\": 850, \"y\": 200},\n      \"config\": {\n        \"method\": \"POST\",\n        \"url\": \"{{$env.DEST_API_URL}}/sync\",\n        \"headers\": {\"Authorization\": \"Bearer {{$env.DEST_API_KEY}}\"},\n        \"body\": \"{{$json}}\"\n      },\n      \"inputs\": [\"input_main\"],\n      \"outputs\": [\"output_main\"]\n    }\n  ],\n  \"edges\": [\n    {\"id\": \"e1\", \"source\": \"trigger_1\", \"target\": \"action_1\"},\n    {\"id\": \"e2\", \"source\": \"action_1\", \"target\": \"logic_1\"},\n    {\"id\": \"e3\", \"source\": \"logic_1\", \"target\": \"action_2\"}\n  ]\n}",
+        "quality": 0.92,
+        "validated": true,
+        "metadata": {
+            "complexity": "medium",
+            "nodes_count": "4"
+        }
+    },
+    {
+        "id": "workflow_003",
+        "domain": "workflow",
+        "category": "conditional_logic",
+        "input": "Create a workflow that processes orders and routes them based on order value - orders over $1000 go to priority queue, others to standard queue",
+        "output": "{\n  \"id\": \"order-routing\",\n  \"name\": \"Order Priority Routing\",\n  \"description\": \"Routes orders based on value threshold\",\n  \"nodes\": [\n    {\n      \"id\": \"trigger_1\",\n      \"type\": \"webhook\",\n      \"name\": \"New Order\",\n      \"position\": {\"x\": 100, \"y\": 300},\n      \"config\": {\"method\": \"POST\", \"path\": \"/orders/new\"},\n      \"outputs\": [\"output_main\"]\n    },\n    {\n      \"id\": \"logic_1\",\n      \"type\": \"if\",\n      \"name\": \"Check Order Value\",\n      \"position\": {\"x\": 350, \"y\": 300},\n      \"config\": {\n        \"conditions\": [{\"field\": \"order.total\", \"operator\": \"greaterThan\", \"value\": 1000}]\n      },\n      \"inputs\": [\"input_main\"],\n      \"outputs\": [\"output_true\", \"output_false\"]\n    },\n    {\n      \"id\": \"action_1\",\n      \"type\": \"message_queue\",\n      \"name\": \"Priority Queue\",\n      \"position\": {\"x\": 600, \"y\": 200},\n      \"config\": {\"queue\": \"orders.priority\", \"operation\": \"publish\"},\n      \"inputs\": [\"input_main\"]\n    },\n    {\n      \"id\": \"action_2\",\n      \"type\": \"message_queue\",\n      \"name\": \"Standard Queue\",\n      \"position\": {\"x\": 600, \"y\": 400},\n      \"config\": {\"queue\": \"orders.standard\", \"operation\": \"publish\"},\n      \"inputs\": [\"input_main\"]\n    }\n  ],\n  \"edges\": [\n    {\"id\": \"e1\", \"source\": \"trigger_1\", \"target\": \"logic_1\"},\n    {\"id\": \"e2\", \"source\": \"logic_1\", \"sourceHandle\": \"output_true\", \"target\": \"action_1\"},\n    {\"id\": \"e3\", \"source\": \"logic_1\", \"sourceHandle\": \"output_false\", \"target\": \"action_2\"}\n  ]\n}",
+        "quality": 0.94,
+        "validated": true,
+        "metadata": {
+            "complexity": "medium",
+            "nodes_count": "4"
+        }
+    }
+]

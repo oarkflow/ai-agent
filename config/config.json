@@ -1,0 +1,418 @@
+{
+    "version": "1.0.0",
+    "name": "AI Agent Configuration",
+    "description": "Comprehensive configuration for the AI Agent framework",
+
+    "providers": {
+        "openai": {
+            "enabled": true,
+            "api_key_env": "OPENAI_API_KEY",
+            "base_url": "https://api.openai.com/v1",
+            "timeout_seconds": 120,
+            "max_retries": 3,
+            "headers": {
+                "OpenAI-Beta": "assistants=v2"
+            },
+            "models": {
+                "gpt-4o": {
+                    "id": "gpt-4o",
+                    "name": "GPT-4o",
+                    "capabilities": [ "text", "vision", "function_calling", "streaming", "reasoning" ],
+                    "context_window": 128000,
+                    "max_output_tokens": 16384,
+                    "input_cost_per_1k": 0.0025,
+                    "output_cost_per_1k": 0.01,
+                    "supported_formats": [ "image/jpeg", "image/png", "image/gif", "image/webp" ]
+                },
+                "gpt-4o-mini": {
+                    "id": "gpt-4o-mini",
+                    "name": "GPT-4o Mini",
+                    "capabilities": [ "text", "vision", "function_calling", "streaming" ],
+                    "context_window": 128000,
+                    "max_output_tokens": 16384,
+                    "input_cost_per_1k": 0.00015,
+                    "output_cost_per_1k": 0.0006
+                },
+                "o1": {
+                    "id": "o1",
+                    "name": "OpenAI o1",
+                    "capabilities": [ "text", "reasoning", "vision" ],
+                    "context_window": 200000,
+                    "max_output_tokens": 100000,
+                    "input_cost_per_1k": 0.015,
+                    "output_cost_per_1k": 0.06
+                },
+                "o3-mini": {
+                    "id": "o3-mini",
+                    "name": "OpenAI o3-mini",
+                    "capabilities": [ "text", "reasoning" ],
+                    "context_window": 200000,
+                    "max_output_tokens": 100000,
+                    "input_cost_per_1k": 0.0011,
+                    "output_cost_per_1k": 0.0044
+                },
+                "text-embedding-3-small": {
+                    "id": "text-embedding-3-small",
+                    "name": "Text Embedding 3 Small",
+                    "capabilities": [ "embedding" ],
+                    "context_window": 8192,
+                    "input_cost_per_1k": 0.00002
+                },
+                "text-embedding-3-large": {
+                    "id": "text-embedding-3-large",
+                    "name": "Text Embedding 3 Large",
+                    "capabilities": [ "embedding" ],
+                    "context_window": 8192,
+                    "input_cost_per_1k": 0.00013
+                },
+                "whisper-1": {
+                    "id": "whisper-1",
+                    "name": "Whisper",
+                    "capabilities": [ "transcription" ],
+                    "supported_formats": [ "audio/mp3", "audio/wav", "audio/flac", "audio/m4a", "audio/ogg", "audio/webm" ]
+                },
+                "dall-e-3": {
+                    "id": "dall-e-3",
+                    "name": "DALL-E 3",
+                    "capabilities": [ "image_generation" ]
+                },
+                "tts-1": {
+                    "id": "tts-1",
+                    "name": "TTS-1",
+                    "capabilities": [ "speech_generation" ]
+                },
+                "tts-1-hd": {
+                    "id": "tts-1-hd",
+                    "name": "TTS-1 HD",
+                    "capabilities": [ "speech_generation" ]
+                }
+            }
+        },
+
+        "anthropic": {
+            "enabled": true,
+            "api_key_env": "ANTHROPIC_API_KEY",
+            "base_url": "https://api.anthropic.com/v1",
+            "api_version": "2023-06-01",
+            "timeout_seconds": 120,
+            "max_retries": 3,
+            "beta_features": [ "prompt-caching-2024-07-31", "pdfs-2024-09-25" ],
+            "models": {
+                "claude-sonnet-4-20250514": {
+                    "id": "claude-sonnet-4-20250514",
+                    "name": "Claude 4 Sonnet",
+                    "capabilities": [ "text", "vision", "document", "code_generation", "function_calling", "streaming" ],
+                    "context_window": 200000,
+                    "max_output_tokens": 64000,
+                    "input_cost_per_1k": 0.003,
+                    "output_cost_per_1k": 0.015,
+                    "supported_formats": [ "image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf" ]
+                },
+                "claude-opus-4-20250514": {
+                    "id": "claude-opus-4-20250514",
+                    "name": "Claude 4 Opus",
+                    "capabilities": [ "text", "vision", "document", "code_generation", "function_calling", "streaming", "reasoning", "agents" ],
+                    "context_window": 200000,
+                    "max_output_tokens": 64000,
+                    "input_cost_per_1k": 0.015,
+                    "output_cost_per_1k": 0.075,
+                    "supported_formats": [ "image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf" ]
+                }
+            }
+        },
+
+        "google": {
+            "enabled": true,
+            "api_key_env": "GOOGLE_API_KEY",
+            "base_url": "https://generativelanguage.googleapis.com/v1beta",
+            "timeout_seconds": 300,
+            "max_retries": 3,
+            "vertex_ai": {
+                "enabled": false,
+                "project_id_env": "GOOGLE_PROJECT_ID",
+                "location": "us-central1"
+            },
+            "models": {
+                "gemini-2.0-flash": {
+                    "id": "gemini-2.0-flash",
+                    "name": "Gemini 2.0 Flash",
+                    "capabilities": [ "text", "vision", "audio", "video", "code_generation", "function_calling", "streaming", "reasoning", "web_search" ],
+                    "context_window": 1000000,
+                    "max_output_tokens": 8192,
+                    "input_cost_per_1k": 0.000075,
+                    "output_cost_per_1k": 0.0003,
+                    "supported_formats": [ "image/jpeg", "image/png", "image/gif", "image/webp", "audio/mp3", "audio/wav", "audio/ogg", "audio/flac", "video/mp4", "video/quicktime", "video/x-msvideo", "video/webm", "video/x-matroska", "application/pdf" ]
+                },
+                "gemini-2.0-flash-lite": {
+                    "id": "gemini-2.0-flash-lite",
+                    "name": "Gemini 2.0 Flash Lite",
+                    "capabilities": [ "text", "vision", "function_calling", "streaming" ],
+                    "context_window": 1000000,
+                    "max_output_tokens": 8192,
+                    "input_cost_per_1k": 0.00001875,
+                    "output_cost_per_1k": 0.000075
+                },
+                "gemini-2.5-pro": {
+                    "id": "gemini-2.5-pro",
+                    "name": "Gemini 2.5 Pro",
+                    "capabilities": [ "text", "vision", "audio", "video", "document", "code_generation", "function_calling", "streaming", "reasoning" ],
+                    "context_window": 2000000,
+                    "max_output_tokens": 65536,
+                    "input_cost_per_1k": 0.00125,
+                    "output_cost_per_1k": 0.005
+                },
+                "text-embedding-004": {
+                    "id": "text-embedding-004",
+                    "name": "Text Embedding 004",
+                    "capabilities": [ "embedding" ],
+                    "context_window": 2048,
+                    "input_cost_per_1k": 0.00001
+                }
+            }
+        },
+
+        "deepseek": {
+            "enabled": true,
+            "api_key_env": "DEEPSEEK_API_KEY",
+            "base_url": "https://api.deepseek.com/v1",
+            "timeout_seconds": 120,
+            "max_retries": 3,
+            "models": {
+                "deepseek-chat": {
+                    "id": "deepseek-chat",
+                    "name": "DeepSeek Chat",
+                    "capabilities": [ "text", "code_generation", "function_calling" ],
+                    "context_window": 64000,
+                    "max_output_tokens": 8192,
+                    "input_cost_per_1k": 0.00014,
+                    "output_cost_per_1k": 0.00028
+                },
+                "deepseek-reasoner": {
+                    "id": "deepseek-reasoner",
+                    "name": "DeepSeek Reasoner (R1)",
+                    "capabilities": [ "text", "reasoning", "code_generation" ],
+                    "context_window": 64000,
+                    "max_output_tokens": 8192,
+                    "input_cost_per_1k": 0.00055,
+                    "output_cost_per_1k": 0.00219
+                },
+                "deepseek-coder": {
+                    "id": "deepseek-coder",
+                    "name": "DeepSeek Coder V3",
+                    "capabilities": [ "text", "code_generation", "function_calling" ],
+                    "context_window": 128000,
+                    "max_output_tokens": 16384,
+                    "input_cost_per_1k": 0.00014,
+                    "output_cost_per_1k": 0.00028
+                }
+            }
+        },
+
+        "mistral": {
+            "enabled": true,
+            "api_key_env": "MISTRAL_API_KEY",
+            "base_url": "https://api.mistral.ai/v1",
+            "timeout_seconds": 120,
+            "max_retries": 3,
+            "models": {
+                "mistral-large-latest": {
+                    "id": "mistral-large-latest",
+                    "name": "Mistral Large",
+                    "capabilities": [ "text", "code_generation", "function_calling", "streaming", "reasoning" ],
+                    "context_window": 128000,
+                    "max_output_tokens": 8192,
+                    "input_cost_per_1k": 0.002,
+                    "output_cost_per_1k": 0.006
+                },
+                "codestral-latest": {
+                    "id": "codestral-latest",
+                    "name": "Codestral",
+                    "capabilities": [ "text", "code_generation", "streaming" ],
+                    "context_window": 32000,
+                    "max_output_tokens": 8192,
+                    "input_cost_per_1k": 0.001,
+                    "output_cost_per_1k": 0.003
+                },
+                "pixtral-large-latest": {
+                    "id": "pixtral-large-latest",
+                    "name": "Pixtral Large",
+                    "capabilities": [ "text", "vision", "code_generation", "function_calling", "streaming" ],
+                    "context_window": 128000,
+                    "max_output_tokens": 8192,
+                    "input_cost_per_1k": 0.002,
+                    "output_cost_per_1k": 0.006,
+                    "supported_formats": [ "image/jpeg", "image/png", "image/gif", "image/webp" ]
+                },
+                "mistral-embed": {
+                    "id": "mistral-embed",
+                    "name": "Mistral Embed",
+                    "capabilities": [ "embedding" ],
+                    "context_window": 8192,
+                    "input_cost_per_1k": 0.0001
+                }
+            }
+        },
+
+        "xai": {
+            "enabled": true,
+            "api_key_env": "XAI_API_KEY",
+            "base_url": "https://api.x.ai/v1",
+            "timeout_seconds": 120,
+            "max_retries": 3,
+            "models": {
+                "grok-2": {
+                    "id": "grok-2",
+                    "name": "Grok-2",
+                    "capabilities": [ "text", "code_generation", "function_calling", "streaming", "realtime" ],
+                    "context_window": 131072,
+                    "max_output_tokens": 8192,
+                    "input_cost_per_1k": 0.002,
+                    "output_cost_per_1k": 0.01
+                },
+                "grok-2-vision": {
+                    "id": "grok-2-vision",
+                    "name": "Grok-2 Vision",
+                    "capabilities": [ "text", "vision", "code_generation", "function_calling", "streaming" ],
+                    "context_window": 32768,
+                    "max_output_tokens": 8192,
+                    "input_cost_per_1k": 0.002,
+                    "output_cost_per_1k": 0.01,
+                    "supported_formats": [ "image/jpeg", "image/png", "image/gif", "image/webp" ]
+                },
+                "grok-3": {
+                    "id": "grok-3",
+                    "name": "Grok-3",
+                    "capabilities": [ "text", "vision", "code_generation", "function_calling", "streaming", "reasoning", "agents" ],
+                    "context_window": 131072,
+                    "max_output_tokens": 16384,
+                    "input_cost_per_1k": 0.003,
+                    "output_cost_per_1k": 0.015
+                }
+            }
+        }
+    },
+
+    "routing": {
+        "default_models": {
+            "text": "gpt-4o-mini",
+            "vision": "gemini-2.0-flash",
+            "audio": "gemini-2.0-flash",
+            "video": "gemini-2.5-pro",
+            "document": "gemini-2.5-pro",
+            "code": "claude-sonnet-4-20250514",
+            "reasoning": "o3-mini",
+            "embedding": "text-embedding-3-small",
+            "image_generation": "dall-e-3",
+            "speech": "tts-1",
+            "transcription": "whisper-1"
+        },
+        "prefer_cheaper_models": false,
+        "max_cost_per_1k_tokens": 0.0,
+        "preferred_providers": [ "openai", "anthropic", "google" ],
+        "fallback_providers": [ "deepseek", "mistral", "xai" ],
+        "domain_routes": {
+            "healthcare": "claude-opus-4-20250514",
+            "legal": "claude-opus-4-20250514",
+            "finance": "gpt-4o",
+            "code": "claude-sonnet-4-20250514",
+            "creative": "claude-sonnet-4-20250514",
+            "analysis": "gemini-2.5-pro"
+        }
+    },
+
+    "generation": {
+        "defaults": {
+            "temperature": 0.7,
+            "max_tokens": 4096,
+            "top_p": 1.0,
+            "top_k": 0,
+            "frequency_penalty": 0.0,
+            "presence_penalty": 0.0,
+            "stop_sequences": [ ],
+            "streaming_enabled": true,
+            "retry_on_error": true,
+            "max_retries": 3
+        },
+        "task_specific": {
+            "coding": {
+                "temperature": 0.2,
+                "max_tokens": 8192
+            },
+            "creative": {
+                "temperature": 0.9,
+                "max_tokens": 4096
+            },
+            "analysis": {
+                "temperature": 0.3,
+                "max_tokens": 8192
+            },
+            "conversation": {
+                "temperature": 0.7,
+                "max_tokens": 2048
+            }
+        }
+    },
+
+    "memory": {
+        "enabled": true,
+        "strategy": "hybrid",
+        "max_messages": 100,
+        "max_tokens": 100000,
+        "summary_interval": 20,
+        "keep_system_prompt": true,
+        "persist_path": "./data/memory",
+        "semantic_memory": {
+            "enabled": true,
+            "vector_store_type": "in_memory",
+            "similarity_threshold": 0.7,
+            "max_results": 5
+        }
+    },
+
+    "rate_limits": {
+        "enabled": true,
+        "requests_per_minute": 60,
+        "tokens_per_minute": 100000,
+        "concurrent_requests": 10,
+        "queue_size": 100,
+        "burst_size": 20
+    },
+
+    "logging": {
+        "level": "info",
+        "format": "json",
+        "output": "stdout",
+        "log_requests": true,
+        "log_responses": false,
+        "log_tokens": true,
+        "log_costs": true,
+        "redact": true,
+        "redact_patterns": [ "api_key", "password", "secret", "token" ]
+    },
+
+    "security": {
+        "content_filtering": true,
+        "max_input_length": 1000000,
+        "max_output_length": 100000,
+        "blocked_topics": [ ],
+        "allowed_domains": [ ],
+        "sanitize_html": true,
+        "validate_json": true,
+        "pii_detection": false,
+        "pii_redaction": false
+    },
+
+    "features": {
+        "enable_rag": true,
+        "enable_tools": true,
+        "enable_streaming": true,
+        "enable_caching": true,
+        "enable_cost_tracking": true,
+        "auto_preprocess": true
+    },
+
+    "agent": {
+        "name": "SmartAssistant",
+        "system_prompt": "You are an advanced AI assistant with expertise in multiple domains.\nYou can analyze images, transcribe audio, process videos, review code, and handle documents.\nAlways provide helpful, accurate, and detailed responses.\nWhen analyzing code, focus on correctness, performance, and best practices.\nWhen handling multimodal content, describe what you observe clearly."
+    }
+}

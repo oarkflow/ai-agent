@@ -10,21 +10,25 @@ import (
 )
 
 // OpenAIProvider implements the Provider interface for OpenAI.
+// NOTE: For multimodal support and config-based initialization, use OpenAIMultimodalProvider instead.
 type OpenAIProvider struct {
-	APIKey string
-	Model  string
-	Client *http.Client
+	APIKey  string
+	Model   string
+	BaseURL string
+	Client  *http.Client
 }
 
 // NewOpenAIProvider creates a new instance of OpenAIProvider.
+// When using JSON configuration, prefer using ProviderFactory.CreateProvider("openai") instead.
 func NewOpenAIProvider(apiKey string, model string) *OpenAIProvider {
 	if model == "" {
-		model = "gpt-4o"
+		model = "gpt-4o" // Default, override via config
 	}
 	return &OpenAIProvider{
-		APIKey: apiKey,
-		Model:  model,
-		Client: &http.Client{},
+		APIKey:  apiKey,
+		Model:   model,
+		BaseURL: "https://api.openai.com/v1", // Default, override via config
+		Client:  &http.Client{},
 	}
 }
 
@@ -84,7 +88,12 @@ func (p *OpenAIProvider) Chat(ctx context.Context, messages []Message, options *
 		return "", fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "POST", "https://api.openai.com/v1/chat/completions", bytes.NewBuffer(jsonData))
+	baseURL := p.BaseURL
+	if baseURL == "" {
+		baseURL = "https://api.openai.com/v1"
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", baseURL+"/chat/completions", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return "", fmt.Errorf("failed to create request: %w", err)
 	}

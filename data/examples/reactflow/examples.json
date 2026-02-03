@@ -1,0 +1,41 @@
+[
+    {
+        "id": "reactflow_001",
+        "domain": "reactflow",
+        "category": "process_flow",
+        "input": "Create a user authentication flow with login, validation, and success/failure paths",
+        "output": "{\n  \"nodes\": [\n    {\n      \"id\": \"start\",\n      \"type\": \"input\",\n      \"position\": {\"x\": 250, \"y\": 0},\n      \"data\": {\"label\": \"User Visits Login Page\"}\n    },\n    {\n      \"id\": \"login-form\",\n      \"type\": \"default\",\n      \"position\": {\"x\": 250, \"y\": 100},\n      \"data\": {\"label\": \"Display Login Form\"}\n    },\n    {\n      \"id\": \"submit\",\n      \"type\": \"default\",\n      \"position\": {\"x\": 250, \"y\": 200},\n      \"data\": {\"label\": \"Submit Credentials\"}\n    },\n    {\n      \"id\": \"validate\",\n      \"type\": \"default\",\n      \"position\": {\"x\": 250, \"y\": 300},\n      \"data\": {\"label\": \"Validate Credentials\"},\n      \"style\": {\"background\": \"#fef3c7\"}\n    },\n    {\n      \"id\": \"success\",\n      \"type\": \"output\",\n      \"position\": {\"x\": 100, \"y\": 420},\n      \"data\": {\"label\": \"Login Success - Redirect to Dashboard\"},\n      \"style\": {\"background\": \"#d1fae5\"}\n    },\n    {\n      \"id\": \"failure\",\n      \"type\": \"output\",\n      \"position\": {\"x\": 400, \"y\": 420},\n      \"data\": {\"label\": \"Login Failed - Show Error\"},\n      \"style\": {\"background\": \"#fee2e2\"}\n    }\n  ],\n  \"edges\": [\n    {\"id\": \"e1\", \"source\": \"start\", \"target\": \"login-form\", \"animated\": true},\n    {\"id\": \"e2\", \"source\": \"login-form\", \"target\": \"submit\"},\n    {\"id\": \"e3\", \"source\": \"submit\", \"target\": \"validate\"},\n    {\"id\": \"e4\", \"source\": \"validate\", \"target\": \"success\", \"label\": \"Valid\", \"labelStyle\": {\"fill\": \"#10b981\"}},\n    {\"id\": \"e5\", \"source\": \"validate\", \"target\": \"failure\", \"label\": \"Invalid\", \"labelStyle\": {\"fill\": \"#ef4444\"}}\n  ],\n  \"viewport\": {\"x\": 0, \"y\": 0, \"zoom\": 1}\n}",
+        "quality": 0.95,
+        "validated": true,
+        "metadata": {
+            "layout": "vertical",
+            "nodes_count": "6"
+        }
+    },
+    {
+        "id": "reactflow_002",
+        "domain": "reactflow",
+        "category": "organization_chart",
+        "input": "Create an org chart with CEO, 3 VPs, and 2 managers under each VP",
+        "output": "{\n  \"nodes\": [\n    {\"id\": \"ceo\", \"type\": \"default\", \"position\": {\"x\": 400, \"y\": 0}, \"data\": {\"label\": \"CEO\"}, \"style\": {\"background\": \"#dbeafe\", \"fontWeight\": \"bold\", \"width\": 120}},\n    {\"id\": \"vp-eng\", \"type\": \"default\", \"position\": {\"x\": 100, \"y\": 100}, \"data\": {\"label\": \"VP Engineering\"}, \"style\": {\"background\": \"#fef3c7\", \"width\": 140}},\n    {\"id\": \"vp-sales\", \"type\": \"default\", \"position\": {\"x\": 350, \"y\": 100}, \"data\": {\"label\": \"VP Sales\"}, \"style\": {\"background\": \"#fef3c7\", \"width\": 140}},\n    {\"id\": \"vp-ops\", \"type\": \"default\", \"position\": {\"x\": 600, \"y\": 100}, \"data\": {\"label\": \"VP Operations\"}, \"style\": {\"background\": \"#fef3c7\", \"width\": 140}},\n    {\"id\": \"mgr-fe\", \"type\": \"default\", \"position\": {\"x\": 0, \"y\": 220}, \"data\": {\"label\": \"Frontend Manager\"}},\n    {\"id\": \"mgr-be\", \"type\": \"default\", \"position\": {\"x\": 170, \"y\": 220}, \"data\": {\"label\": \"Backend Manager\"}},\n    {\"id\": \"mgr-ent\", \"type\": \"default\", \"position\": {\"x\": 280, \"y\": 220}, \"data\": {\"label\": \"Enterprise Manager\"}},\n    {\"id\": \"mgr-smb\", \"type\": \"default\", \"position\": {\"x\": 420, \"y\": 220}, \"data\": {\"label\": \"SMB Manager\"}},\n    {\"id\": \"mgr-sup\", \"type\": \"default\", \"position\": {\"x\": 530, \"y\": 220}, \"data\": {\"label\": \"Support Manager\"}},\n    {\"id\": \"mgr-log\", \"type\": \"default\", \"position\": {\"x\": 670, \"y\": 220}, \"data\": {\"label\": \"Logistics Manager\"}}\n  ],\n  \"edges\": [\n    {\"id\": \"e1\", \"source\": \"ceo\", \"target\": \"vp-eng\", \"type\": \"smoothstep\"},\n    {\"id\": \"e2\", \"source\": \"ceo\", \"target\": \"vp-sales\", \"type\": \"smoothstep\"},\n    {\"id\": \"e3\", \"source\": \"ceo\", \"target\": \"vp-ops\", \"type\": \"smoothstep\"},\n    {\"id\": \"e4\", \"source\": \"vp-eng\", \"target\": \"mgr-fe\", \"type\": \"smoothstep\"},\n    {\"id\": \"e5\", \"source\": \"vp-eng\", \"target\": \"mgr-be\", \"type\": \"smoothstep\"},\n    {\"id\": \"e6\", \"source\": \"vp-sales\", \"target\": \"mgr-ent\", \"type\": \"smoothstep\"},\n    {\"id\": \"e7\", \"source\": \"vp-sales\", \"target\": \"mgr-smb\", \"type\": \"smoothstep\"},\n    {\"id\": \"e8\", \"source\": \"vp-ops\", \"target\": \"mgr-sup\", \"type\": \"smoothstep\"},\n    {\"id\": \"e9\", \"source\": \"vp-ops\", \"target\": \"mgr-log\", \"type\": \"smoothstep\"}\n  ],\n  \"viewport\": {\"x\": 0, \"y\": 0, \"zoom\": 1}\n}",
+        "quality": 0.93,
+        "validated": true,
+        "metadata": {
+            "layout": "hierarchical",
+            "nodes_count": "10"
+        }
+    },
+    {
+        "id": "reactflow_003",
+        "domain": "reactflow",
+        "category": "state_machine",
+        "input": "Create a state machine diagram for an e-commerce order: pending, confirmed, shipped, delivered, cancelled",
+        "output": "{\n  \"nodes\": [\n    {\"id\": \"pending\", \"type\": \"input\", \"position\": {\"x\": 0, \"y\": 150}, \"data\": {\"label\": \"Pending\"}, \"style\": {\"background\": \"#fef3c7\", \"borderRadius\": \"50%\", \"width\": 100, \"height\": 60}},\n    {\"id\": \"confirmed\", \"type\": \"default\", \"position\": {\"x\": 180, \"y\": 150}, \"data\": {\"label\": \"Confirmed\"}, \"style\": {\"background\": \"#dbeafe\", \"borderRadius\": \"50%\", \"width\": 100, \"height\": 60}},\n    {\"id\": \"shipped\", \"type\": \"default\", \"position\": {\"x\": 360, \"y\": 150}, \"data\": {\"label\": \"Shipped\"}, \"style\": {\"background\": \"#e0e7ff\", \"borderRadius\": \"50%\", \"width\": 100, \"height\": 60}},\n    {\"id\": \"delivered\", \"type\": \"output\", \"position\": {\"x\": 540, \"y\": 150}, \"data\": {\"label\": \"Delivered\"}, \"style\": {\"background\": \"#d1fae5\", \"borderRadius\": \"50%\", \"width\": 100, \"height\": 60}},\n    {\"id\": \"cancelled\", \"type\": \"output\", \"position\": {\"x\": 180, \"y\": 300}, \"data\": {\"label\": \"Cancelled\"}, \"style\": {\"background\": \"#fee2e2\", \"borderRadius\": \"50%\", \"width\": 100, \"height\": 60}}\n  ],\n  \"edges\": [\n    {\"id\": \"e1\", \"source\": \"pending\", \"target\": \"confirmed\", \"label\": \"confirm\", \"type\": \"smoothstep\", \"animated\": true},\n    {\"id\": \"e2\", \"source\": \"confirmed\", \"target\": \"shipped\", \"label\": \"ship\", \"type\": \"smoothstep\", \"animated\": true},\n    {\"id\": \"e3\", \"source\": \"shipped\", \"target\": \"delivered\", \"label\": \"deliver\", \"type\": \"smoothstep\", \"animated\": true},\n    {\"id\": \"e4\", \"source\": \"pending\", \"target\": \"cancelled\", \"label\": \"cancel\", \"type\": \"smoothstep\", \"style\": {\"stroke\": \"#ef4444\"}},\n    {\"id\": \"e5\", \"source\": \"confirmed\", \"target\": \"cancelled\", \"label\": \"cancel\", \"type\": \"smoothstep\", \"style\": {\"stroke\": \"#ef4444\"}}\n  ],\n  \"viewport\": {\"x\": 0, \"y\": 0, \"zoom\": 1}\n}",
+        "quality": 0.94,
+        "validated": true,
+        "metadata": {
+            "layout": "horizontal",
+            "nodes_count": "5"
+        }
+    }
+]

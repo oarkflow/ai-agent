@@ -1,0 +1,41 @@
+[
+    {
+        "id": "multimodal_001",
+        "domain": "multimodal",
+        "category": "image_analysis",
+        "input": "Analyze this receipt image and extract all transaction details",
+        "output": "{\n  \"type\": \"image\",\n  \"format\": \"receipt\",\n  \"description\": \"A retail store receipt showing multiple items purchased\",\n  \"extracted_text\": \"STORE NAME\\n123 Main Street\\nDate: 01/15/2024 Time: 14:32\\n\\nItem 1 - Milk 2%     $3.99\\nItem 2 - Bread       $2.49\\nItem 3 - Eggs dozen  $4.29\\n\\nSubtotal: $10.77\\nTax (8%): $0.86\\nTotal: $11.63\\n\\nPaid: VISA ****1234\",\n  \"structured_data\": {\n    \"merchant_name\": \"STORE NAME\",\n    \"merchant_address\": \"123 Main Street\",\n    \"date\": \"2024-01-15\",\n    \"time\": \"14:32\",\n    \"items\": [\n      {\"description\": \"Milk 2%\", \"amount\": 3.99},\n      {\"description\": \"Bread\", \"amount\": 2.49},\n      {\"description\": \"Eggs dozen\", \"amount\": 4.29}\n    ],\n    \"subtotal\": 10.77,\n    \"tax_rate\": 0.08,\n    \"tax_amount\": 0.86,\n    \"total\": 11.63,\n    \"payment_method\": \"VISA\",\n    \"card_last_four\": \"1234\"\n  },\n  \"entities\": [\n    {\"type\": \"organization\", \"value\": \"STORE NAME\"},\n    {\"type\": \"date\", \"value\": \"2024-01-15\"},\n    {\"type\": \"amount\", \"value\": \"11.63\", \"label\": \"total\"}\n  ],\n  \"tags\": [\"receipt\", \"retail\", \"grocery\", \"purchase\"],\n  \"confidence\": 0.94\n}",
+        "quality": 0.95,
+        "validated": true,
+        "metadata": {
+            "content_type": "receipt",
+            "output_format": "json"
+        }
+    },
+    {
+        "id": "multimodal_002",
+        "domain": "multimodal",
+        "category": "document_analysis",
+        "input": "Extract all form fields from this job application PDF",
+        "output": "{\n  \"type\": \"document\",\n  \"format\": \"pdf\",\n  \"description\": \"A job application form with personal information, education, and work history sections\",\n  \"structured_data\": {\n    \"form_type\": \"job_application\",\n    \"sections\": [\n      {\n        \"name\": \"personal_information\",\n        \"fields\": {\n          \"full_name\": \"[Applicant Name]\",\n          \"email\": \"[email@example.com]\",\n          \"phone\": \"[Phone Number]\",\n          \"address\": \"[Street Address]\",\n          \"city\": \"[City]\",\n          \"state\": \"[State]\",\n          \"zip\": \"[ZIP Code]\"\n        }\n      },\n      {\n        \"name\": \"education\",\n        \"entries\": [\n          {\n            \"institution\": \"[University Name]\",\n            \"degree\": \"[Degree Type]\",\n            \"field\": \"[Field of Study]\",\n            \"graduation_date\": \"[Date]\"\n          }\n        ]\n      },\n      {\n        \"name\": \"work_experience\",\n        \"entries\": [\n          {\n            \"company\": \"[Company Name]\",\n            \"title\": \"[Job Title]\",\n            \"start_date\": \"[Start Date]\",\n            \"end_date\": \"[End Date]\",\n            \"responsibilities\": [\"[Responsibility 1]\", \"[Responsibility 2]\"]\n          }\n        ]\n      }\n    ]\n  },\n  \"entities\": [\n    {\"type\": \"person\", \"value\": \"[Applicant Name]\"},\n    {\"type\": \"email\", \"value\": \"[email@example.com]\"},\n    {\"type\": \"organization\", \"value\": \"[University Name]\"},\n    {\"type\": \"organization\", \"value\": \"[Company Name]\"}\n  ],\n  \"tags\": [\"form\", \"job_application\", \"employment\", \"hr\"],\n  \"confidence\": 0.91\n}",
+        "quality": 0.93,
+        "validated": true,
+        "metadata": {
+            "content_type": "form",
+            "output_format": "json"
+        }
+    },
+    {
+        "id": "multimodal_003",
+        "domain": "multimodal",
+        "category": "invoice_extraction",
+        "input": "Extract invoice details from this document and format as structured data",
+        "output": "{\n  \"type\": \"document\",\n  \"format\": \"invoice\",\n  \"description\": \"A commercial invoice from a vendor showing line items and payment terms\",\n  \"structured_data\": {\n    \"invoice_number\": \"INV-2024-00123\",\n    \"invoice_date\": \"2024-01-20\",\n    \"due_date\": \"2024-02-19\",\n    \"vendor\": {\n      \"name\": \"Acme Corporation\",\n      \"address\": \"456 Business Ave, Suite 100\",\n      \"city\": \"New York\",\n      \"state\": \"NY\",\n      \"zip\": \"10001\",\n      \"tax_id\": \"12-3456789\"\n    },\n    \"customer\": {\n      \"name\": \"Client Company Inc.\",\n      \"address\": \"789 Customer Lane\",\n      \"city\": \"Boston\",\n      \"state\": \"MA\",\n      \"zip\": \"02101\"\n    },\n    \"line_items\": [\n      {\n        \"line_number\": 1,\n        \"description\": \"Professional Services - January\",\n        \"quantity\": 40,\n        \"unit\": \"hours\",\n        \"unit_price\": 150.00,\n        \"amount\": 6000.00\n      },\n      {\n        \"line_number\": 2,\n        \"description\": \"Software License - Annual\",\n        \"quantity\": 1,\n        \"unit\": \"each\",\n        \"unit_price\": 1200.00,\n        \"amount\": 1200.00\n      }\n    ],\n    \"subtotal\": 7200.00,\n    \"tax_rate\": 0.0875,\n    \"tax_amount\": 630.00,\n    \"total\": 7830.00,\n    \"payment_terms\": \"Net 30\",\n    \"payment_methods\": [\"ACH\", \"Wire\", \"Check\"]\n  },\n  \"entities\": [\n    {\"type\": \"organization\", \"value\": \"Acme Corporation\", \"label\": \"vendor\"},\n    {\"type\": \"organization\", \"value\": \"Client Company Inc.\", \"label\": \"customer\"},\n    {\"type\": \"amount\", \"value\": \"7830.00\", \"label\": \"total\"},\n    {\"type\": \"date\", \"value\": \"2024-02-19\", \"label\": \"due_date\"}\n  ],\n  \"tags\": [\"invoice\", \"accounts_payable\", \"vendor\", \"b2b\"],\n  \"confidence\": 0.96\n}",
+        "quality": 0.97,
+        "validated": true,
+        "metadata": {
+            "content_type": "invoice",
+            "output_format": "json"
+        }
+    }
+]

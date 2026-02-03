@@ -1,0 +1,345 @@
+{
+    "tools": {
+        "web_search": {
+            "name": "web_search",
+            "description": "Search the web for current information. Use this when you need up-to-date information that may not be in your training data.",
+            "enabled": true,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "The search query"
+                    },
+                    "num_results": {
+                        "type": "integer",
+                        "description": "Number of results to return",
+                        "default": 5,
+                        "minimum": 1,
+                        "maximum": 20
+                    },
+                    "time_range": {
+                        "type": "string",
+                        "description": "Time range for results",
+                        "enum": [ "day", "week", "month", "year", "all" ],
+                        "default": "all"
+                    }
+                },
+                "required": [ "query" ]
+            },
+            "endpoint": {
+                "type": "http",
+                "url": "${SEARCH_API_URL}",
+                "method": "GET",
+                "headers": {
+                    "Authorization": "Bearer ${SEARCH_API_KEY}"
+                }
+            }
+        },
+
+        "calculator": {
+            "name": "calculator",
+            "description": "Perform mathematical calculations. Supports basic arithmetic, scientific functions, and complex expressions.",
+            "enabled": true,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "expression": {
+                        "type": "string",
+                        "description": "The mathematical expression to evaluate"
+                    },
+                    "precision": {
+                        "type": "integer",
+                        "description": "Decimal precision for the result",
+                        "default": 10
+                    }
+                },
+                "required": [ "expression" ]
+            },
+            "handler": "builtin:calculator"
+        },
+
+        "datetime": {
+            "name": "datetime",
+            "description": "Get current date/time or perform date calculations.",
+            "enabled": true,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "operation": {
+                        "type": "string",
+                        "description": "The operation to perform",
+                        "enum": [ "now", "format", "parse", "add", "subtract", "diff" ],
+                        "default": "now"
+                    },
+                    "timezone": {
+                        "type": "string",
+                        "description": "Timezone (e.g., 'America/New_York', 'UTC')",
+                        "default": "UTC"
+                    },
+                    "format": {
+                        "type": "string",
+                        "description": "Date format string",
+                        "default": "2006-01-02T15:04:05Z07:00"
+                    },
+                    "date": {
+                        "type": "string",
+                        "description": "Date string for parse/format operations"
+                    },
+                    "duration": {
+                        "type": "string",
+                        "description": "Duration for add/subtract (e.g., '24h', '7d', '1w')"
+                    }
+                },
+                "required": [ "operation" ]
+            },
+            "handler": "builtin:datetime"
+        },
+
+        "code_execute": {
+            "name": "code_execute",
+            "description": "Execute code in a sandboxed environment. Supports Python, JavaScript, and shell commands.",
+            "enabled": false,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "description": "The code to execute"
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "Programming language",
+                        "enum": [ "python", "javascript", "bash" ]
+                    },
+                    "timeout": {
+                        "type": "integer",
+                        "description": "Execution timeout in seconds",
+                        "default": 30,
+                        "maximum": 300
+                    }
+                },
+                "required": [ "code", "language" ]
+            },
+            "sandbox": {
+                "enabled": true,
+                "memory_limit_mb": 512,
+                "network_access": false
+            },
+            "handler": "builtin:code_execute"
+        },
+
+        "file_read": {
+            "name": "file_read",
+            "description": "Read contents of a file from allowed paths.",
+            "enabled": true,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "path": {
+                        "type": "string",
+                        "description": "Path to the file"
+                    },
+                    "encoding": {
+                        "type": "string",
+                        "description": "File encoding",
+                        "default": "utf-8"
+                    },
+                    "max_bytes": {
+                        "type": "integer",
+                        "description": "Maximum bytes to read",
+                        "default": 1048576
+                    }
+                },
+                "required": [ "path" ]
+            },
+            "security": {
+                "allowed_paths": [ "./data", "./uploads", "./documents" ],
+                "blocked_extensions": [ ".exe", ".sh", ".bat", ".ps1" ]
+            },
+            "handler": "builtin:file_read"
+        },
+
+        "file_write": {
+            "name": "file_write",
+            "description": "Write contents to a file in allowed paths.",
+            "enabled": false,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "path": {
+                        "type": "string",
+                        "description": "Path to the file"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "Content to write"
+                    },
+                    "mode": {
+                        "type": "string",
+                        "description": "Write mode",
+                        "enum": [ "overwrite", "append" ],
+                        "default": "overwrite"
+                    }
+                },
+                "required": [ "path", "content" ]
+            },
+            "security": {
+                "allowed_paths": [ "./data/output", "./uploads" ],
+                "max_file_size_mb": 10
+            },
+            "handler": "builtin:file_write"
+        },
+
+        "http_request": {
+            "name": "http_request",
+            "description": "Make HTTP requests to allowed endpoints.",
+            "enabled": true,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "description": "The URL to request"
+                    },
+                    "method": {
+                        "type": "string",
+                        "description": "HTTP method",
+                        "enum": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+                        "default": "GET"
+                    },
+                    "headers": {
+                        "type": "object",
+                        "description": "Request headers"
+                    },
+                    "body": {
+                        "type": "string",
+                        "description": "Request body for POST/PUT/PATCH"
+                    },
+                    "timeout": {
+                        "type": "integer",
+                        "description": "Request timeout in seconds",
+                        "default": 30
+                    }
+                },
+                "required": [ "url" ]
+            },
+            "security": {
+                "allowed_domains": [ "api.github.com", "api.openai.com", "*.googleapis.com" ],
+                "blocked_domains": [ "localhost", "127.0.0.1", "*.internal" ]
+            },
+            "handler": "builtin:http_request"
+        },
+
+        "database_query": {
+            "name": "database_query",
+            "description": "Execute read-only database queries.",
+            "enabled": false,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "SQL query to execute"
+                    },
+                    "database": {
+                        "type": "string",
+                        "description": "Database connection name"
+                    },
+                    "params": {
+                        "type": "array",
+                        "description": "Query parameters"
+                    }
+                },
+                "required": [ "query", "database" ]
+            },
+            "security": {
+                "read_only": true,
+                "max_rows": 1000,
+                "allowed_databases": [ "analytics", "public" ]
+            },
+            "handler": "builtin:database_query"
+        },
+
+        "vector_search": {
+            "name": "vector_search",
+            "description": "Search vector store for semantically similar content.",
+            "enabled": true,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Search query"
+                    },
+                    "collection": {
+                        "type": "string",
+                        "description": "Vector collection to search"
+                    },
+                    "top_k": {
+                        "type": "integer",
+                        "description": "Number of results",
+                        "default": 5
+                    },
+                    "threshold": {
+                        "type": "number",
+                        "description": "Similarity threshold",
+                        "default": 0.7
+                    },
+                    "filters": {
+                        "type": "object",
+                        "description": "Metadata filters"
+                    }
+                },
+                "required": [ "query" ]
+            },
+            "handler": "builtin:vector_search"
+        },
+
+        "image_generate": {
+            "name": "image_generate",
+            "description": "Generate images from text descriptions.",
+            "enabled": true,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "prompt": {
+                        "type": "string",
+                        "description": "Image description"
+                    },
+                    "size": {
+                        "type": "string",
+                        "description": "Image size",
+                        "enum": [ "256x256", "512x512", "1024x1024", "1792x1024", "1024x1792" ],
+                        "default": "1024x1024"
+                    },
+                    "quality": {
+                        "type": "string",
+                        "description": "Image quality",
+                        "enum": [ "standard", "hd" ],
+                        "default": "standard"
+                    },
+                    "style": {
+                        "type": "string",
+                        "description": "Image style",
+                        "enum": [ "natural", "vivid" ],
+                        "default": "natural"
+                    }
+                },
+                "required": [ "prompt" ]
+            },
+            "provider": "openai",
+            "model": "dall-e-3",
+            "handler": "builtin:image_generate"
+        }
+    },
+
+    "tool_settings": {
+        "max_parallel_calls": 5,
+        "default_timeout": 30,
+        "retry_on_error": true,
+        "max_retries": 3,
+        "log_tool_calls": true,
+        "validate_parameters": true
+    }
+}

@@ -1,0 +1,41 @@
+[
+    {
+        "id": "healthcare_001",
+        "domain": "healthcare",
+        "category": "medical_coding",
+        "input": "Patient presents with acute bronchitis and productive cough for 5 days. Chest X-ray performed. Prescribed antibiotics and cough suppressant.",
+        "output": "{\n  \"diagnoses\": [\n    {\n      \"code\": \"J20.9\",\n      \"description\": \"Acute bronchitis, unspecified\",\n      \"confidence\": 0.95\n    },\n    {\n      \"code\": \"R05.9\",\n      \"description\": \"Cough, unspecified\",\n      \"confidence\": 0.85\n    }\n  ],\n  \"procedures\": [\n    {\n      \"code\": \"71046\",\n      \"description\": \"Chest X-ray, 2 views\",\n      \"confidence\": 0.92\n    }\n  ],\n  \"medications\": [\n    {\n      \"name\": \"Antibiotic\",\n      \"indication\": \"Acute bronchitis\"\n    },\n    {\n      \"name\": \"Cough suppressant\",\n      \"indication\": \"Productive cough\"\n    }\n  ],\n  \"e_m_level\": \"99213\",\n  \"notes\": \"Primary diagnosis is acute bronchitis (J20.9). R05.9 is secondary as symptom. CPT 71046 for chest X-ray with 2 views. E/M level 99213 for established patient, low complexity.\"\n}",
+        "quality": 0.96,
+        "validated": true,
+        "metadata": {
+            "specialty": "pulmonology",
+            "complexity": "low"
+        }
+    },
+    {
+        "id": "healthcare_002",
+        "domain": "healthcare",
+        "category": "medical_coding",
+        "input": "68-year-old male with Type 2 diabetes mellitus with diabetic chronic kidney disease stage 3. Labs show HbA1c 8.2%, eGFR 45. Medication adjustment for metformin.",
+        "output": "{\n  \"diagnoses\": [\n    {\n      \"code\": \"E11.65\",\n      \"description\": \"Type 2 diabetes mellitus with hyperglycemia\",\n      \"confidence\": 0.94\n    },\n    {\n      \"code\": \"E11.22\",\n      \"description\": \"Type 2 diabetes mellitus with diabetic chronic kidney disease\",\n      \"confidence\": 0.97\n    },\n    {\n      \"code\": \"N18.3\",\n      \"description\": \"Chronic kidney disease, stage 3 (moderate)\",\n      \"confidence\": 0.95\n    }\n  ],\n  \"procedures\": [\n    {\n      \"code\": \"83036\",\n      \"description\": \"Hemoglobin A1c\",\n      \"confidence\": 0.98\n    },\n    {\n      \"code\": \"82565\",\n      \"description\": \"Creatinine; blood\",\n      \"confidence\": 0.90\n    }\n  ],\n  \"hcc_codes\": [\n    {\n      \"code\": \"HCC 18\",\n      \"description\": \"Diabetes with Chronic Complications\"\n    },\n    {\n      \"code\": \"HCC 138\",\n      \"description\": \"Chronic Kidney Disease, Stage 3\"\n    }\n  ],\n  \"e_m_level\": \"99214\",\n  \"notes\": \"Multiple chronic conditions warrant 99214. E11.22 captures diabetic CKD relationship. HCC codes for risk adjustment. Consider metformin dose reduction with eGFR 45.\"\n}",
+        "quality": 0.97,
+        "validated": true,
+        "metadata": {
+            "specialty": "endocrinology",
+            "complexity": "moderate"
+        }
+    },
+    {
+        "id": "healthcare_003",
+        "domain": "healthcare",
+        "category": "claim_generation",
+        "input": "Generate a CMS-1500 claim for: Patient John Doe, DOB 03/15/1955, seen on 01/10/2024 for hypertension follow-up and diabetes management. Provider NPI: 1234567890. Insurance: Medicare. Diagnosis: I10, E11.9. CPT: 99214.",
+        "output": "{\n  \"claim_type\": \"CMS-1500\",\n  \"patient\": {\n    \"name\": \"DOE, JOHN\",\n    \"dob\": \"03/15/1955\",\n    \"sex\": \"M\",\n    \"patient_id\": \"MCARE12345\"\n  },\n  \"provider\": {\n    \"npi\": \"1234567890\",\n    \"tax_id\": \"XX-XXXXXXX\",\n    \"name\": \"[Provider Name]\",\n    \"address\": \"[Provider Address]\"\n  },\n  \"payer\": {\n    \"name\": \"Medicare\",\n    \"payer_id\": \"00001\",\n    \"plan_type\": \"MB\"\n  },\n  \"service_lines\": [\n    {\n      \"line_number\": 1,\n      \"date_of_service\": \"01/10/2024\",\n      \"place_of_service\": \"11\",\n      \"cpt_code\": \"99214\",\n      \"modifiers\": [],\n      \"diagnosis_pointers\": [\"A\", \"B\"],\n      \"units\": 1,\n      \"charges\": 150.00\n    }\n  ],\n  \"diagnoses\": [\n    {\"pointer\": \"A\", \"code\": \"I10\", \"description\": \"Essential (primary) hypertension\"},\n    {\"pointer\": \"B\", \"code\": \"E11.9\", \"description\": \"Type 2 diabetes mellitus without complications\"}\n  ],\n  \"totals\": {\n    \"total_charges\": 150.00\n  },\n  \"validation\": {\n    \"status\": \"valid\",\n    \"warnings\": [\"Consider adding modifier -25 if separate E/M service performed\"],\n    \"errors\": []\n  }\n}",
+        "quality": 0.94,
+        "validated": true,
+        "metadata": {
+            "claim_type": "professional",
+            "payer": "medicare"
+        }
+    }
+]
