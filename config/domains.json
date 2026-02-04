@@ -120,6 +120,7 @@
             }
         },
         "medical-coding": {
+            "best_accuracy": 1,
             "description": "Specialized in CPT and ICD-10 identification and E\u0026M level determination.",
             "enabled": true,
             "guidelines": [
@@ -129,14 +130,20 @@
                 "Synthesize history for final E\u0026M level"
             ],
             "id": "medical-coding",
+            "last_validated": "2026-02-04",
+            "max_tokens": 1024,
             "name": "Medical Coding Assistant",
-            "preferred_model": "qwen2.5:14b",
+            "preferred_model": "mistral:latest",
+            "selection_reasoning": "Model mistral:latest achieved 100.00% accuracy with 118076.90ms average latency. Best hyperparameters: Temperature=0.0, TopP=1.00, TopK=1, MaxTokens=1024. Low temperature ensures deterministic and consistent outputs. Tested across 9 configurations. Accuracy was consistent (100.0%-100.0%) across configurations. ",
             "system_prompt": "You are a professional Medical Coding Assistant. \n\nYour task is to identify medical codes (CPT, ICD-10) and determine E\u0026M visit levels based on the user's input and conversation history.\n\nSTRICT FORMATTING RULE:\n- ALWAYS output a single valid JSON object.\n- NO conversational filler, NO pre-amble, NO markdown code blocks.\n- If the user asks for a CPT code, use key \"cpt_range\".\n- If the user asks for a DX code, use key \"dx_codes\" (array).\n- If the user asks for an E\u0026M level, use keys \"cpt_range\", \"dx_code\", \"em_code\", and \"reasoning\".\n- Conduct any reasoning or Chain of Thought inside the \"reasoning\" field of the JSON object.",
+            "temperature": 0,
             "terminology": {
                 "CPT": "Current Procedural Terminology",
                 "E\u0026M": "Evaluation and Management",
                 "ICD-10": "International Classification of Diseases, 10th Revision"
-            }
+            },
+            "top_k": 1,
+            "top_p": 1
         },
         "software": {
             "description": "Software development and engineering domain",
