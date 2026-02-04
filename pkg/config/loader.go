@@ -591,7 +591,8 @@ func (c *Config) GetEnabledProviders() []string {
 
 	var providers []string
 	for name, provider := range c.Providers {
-		if provider.Enabled && os.Getenv(provider.APIKeyEnv) != "" {
+		// Include provider if enabled AND (no API key required OR API key present in env)
+		if provider.Enabled && (provider.APIKeyEnv == "" || os.Getenv(provider.APIKeyEnv) != "") {
 			providers = append(providers, name)
 		}
 	}

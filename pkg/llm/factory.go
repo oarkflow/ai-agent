@@ -31,7 +31,8 @@ func (f *ProviderFactory) CreateProvider(providerName string) (MultimodalProvide
 	}
 
 	apiKey := f.config.GetAPIKey(providerName)
-	if apiKey == "" {
+	// Ollama doesn't strictly need API key for local, but the system might expect it or we can pass dummy
+	if apiKey == "" && providerName != "ollama" {
 		return nil, fmt.Errorf("API key not set for provider: %s (env: %s)", providerName, providerCfg.APIKeyEnv)
 	}
 
@@ -48,6 +49,8 @@ func (f *ProviderFactory) CreateProvider(providerName string) (MultimodalProvide
 		return f.createMistralProvider(apiKey, providerCfg)
 	case "xai":
 		return f.createXAIProvider(apiKey, providerCfg)
+	case "ollama":
+		return f.createOllamaProvider(apiKey, providerCfg)
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", providerName)
 	}
@@ -225,6 +228,28 @@ func (f *ProviderFactory) createXAIProvider(apiKey string, cfg *config.ProviderC
 		},
 		Client: &http.Client{Timeout: timeout},
 	}
+
+	return p, nil
+}
+
+// createOllamaProvider creates an Ollama provider from config.
+func (f *ProviderFactory) createOllamaProvider(apiKey string, cfg *config.ProviderCfg) (*OllamaProvider, error) {
+	models := f.convertModels(cfg.Models, ProviderOllama)
+
+	// BaseURL is critical for Ollama
+	baseURL := "http://localhost:11434"
+	if cfg.BaseURL != "" {
+		baseURL = cfg.BaseURL
+	}
+
+	p := NewOllamaProvider(baseURL)
+
+	// Override defaults with config if present
+	defaultModel := f.getDefaultModel(cfg.Models)
+	if defaultModel != "" {
+		p.DefaultModel = defaultModel
+	}
+	p.Models = models // Set the converted models
 
 	return p, nil
 }

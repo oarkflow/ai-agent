@@ -8,9 +8,24 @@
             "category": "code_review",
             "template": "Review the following {{.language}} code:\n\n{{.code}}\n\nProvide a comprehensive code review covering:\n1. Code quality and readability\n2. Potential bugs or errors\n3. Performance considerations\n4. Security vulnerabilities\n5. Best practices and improvements\n6. Suggested refactoring\n\n{{if .focus}}Focus especially on: {{.focus}}{{end}}",
             "variables": [
-                { "name": "code", "type": "string", "required": true, "description": "The code to review" },
-                { "name": "language", "type": "string", "required": true, "description": "Programming language" },
-                { "name": "focus", "type": "string", "required": false, "description": "Specific area to focus on" }
+                {
+                    "name": "code",
+                    "type": "string",
+                    "required": true,
+                    "description": "The code to review"
+                },
+                {
+                    "name": "language",
+                    "type": "string",
+                    "required": true,
+                    "description": "Programming language"
+                },
+                {
+                    "name": "focus",
+                    "type": "string",
+                    "required": false,
+                    "description": "Specific area to focus on"
+                }
             ],
             "config": {
                 "preferred_provider": "anthropic",
@@ -19,7 +34,6 @@
                 "output_format": "markdown"
             }
         },
-
         "summarize": {
             "id": "summarize",
             "name": "Summarize Content",
@@ -28,10 +42,37 @@
             "category": "summarization",
             "template": "Summarize the following content in {{.style}} style:\n\n{{.content}}\n\n{{if .max_length}}Keep the summary under {{.max_length}} words.{{end}}\n{{if .key_points}}Include {{.key_points}} key points.{{end}}",
             "variables": [
-                { "name": "content", "type": "string", "required": true, "description": "Content to summarize" },
-                { "name": "style", "type": "string", "required": false, "default": "concise", "description": "Summary style", "enum": [ "concise", "detailed", "bullet-points", "executive" ] },
-                { "name": "max_length", "type": "integer", "required": false, "description": "Maximum word count" },
-                { "name": "key_points", "type": "integer", "required": false, "description": "Number of key points to include" }
+                {
+                    "name": "content",
+                    "type": "string",
+                    "required": true,
+                    "description": "Content to summarize"
+                },
+                {
+                    "name": "style",
+                    "type": "string",
+                    "required": false,
+                    "default": "concise",
+                    "description": "Summary style",
+                    "enum": [
+                        "concise",
+                        "detailed",
+                        "bullet-points",
+                        "executive"
+                    ]
+                },
+                {
+                    "name": "max_length",
+                    "type": "integer",
+                    "required": false,
+                    "description": "Maximum word count"
+                },
+                {
+                    "name": "key_points",
+                    "type": "integer",
+                    "required": false,
+                    "description": "Number of key points to include"
+                }
             ],
             "config": {
                 "preferred_model": "gpt-4o-mini",
@@ -39,7 +80,6 @@
                 "output_format": "text"
             }
         },
-
         "extract-data": {
             "id": "extract-data",
             "name": "Extract Structured Data",
@@ -48,8 +88,18 @@
             "category": "extraction",
             "template": "Extract the following information from the text:\n\nFields to extract:\n{{range .fields}}- {{.}}\n{{end}}\n\nText:\n{{.text}}\n\nRespond with a JSON object containing the extracted fields. Use null for fields that cannot be found.",
             "variables": [
-                { "name": "text", "type": "string", "required": true, "description": "Text to extract from" },
-                { "name": "fields", "type": "array", "required": true, "description": "Fields to extract" }
+                {
+                    "name": "text",
+                    "type": "string",
+                    "required": true,
+                    "description": "Text to extract from"
+                },
+                {
+                    "name": "fields",
+                    "type": "array",
+                    "required": true,
+                    "description": "Fields to extract"
+                }
             ],
             "config": {
                 "preferred_model": "gpt-4o",
@@ -57,7 +107,6 @@
                 "output_format": "json"
             }
         },
-
         "generate-code": {
             "id": "generate-code",
             "name": "Generate Code",
@@ -66,10 +115,30 @@
             "category": "code_generation",
             "template": "Generate {{.language}} code for the following:\n\nRequirements:\n{{.requirements}}\n\n{{if .constraints}}Constraints:\n{{range .constraints}}- {{.}}\n{{end}}{{end}}\n{{if .style}}Follow {{.style}} coding style.{{end}}\n\nProvide well-documented, production-ready code.",
             "variables": [
-                { "name": "language", "type": "string", "required": true, "description": "Programming language" },
-                { "name": "requirements", "type": "string", "required": true, "description": "Code requirements" },
-                { "name": "constraints", "type": "array", "required": false, "description": "Constraints to follow" },
-                { "name": "style", "type": "string", "required": false, "description": "Coding style guidelines" }
+                {
+                    "name": "language",
+                    "type": "string",
+                    "required": true,
+                    "description": "Programming language"
+                },
+                {
+                    "name": "requirements",
+                    "type": "string",
+                    "required": true,
+                    "description": "Code requirements"
+                },
+                {
+                    "name": "constraints",
+                    "type": "array",
+                    "required": false,
+                    "description": "Constraints to follow"
+                },
+                {
+                    "name": "style",
+                    "type": "string",
+                    "required": false,
+                    "description": "Coding style guidelines"
+                }
             ],
             "config": {
                 "preferred_provider": "anthropic",
@@ -79,7 +148,6 @@
                 "output_format": "code"
             }
         },
-
         "analyze-image": {
             "id": "analyze-image",
             "name": "Analyze Image",
@@ -88,8 +156,18 @@
             "category": "multimodal",
             "template": "Analyze this image and provide:\n\n{{if .focus}}Focus on: {{.focus}}\n\n{{end}}1. A detailed description of what you see\n2. Key elements and objects identified\n3. Any text visible in the image\n4. Colors, composition, and style\n5. Context or setting\n\n{{if .questions}}Also answer these questions:\n{{range .questions}}- {{.}}\n{{end}}{{end}}",
             "variables": [
-                { "name": "focus", "type": "string", "required": false, "description": "Specific aspect to focus on" },
-                { "name": "questions", "type": "array", "required": false, "description": "Specific questions to answer" }
+                {
+                    "name": "focus",
+                    "type": "string",
+                    "required": false,
+                    "description": "Specific aspect to focus on"
+                },
+                {
+                    "name": "questions",
+                    "type": "array",
+                    "required": false,
+                    "description": "Specific questions to answer"
+                }
             ],
             "config": {
                 "preferred_provider": "google",
@@ -98,7 +176,6 @@
                 "output_format": "markdown"
             }
         },
-
         "reasoning": {
             "id": "reasoning",
             "name": "Complex Reasoning",
@@ -107,8 +184,18 @@
             "category": "reasoning",
             "template": "Solve the following problem using careful, step-by-step reasoning:\n\nProblem:\n{{.problem}}\n\n{{if .context}}Context:\n{{.context}}\n\n{{end}}Think through this systematically:\n1. First, understand what is being asked\n2. Identify relevant information and constraints\n3. Consider different approaches\n4. Work through the solution step by step\n5. Verify your answer\n\nShow your complete reasoning process.",
             "variables": [
-                { "name": "problem", "type": "string", "required": true, "description": "The problem to solve" },
-                { "name": "context", "type": "string", "required": false, "description": "Additional context" }
+                {
+                    "name": "problem",
+                    "type": "string",
+                    "required": true,
+                    "description": "The problem to solve"
+                },
+                {
+                    "name": "context",
+                    "type": "string",
+                    "required": false,
+                    "description": "Additional context"
+                }
             ],
             "config": {
                 "preferred_provider": "openai",
@@ -117,7 +204,6 @@
                 "output_format": "markdown"
             }
         },
-
         "translate": {
             "id": "translate",
             "name": "Translate Text",
@@ -126,11 +212,42 @@
             "category": "translation",
             "template": "Translate the following text from {{.source_language}} to {{.target_language}}:\n\n{{.text}}\n\n{{if .style}}Use a {{.style}} tone.{{end}}\n{{if .preserve_formatting}}Preserve the original formatting.{{end}}",
             "variables": [
-                { "name": "text", "type": "string", "required": true, "description": "Text to translate" },
-                { "name": "source_language", "type": "string", "required": true, "description": "Source language" },
-                { "name": "target_language", "type": "string", "required": true, "description": "Target language" },
-                { "name": "style", "type": "string", "required": false, "description": "Translation tone", "enum": [ "formal", "casual", "technical", "literary" ] },
-                { "name": "preserve_formatting", "type": "boolean", "required": false, "default": true }
+                {
+                    "name": "text",
+                    "type": "string",
+                    "required": true,
+                    "description": "Text to translate"
+                },
+                {
+                    "name": "source_language",
+                    "type": "string",
+                    "required": true,
+                    "description": "Source language"
+                },
+                {
+                    "name": "target_language",
+                    "type": "string",
+                    "required": true,
+                    "description": "Target language"
+                },
+                {
+                    "name": "style",
+                    "type": "string",
+                    "required": false,
+                    "description": "Translation tone",
+                    "enum": [
+                        "formal",
+                        "casual",
+                        "technical",
+                        "literary"
+                    ]
+                },
+                {
+                    "name": "preserve_formatting",
+                    "type": "boolean",
+                    "required": false,
+                    "default": "true"
+                }
             ],
             "config": {
                 "preferred_model": "gpt-4o",
@@ -138,7 +255,6 @@
                 "output_format": "text"
             }
         },
-
         "explain-code": {
             "id": "explain-code",
             "name": "Explain Code",
@@ -147,9 +263,29 @@
             "category": "code_review",
             "template": "Explain the following {{.language}} code:\n\n```{{.language}}\n{{.code}}\n```\n\n{{if .audience}}Explain for: {{.audience}}{{else}}Explain for a developer with intermediate experience.{{end}}\n\nInclude:\n1. What the code does overall\n2. How it works step by step\n3. Any important patterns or techniques used\n4. Potential use cases",
             "variables": [
-                { "name": "code", "type": "string", "required": true, "description": "Code to explain" },
-                { "name": "language", "type": "string", "required": true, "description": "Programming language" },
-                { "name": "audience", "type": "string", "required": false, "description": "Target audience level", "enum": [ "beginner", "intermediate", "expert" ] }
+                {
+                    "name": "code",
+                    "type": "string",
+                    "required": true,
+                    "description": "Code to explain"
+                },
+                {
+                    "name": "language",
+                    "type": "string",
+                    "required": true,
+                    "description": "Programming language"
+                },
+                {
+                    "name": "audience",
+                    "type": "string",
+                    "required": false,
+                    "description": "Target audience level",
+                    "enum": [
+                        "beginner",
+                        "intermediate",
+                        "expert"
+                    ]
+                }
             ],
             "config": {
                 "preferred_model": "gpt-4o",
@@ -157,7 +293,6 @@
                 "output_format": "markdown"
             }
         },
-
         "debug-code": {
             "id": "debug-code",
             "name": "Debug Code",
@@ -166,11 +301,36 @@
             "category": "code_review",
             "template": "Debug the following {{.language}} code:\n\n```{{.language}}\n{{.code}}\n```\n\n{{if .error}}Error message:\n{{.error}}\n\n{{end}}{{if .expected}}Expected behavior:\n{{.expected}}\n\n{{end}}{{if .actual}}Actual behavior:\n{{.actual}}\n\n{{end}}Identify:\n1. The bug(s) in the code\n2. Root cause analysis\n3. Fixed code with explanations\n4. How to prevent similar issues",
             "variables": [
-                { "name": "code", "type": "string", "required": true, "description": "Code to debug" },
-                { "name": "language", "type": "string", "required": true, "description": "Programming language" },
-                { "name": "error", "type": "string", "required": false, "description": "Error message if any" },
-                { "name": "expected", "type": "string", "required": false, "description": "Expected behavior" },
-                { "name": "actual", "type": "string", "required": false, "description": "Actual behavior" }
+                {
+                    "name": "code",
+                    "type": "string",
+                    "required": true,
+                    "description": "Code to debug"
+                },
+                {
+                    "name": "language",
+                    "type": "string",
+                    "required": true,
+                    "description": "Programming language"
+                },
+                {
+                    "name": "error",
+                    "type": "string",
+                    "required": false,
+                    "description": "Error message if any"
+                },
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "required": false,
+                    "description": "Expected behavior"
+                },
+                {
+                    "name": "actual",
+                    "type": "string",
+                    "required": false,
+                    "description": "Actual behavior"
+                }
             ],
             "config": {
                 "preferred_provider": "anthropic",
@@ -179,7 +339,6 @@
                 "output_format": "markdown"
             }
         },
-
         "write-tests": {
             "id": "write-tests",
             "name": "Write Tests",
@@ -188,11 +347,37 @@
             "category": "code_generation",
             "template": "Write comprehensive {{.test_framework}} tests for the following {{.language}} code:\n\n```{{.language}}\n{{.code}}\n```\n\n{{if .coverage}}Target coverage: {{.coverage}}%{{end}}\n\nInclude:\n1. Happy path tests\n2. Edge cases\n3. Error handling tests\n4. {{if .mocking}}Mock dependencies as needed{{end}}\n\nFollow testing best practices for {{.language}}.",
             "variables": [
-                { "name": "code", "type": "string", "required": true, "description": "Code to test" },
-                { "name": "language", "type": "string", "required": true, "description": "Programming language" },
-                { "name": "test_framework", "type": "string", "required": false, "default": "standard", "description": "Testing framework" },
-                { "name": "coverage", "type": "integer", "required": false, "description": "Target coverage percentage" },
-                { "name": "mocking", "type": "boolean", "required": false, "default": true }
+                {
+                    "name": "code",
+                    "type": "string",
+                    "required": true,
+                    "description": "Code to test"
+                },
+                {
+                    "name": "language",
+                    "type": "string",
+                    "required": true,
+                    "description": "Programming language"
+                },
+                {
+                    "name": "test_framework",
+                    "type": "string",
+                    "required": false,
+                    "default": "standard",
+                    "description": "Testing framework"
+                },
+                {
+                    "name": "coverage",
+                    "type": "integer",
+                    "required": false,
+                    "description": "Target coverage percentage"
+                },
+                {
+                    "name": "mocking",
+                    "type": "boolean",
+                    "required": false,
+                    "default": "true"
+                }
             ],
             "config": {
                 "preferred_provider": "anthropic",
