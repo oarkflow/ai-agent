@@ -241,6 +241,12 @@ func (a *MultimodalAgent) Send(ctx context.Context, msg *content.Message) (*llm.
 	// Build messages
 	messages := a.buildMessages(ctx, msg)
 
+	// DEBUG LOG
+	fmt.Printf("\n[DEBUG] Agent '%s' sending %d messages to model '%s'\n", a.Name, len(messages), a.Config.DefaultModel)
+	for i, m := range messages {
+		fmt.Printf("  Message %d (%s): %s\n", i, m.Role, truncateText(m.GetText(), 200))
+	}
+
 	// Emit before generate event
 	a.emit(ctx, EventBeforeGenerate, messages)
 
@@ -463,8 +469,10 @@ func (a *MultimodalAgent) buildRequirements(msg *content.Message) *llm.ModelRequ
 		}
 	}
 
-	// Check preferred model for content type
-	if len(msg.Contents) > 0 {
+	// Check preferred model
+	if a.Config.DefaultModel != "" {
+		req.PreferredModel = a.Config.DefaultModel
+	} else if len(msg.Contents) > 0 {
 		ct := msg.Contents[0].Type
 		if preferred, ok := a.Config.PreferredModels[ct]; ok {
 			req.PreferredModel = preferred
@@ -606,4 +614,11 @@ func (t *UsageTracker) GetStats() map[string]any {
 		"request_count":       t.RequestCount,
 		"model_usage":         t.ModelUsage,
 	}
+}
+
+func truncateText(s string, maxLen int) string {
+	if len(s) <= maxLen {
+		return s
+	}
+	return s[:maxLen] + "..."
 }

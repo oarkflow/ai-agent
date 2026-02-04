@@ -126,6 +126,19 @@ func (r *ProviderRegistry) GetModel(modelID string) (*RegisteredModel, bool) {
 	return m, ok
 }
 
+// ListModels returns a list of all registered model IDs.
+func (r *ProviderRegistry) ListModels() []string {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	ids := make([]string, 0, len(r.models))
+	for id := range r.models {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	return ids
+}
+
 // SelectModel automatically selects the best model for the given request.
 func (r *ProviderRegistry) SelectModel(messages []*content.Message, requirements *ModelRequirements) (*RegisteredModel, error) {
 	r.mu.RLock()

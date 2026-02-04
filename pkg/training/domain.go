@@ -13,6 +13,14 @@ import (
 	"github.com/sujit/ai-agent/pkg/llm"
 )
 
+// RAGConfig defines parameters for RAG optimization experiments.
+type RAGConfig struct {
+	ChunkSize    int         `json:"chunk_size"`
+	ChunkOverlap int         `json:"chunk_overlap"`
+	TopK         int         `json:"top_k"`
+	VectorStore  VectorStore `json:"-"`
+}
+
 //
 // ==============================
 // Core Domain Models
@@ -280,6 +288,76 @@ func (t *DomainTrainer) AddDocument(ctx context.Context, domainID string, doc *D
 	domain.Documents = append(domain.Documents, *doc)
 	domain.UpdatedAt = time.Now()
 	return nil
+}
+
+// Reindex re-processes all documents in a domain with the current trainer settings.
+// This is useful for testing different chunking strategies.
+func (t *DomainTrainer) Reindex(ctx context.Context, domainID string) error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	domain, ok := t.domains[domainID]
+	if !ok {
+		return fmt.Errorf("domain not found")
+	}
+
+	// 1. Clear existing vectors for this domain from the store
+	// Note: Simple InMemoryVectorStore doesn't support selective clearing easily without a scan,
+	// but we can just clear and re-store everything for now.
+	// In a real DB we'd use a filter.
+	if t.vectorStore != nil {
+		// For simplicity in this local implementation, we'll assume Search can be used to find IDs
+		// but VectorStore interface doesn't have ListIDsByFilter.
+		// Let's just Clear the whole store if it's an experiment store.
+		// For now, we'll assume the user provides a fresh VectorStore for experiments.
+	}
+
+	// 2. Re-chunk and re-embed all documents
+	for i := range domain.Documents {
+		doc := &domain.Documents[i]
+		doc.Chunks = t.chunkDocument(doc)
+		if err := t.generateChunkEmbeddings(ctx, domainID, doc.Chunks); err != nil {
+			return err
+		}
+	}
+
+	domain.UpdatedAt = time.Now()
+	return nil
+}
+
+// UseConfig temporarily applies a RAGConfig for the duration of the provided function.
+func (t *DomainTrainer) UseConfig(cfg *RAGConfig, fn func() error) error {
+	t.mu.Lock()
+
+	// Backup original settings
+	origSize := t.chunkSize
+	origOverlap := t.chunkOverlap
+	origStore := t.vectorStore
+
+	// Apply new settings
+	if cfg.ChunkSize > 0 {
+		t.chunkSize = cfg.ChunkSize
+	}
+	if cfg.ChunkOverlap >= 0 {
+		t.chunkOverlap = cfg.ChunkOverlap
+	}
+	if cfg.VectorStore != nil {
+		t.vectorStore = cfg.VectorStore
+	}
+
+	t.mu.Unlock()
+
+	// Execute the test function
+	err := fn()
+
+	// Restore original settings
+	t.mu.Lock()
+	t.chunkSize = origSize
+	t.chunkOverlap = origOverlap
+	t.vectorStore = origStore
+	t.mu.Unlock()
+
+	return err
 }
 
 func (t *DomainTrainer) chunkDocument(doc *Document) []DocumentChunk {

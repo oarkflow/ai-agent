@@ -77,10 +77,17 @@ func (p *OllamaProvider) Generate(ctx context.Context, messages []*content.Messa
 		}
 	}
 
+	// DEBUG LOG
+	reqJSON, _ := json.MarshalIndent(reqBody, "", "  ")
+	fmt.Printf("\n[DEBUG] Ollama Request to %s/api/chat:\n%s\n", p.BaseURL, string(reqJSON))
+
 	body, err := p.doRequest(ctx, "POST", "/api/chat", reqBody)
 	if err != nil {
+		fmt.Printf("[DEBUG] Ollama Request FAILED: %v\n", err)
 		return nil, err
 	}
+
+	fmt.Printf("[DEBUG] Ollama Response: %s\n", truncateText(string(body), 500))
 
 	var resp struct {
 		Model     string    `json:"model"`
@@ -441,4 +448,11 @@ func (p *OllamaProvider) doRequest(ctx context.Context, method, path string, bod
 	}
 
 	return respBody, nil
+}
+
+func truncateText(s string, maxLen int) string {
+	if len(s) <= maxLen {
+		return s
+	}
+	return s[:maxLen] + "..."
 }

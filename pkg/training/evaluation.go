@@ -87,7 +87,8 @@ type EvaluationResult struct {
 	ConfidenceIntervals map[string]*ConfidenceInterval `json:"confidence_intervals,omitempty"`
 
 	// Predictions (if saved)
-	PredictionsFile string `json:"predictions_file,omitempty"`
+	Predictions     []Prediction `json:"predictions,omitempty"`
+	PredictionsFile string       `json:"predictions_file,omitempty"`
 
 	// Errors
 	Errors []string `json:"errors,omitempty"`
@@ -159,6 +160,7 @@ func (e *Evaluator) Evaluate(dataPoints []DataPoint, predictFn EvalPredictionFun
 		predictions = append(predictions, pred)
 	}
 
+	result.Predictions = predictions
 	e.calculator.Clear()
 	e.calculator.AddPredictions(predictions)
 

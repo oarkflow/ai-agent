@@ -1,22 +1,72 @@
 {
+    "domain_settings": {
+        "auto_detect_domain": true,
+        "chunk_overlap": 200,
+        "chunk_size": 1000,
+        "embedding_model": "text-embedding-3-small",
+        "max_context_documents": 5,
+        "similarity_threshold": 0.7,
+        "storage_path": "./data/domains"
+    },
     "domains": {
+        "data-science": {
+            "description": "Data science and machine learning domain",
+            "enabled": true,
+            "guidelines": [
+                "Always validate data before training models",
+                "Use appropriate evaluation metrics for the problem",
+                "Consider bias and fairness in model development",
+                "Document model training procedures",
+                "Version control datasets and models",
+                "Test models on diverse, representative data"
+            ],
+            "id": "data-science",
+            "name": "Data Science",
+            "preferred_model": "gemini-2.5-pro",
+            "system_prompt_extension": "When discussing data science topics, emphasize rigorous methodology, proper validation, and ethical considerations in model development.",
+            "terminology": {
+                "CNN": "Convolutional Neural Network - for image processing",
+                "Cross-validation": "Technique for assessing model generalization",
+                "DL": "Deep Learning - neural networks with multiple layers",
+                "Feature Engineering": "Creating features from raw data",
+                "Hyperparameter": "Model settings not learned from data",
+                "ML": "Machine Learning - algorithms that learn from data",
+                "NLP": "Natural Language Processing - text understanding",
+                "Overfitting": "Model performs well on training but poorly on new data",
+                "RNN": "Recurrent Neural Network - for sequential data",
+                "Transformer": "Architecture using self-attention mechanism"
+            }
+        },
+        "finance": {
+            "description": "Financial domain knowledge and terminology",
+            "enabled": true,
+            "guidelines": [
+                "Do not provide specific investment advice",
+                "Include appropriate disclaimers about financial risks",
+                "Recommend consulting financial advisors for personal decisions",
+                "Clarify that past performance doesn't guarantee future results",
+                "Be aware of regional differences in financial regulations"
+            ],
+            "id": "finance",
+            "name": "Finance",
+            "preferred_model": "gpt-4o",
+            "system_prompt_extension": "When discussing financial topics, provide educational information and recommend consulting qualified financial advisors for personal investment decisions.",
+            "terminology": {
+                "APR": "Annual Percentage Rate - yearly interest rate",
+                "APY": "Annual Percentage Yield - total interest earned in a year",
+                "Amortization": "Spreading loan payments over time",
+                "Derivative": "Financial instrument whose value derives from an underlying asset",
+                "EBITDA": "Earnings Before Interest, Taxes, Depreciation, and Amortization",
+                "Hedge": "Investment to reduce risk of adverse price movements",
+                "Liquidity": "How easily an asset can be converted to cash",
+                "P/E Ratio": "Price-to-Earnings Ratio - stock valuation metric",
+                "ROI": "Return on Investment - measure of profitability",
+                "Volatility": "Measure of price fluctuation over time"
+            }
+        },
         "healthcare": {
-            "id": "healthcare",
-            "name": "Healthcare",
             "description": "Healthcare and medical domain knowledge",
             "enabled": true,
-            "terminology": {
-                "EMR": "Electronic Medical Record - a digital version of a patient's medical chart",
-                "EHR": "Electronic Health Record - comprehensive digital health records that can be shared across healthcare systems",
-                "HIPAA": "Health Insurance Portability and Accountability Act - US law governing health data privacy",
-                "PHI": "Protected Health Information - any health information that can identify an individual",
-                "ICD-10": "International Classification of Diseases, 10th Revision - standard diagnostic codes",
-                "CPT": "Current Procedural Terminology - codes for medical procedures and services",
-                "HL7": "Health Level Seven - international standards for health information exchange",
-                "FHIR": "Fast Healthcare Interoperability Resources - modern standard for health data exchange",
-                "SNOMED-CT": "Systematized Nomenclature of Medicine Clinical Terms - comprehensive clinical terminology",
-                "RxNorm": "Standardized nomenclature for clinical drugs"
-            },
             "guidelines": [
                 "Never provide medical diagnoses or treatment recommendations",
                 "Always recommend consulting healthcare professionals for medical decisions",
@@ -25,26 +75,26 @@
                 "Acknowledge limitations in medical knowledge and uncertainty when appropriate",
                 "Be sensitive to the emotional nature of health-related topics"
             ],
+            "id": "healthcare",
+            "name": "Healthcare",
             "preferred_model": "claude-opus-4-20250514",
-            "system_prompt_extension": "When discussing healthcare topics, prioritize accuracy, patient safety, and privacy. Do not provide specific medical advice."
+            "system_prompt_extension": "When discussing healthcare topics, prioritize accuracy, patient safety, and privacy. Do not provide specific medical advice.",
+            "terminology": {
+                "CPT": "Current Procedural Terminology - codes for medical procedures and services",
+                "EHR": "Electronic Health Record - comprehensive digital health records that can be shared across healthcare systems",
+                "EMR": "Electronic Medical Record - a digital version of a patient's medical chart",
+                "FHIR": "Fast Healthcare Interoperability Resources - modern standard for health data exchange",
+                "HIPAA": "Health Insurance Portability and Accountability Act - US law governing health data privacy",
+                "HL7": "Health Level Seven - international standards for health information exchange",
+                "ICD-10": "International Classification of Diseases, 10th Revision - standard diagnostic codes",
+                "PHI": "Protected Health Information - any health information that can identify an individual",
+                "RxNorm": "Standardized nomenclature for clinical drugs",
+                "SNOMED-CT": "Systematized Nomenclature of Medicine Clinical Terms - comprehensive clinical terminology"
+            }
         },
         "legal": {
-            "id": "legal",
-            "name": "Legal",
             "description": "Legal domain knowledge and terminology",
             "enabled": true,
-            "terminology": {
-                "Plaintiff": "The party who initiates a lawsuit",
-                "Defendant": "The party being sued or accused",
-                "Tort": "A civil wrong that causes harm, leading to legal liability",
-                "Liability": "Legal responsibility for one's acts or omissions",
-                "Precedent": "A legal case that establishes a principle or rule",
-                "Jurisdiction": "The authority of a court to hear and decide cases",
-                "Discovery": "Pre-trial procedure for obtaining evidence",
-                "Deposition": "Sworn out-of-court testimony",
-                "Injunction": "Court order requiring a party to do or refrain from doing something",
-                "Statute of Limitations": "Time limit for filing a lawsuit"
-            },
             "guidelines": [
                 "Do not provide specific legal advice - recommend consulting an attorney",
                 "Clarify that information is general and may vary by jurisdiction",
@@ -52,53 +102,45 @@
                 "Reference that laws change and information may not be current",
                 "Be careful with predictions about legal outcomes"
             ],
+            "id": "legal",
+            "name": "Legal",
             "preferred_model": "claude-opus-4-20250514",
-            "system_prompt_extension": "When discussing legal topics, provide general information only and recommend consulting qualified legal professionals for specific advice."
-        },
-        "finance": {
-            "id": "finance",
-            "name": "Finance",
-            "description": "Financial domain knowledge and terminology",
-            "enabled": true,
+            "system_prompt_extension": "When discussing legal topics, provide general information only and recommend consulting qualified legal professionals for specific advice.",
             "terminology": {
-                "ROI": "Return on Investment - measure of profitability",
-                "EBITDA": "Earnings Before Interest, Taxes, Depreciation, and Amortization",
-                "P/E Ratio": "Price-to-Earnings Ratio - stock valuation metric",
-                "APR": "Annual Percentage Rate - yearly interest rate",
-                "APY": "Annual Percentage Yield - total interest earned in a year",
-                "Liquidity": "How easily an asset can be converted to cash",
-                "Volatility": "Measure of price fluctuation over time",
-                "Hedge": "Investment to reduce risk of adverse price movements",
-                "Derivative": "Financial instrument whose value derives from an underlying asset",
-                "Amortization": "Spreading loan payments over time"
-            },
+                "Defendant": "The party being sued or accused",
+                "Deposition": "Sworn out-of-court testimony",
+                "Discovery": "Pre-trial procedure for obtaining evidence",
+                "Injunction": "Court order requiring a party to do or refrain from doing something",
+                "Jurisdiction": "The authority of a court to hear and decide cases",
+                "Liability": "Legal responsibility for one's acts or omissions",
+                "Plaintiff": "The party who initiates a lawsuit",
+                "Precedent": "A legal case that establishes a principle or rule",
+                "Statute of Limitations": "Time limit for filing a lawsuit",
+                "Tort": "A civil wrong that causes harm, leading to legal liability"
+            }
+        },
+        "medical-coding": {
+            "description": "Specialized in CPT and ICD-10 identification and E\u0026M level determination.",
+            "enabled": true,
             "guidelines": [
-                "Do not provide specific investment advice",
-                "Include appropriate disclaimers about financial risks",
-                "Recommend consulting financial advisors for personal decisions",
-                "Clarify that past performance doesn't guarantee future results",
-                "Be aware of regional differences in financial regulations"
+                "Always output strictly valid JSON",
+                "Identify CPT codes for established or new patients",
+                "Identify ICD-10 codes for diagnoses mentioned",
+                "Synthesize history for final E\u0026M level"
             ],
-            "preferred_model": "gpt-4o",
-            "system_prompt_extension": "When discussing financial topics, provide educational information and recommend consulting qualified financial advisors for personal investment decisions."
+            "id": "medical-coding",
+            "name": "Medical Coding Assistant",
+            "preferred_model": "qwen2.5:14b",
+            "system_prompt": "You are a professional Medical Coding Assistant. \n\nYour task is to identify medical codes (CPT, ICD-10) and determine E\u0026M visit levels based on the user's input and conversation history.\n\nSTRICT FORMATTING RULE:\n- ALWAYS output a single valid JSON object.\n- NO conversational filler, NO pre-amble, NO markdown code blocks.\n- If the user asks for a CPT code, use key \"cpt_range\".\n- If the user asks for a DX code, use key \"dx_codes\" (array).\n- If the user asks for an E\u0026M level, use keys \"cpt_range\", \"dx_code\", \"em_code\", and \"reasoning\".\n- Conduct any reasoning or Chain of Thought inside the \"reasoning\" field of the JSON object.",
+            "terminology": {
+                "CPT": "Current Procedural Terminology",
+                "E\u0026M": "Evaluation and Management",
+                "ICD-10": "International Classification of Diseases, 10th Revision"
+            }
         },
         "software": {
-            "id": "software",
-            "name": "Software Development",
             "description": "Software development and engineering domain",
             "enabled": true,
-            "terminology": {
-                "CI/CD": "Continuous Integration and Continuous Deployment",
-                "TDD": "Test-Driven Development - writing tests before code",
-                "DDD": "Domain-Driven Design - software design approach",
-                "Microservices": "Architectural style with independent, deployable services",
-                "API": "Application Programming Interface",
-                "REST": "Representational State Transfer - API architectural style",
-                "GraphQL": "Query language for APIs",
-                "Docker": "Container platform for application deployment",
-                "Kubernetes": "Container orchestration platform",
-                "DevOps": "Development and operations practices for faster delivery"
-            },
             "guidelines": [
                 "Follow SOLID principles in code design",
                 "Write tests for all critical functionality",
@@ -108,70 +150,139 @@
                 "Consider security implications of code",
                 "Optimize for readability over cleverness"
             ],
+            "id": "software",
+            "name": "Software Development",
             "preferred_model": "claude-sonnet-4-20250514",
-            "system_prompt_extension": "When writing or reviewing code, follow best practices, consider security implications, and provide well-documented, maintainable solutions."
-        },
-        "data-science": {
-            "id": "data-science",
-            "name": "Data Science",
-            "description": "Data science and machine learning domain",
-            "enabled": true,
+            "system_prompt_extension": "When writing or reviewing code, follow best practices, consider security implications, and provide well-documented, maintainable solutions.",
             "terminology": {
-                "ML": "Machine Learning - algorithms that learn from data",
-                "DL": "Deep Learning - neural networks with multiple layers",
-                "NLP": "Natural Language Processing - text understanding",
-                "CNN": "Convolutional Neural Network - for image processing",
-                "RNN": "Recurrent Neural Network - for sequential data",
-                "Transformer": "Architecture using self-attention mechanism",
-                "Overfitting": "Model performs well on training but poorly on new data",
-                "Cross-validation": "Technique for assessing model generalization",
-                "Feature Engineering": "Creating features from raw data",
-                "Hyperparameter": "Model settings not learned from data"
-            },
-            "guidelines": [
-                "Always validate data before training models",
-                "Use appropriate evaluation metrics for the problem",
-                "Consider bias and fairness in model development",
-                "Document model training procedures",
-                "Version control datasets and models",
-                "Test models on diverse, representative data"
-            ],
-            "preferred_model": "gemini-2.5-pro",
-            "system_prompt_extension": "When discussing data science topics, emphasize rigorous methodology, proper validation, and ethical considerations in model development."
-        },
-        "medical-coding": {
-            "id": "medical-coding",
-            "name": "Medical Coding Assistant",
-            "description": "Specialized in CPT and ICD-10 identification and E&M level determination.",
-            "enabled": true,
-            "system_prompt": "You are a professional Medical Coding Assistant. \n\nYour task is to identify medical codes (CPT, ICD-10) and determine E&M visit levels based on the user's input and conversation history.\n\nSTRICT FORMATTING RULE:\n- ALWAYS output a single valid JSON object.\n- NO conversational filler, NO pre-amble, NO markdown code blocks.\n- If the user asks for a CPT code, use key \"cpt_range\".\n- If the user asks for a DX code, use key \"dx_codes\" (array).\n- If the user asks for an E&M level, use keys \"cpt_range\", \"dx_code\", \"em_code\", and \"reasoning\".\n- Conduct any reasoning or Chain of Thought inside the \"reasoning\" field of the JSON object.",
-            "terminology": {
-                "CPT": "Current Procedural Terminology",
-                "ICD-10": "International Classification of Diseases, 10th Revision",
-                "E&M": "Evaluation and Management"
-            },
-            "guidelines": [
-                "Always output strictly valid JSON",
-                "Identify CPT codes for established or new patients",
-                "Identify ICD-10 codes for diagnoses mentioned",
-                "Synthesize history for final E&M level"
-            ]
+                "API": "Application Programming Interface",
+                "CI/CD": "Continuous Integration and Continuous Deployment",
+                "DDD": "Domain-Driven Design - software design approach",
+                "DevOps": "Development and operations practices for faster delivery",
+                "Docker": "Container platform for application deployment",
+                "GraphQL": "Query language for APIs",
+                "Kubernetes": "Container orchestration platform",
+                "Microservices": "Architectural style with independent, deployable services",
+                "REST": "Representational State Transfer - API architectural style",
+                "TDD": "Test-Driven Development - writing tests before code"
+            }
         }
     },
-    "domain_settings": {
-        "storage_path": "./data/domains",
-        "chunk_size": 1000,
-        "chunk_overlap": 200,
-        "embedding_model": "text-embedding-3-small",
-        "similarity_threshold": 0.7,
-        "max_context_documents": 5,
-        "auto_detect_domain": true
-    },
     "training_domains": {
+        "healthcare_coding": {
+            "categories": [
+                "medical_coding",
+                "claim_generation",
+                "modifier_suggestion",
+                "documentation"
+            ],
+            "claim_types": [
+                "professional",
+                "institutional"
+            ],
+            "code_systems": [
+                "ICD-10-CM",
+                "ICD-10-PCS",
+                "CPT",
+                "HCPCS"
+            ],
+            "default_model": "gpt-4",
+            "description": "Medical coding and billing with ICD-10, CPT codes, and claim generation",
+            "enabled_features": {
+                "claim_validation": true,
+                "cpt_lookup": true,
+                "hcc_coding": true,
+                "icd10_lookup": true,
+                "modifier_suggestion": true
+            },
+            "few_shot_count": 3,
+            "id": "healthcare",
+            "max_tokens": 4096,
+            "name": "Healthcare Medical Coding",
+            "supported_payers": [
+                "medicare",
+                "medicaid",
+                "commercial"
+            ],
+            "temperature": 0.2
+        },
+        "multimodal": {
+            "categories": [
+                "image_analysis",
+                "document_analysis",
+                "invoice_extraction",
+                "receipt_extraction",
+                "form_processing"
+            ],
+            "default_model": "gpt-4-vision-preview",
+            "description": "Analyze images, documents, and files with structured data extraction",
+            "enabled_features": {
+                "batch_processing": true,
+                "content_comparison": true,
+                "entity_extraction": true,
+                "ocr": true,
+                "schema_extraction": true
+            },
+            "few_shot_count": 2,
+            "id": "multimodal",
+            "max_tokens": 4096,
+            "name": "Multimodal Analysis",
+            "output_formats": [
+                "json",
+                "text",
+                "markdown",
+                "csv"
+            ],
+            "supported_document_types": [
+                "pdf",
+                "docx",
+                "xlsx",
+                "csv"
+            ],
+            "supported_image_types": [
+                "jpeg",
+                "png",
+                "gif",
+                "webp"
+            ],
+            "temperature": 0.3
+        },
+        "reactflow": {
+            "categories": [
+                "process_flow",
+                "organization_chart",
+                "state_machine",
+                "decision_tree",
+                "data_flow"
+            ],
+            "default_model": "gpt-4",
+            "description": "Generate @xyflow/react compatible graph structures for flow diagrams",
+            "edge_types": [
+                "default",
+                "smoothstep",
+                "step",
+                "straight",
+                "bezier"
+            ],
+            "enabled_features": {
+                "animation": true,
+                "auto_layout": true,
+                "react_export": true,
+                "styling": true
+            },
+            "few_shot_count": 3,
+            "id": "reactflow",
+            "layouts": [
+                "horizontal",
+                "vertical",
+                "grid",
+                "dagre"
+            ],
+            "max_tokens": 4096,
+            "name": "ReactFlow Graph Generation",
+            "temperature": 0.4
+        },
         "workflow": {
-            "id": "workflow",
-            "name": "DAG Workflow Pipeline",
-            "description": "Generate n8n-like workflow pipelines with nodes, edges, and triggers",
             "categories": [
                 "webhook_trigger",
                 "scheduled_job",
@@ -180,36 +291,23 @@
                 "integration"
             ],
             "default_model": "gpt-4",
-            "temperature": 0.3,
-            "max_tokens": 4096,
-            "few_shot_count": 3,
+            "description": "Generate n8n-like workflow pipelines with nodes, edges, and triggers",
             "enabled_features": {
-                "validation": true,
                 "auto_layout": true,
+                "validation": true,
                 "variable_extraction": true
             },
+            "few_shot_count": 3,
+            "id": "workflow",
+            "max_tokens": 4096,
+            "name": "DAG Workflow Pipeline",
             "node_types": {
-                "triggers": [
-                    "webhook",
-                    "schedule",
-                    "manual",
-                    "file_watch",
-                    "email"
-                ],
                 "actions": [
                     "http_request",
                     "database",
                     "file",
                     "email_send",
                     "transform"
-                ],
-                "logic": [
-                    "if",
-                    "switch",
-                    "loop",
-                    "merge",
-                    "filter",
-                    "delay"
                 ],
                 "data": [
                     "set",
@@ -224,137 +322,40 @@
                     "jira",
                     "salesforce",
                     "google_sheets"
+                ],
+                "logic": [
+                    "if",
+                    "switch",
+                    "loop",
+                    "merge",
+                    "filter",
+                    "delay"
+                ],
+                "triggers": [
+                    "webhook",
+                    "schedule",
+                    "manual",
+                    "file_watch",
+                    "email"
                 ]
-            }
-        },
-        "reactflow": {
-            "id": "reactflow",
-            "name": "ReactFlow Graph Generation",
-            "description": "Generate @xyflow/react compatible graph structures for flow diagrams",
-            "categories": [
-                "process_flow",
-                "organization_chart",
-                "state_machine",
-                "decision_tree",
-                "data_flow"
-            ],
-            "default_model": "gpt-4",
-            "temperature": 0.4,
-            "max_tokens": 4096,
-            "few_shot_count": 3,
-            "enabled_features": {
-                "auto_layout": true,
-                "styling": true,
-                "animation": true,
-                "react_export": true
             },
-            "layouts": [
-                "horizontal",
-                "vertical",
-                "grid",
-                "dagre"
-            ],
-            "edge_types": [
-                "default",
-                "smoothstep",
-                "step",
-                "straight",
-                "bezier"
-            ]
-        },
-        "healthcare_coding": {
-            "id": "healthcare",
-            "name": "Healthcare Medical Coding",
-            "description": "Medical coding and billing with ICD-10, CPT codes, and claim generation",
-            "categories": [
-                "medical_coding",
-                "claim_generation",
-                "modifier_suggestion",
-                "documentation"
-            ],
-            "default_model": "gpt-4",
-            "temperature": 0.2,
-            "max_tokens": 4096,
-            "few_shot_count": 3,
-            "enabled_features": {
-                "icd10_lookup": true,
-                "cpt_lookup": true,
-                "hcc_coding": true,
-                "claim_validation": true,
-                "modifier_suggestion": true
-            },
-            "supported_payers": [
-                "medicare",
-                "medicaid",
-                "commercial"
-            ],
-            "claim_types": [
-                "professional",
-                "institutional"
-            ],
-            "code_systems": [
-                "ICD-10-CM",
-                "ICD-10-PCS",
-                "CPT",
-                "HCPCS"
-            ]
-        },
-        "multimodal": {
-            "id": "multimodal",
-            "name": "Multimodal Analysis",
-            "description": "Analyze images, documents, and files with structured data extraction",
-            "categories": [
-                "image_analysis",
-                "document_analysis",
-                "invoice_extraction",
-                "receipt_extraction",
-                "form_processing"
-            ],
-            "default_model": "gpt-4-vision-preview",
-            "temperature": 0.3,
-            "max_tokens": 4096,
-            "few_shot_count": 2,
-            "enabled_features": {
-                "ocr": true,
-                "entity_extraction": true,
-                "schema_extraction": true,
-                "batch_processing": true,
-                "content_comparison": true
-            },
-            "supported_image_types": [
-                "jpeg",
-                "png",
-                "gif",
-                "webp"
-            ],
-            "supported_document_types": [
-                "pdf",
-                "docx",
-                "xlsx",
-                "csv"
-            ],
-            "output_formats": [
-                "json",
-                "text",
-                "markdown",
-                "csv"
-            ]
+            "temperature": 0.3
         }
     },
     "training_settings": {
         "auto_validate_threshold": 0.8,
-        "min_examples_for_generation": 3,
         "feedback_to_example_threshold": 4,
+        "min_examples_for_generation": 3,
         "quality_weights": {
-            "validated": 1.0,
+            "auto_generated": 0.6,
             "high_rating": 0.8,
-            "auto_generated": 0.6
+            "validated": 1
         },
         "storage": {
-            "base_path": "./data",
             "auto_save": true,
             "backup_enabled": true,
-            "backup_interval_hours": 24
+            "backup_interval_hours": 24,
+            "base_path": "./data"
         }
     }
 }
