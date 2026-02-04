@@ -325,6 +325,13 @@ type DomainCfg struct {
 	Terminology           map[string]string `json:"terminology"`
 	Guidelines            []string          `json:"guidelines"`
 	PreferredModel        string            `json:"preferred_model,omitempty"`
+	Temperature           float64           `json:"temperature,omitempty"`
+	TopP                  float64           `json:"top_p,omitempty"`
+	TopK                  int               `json:"top_k,omitempty"`
+	MaxTokens             int               `json:"max_tokens,omitempty"`
+	BestAccuracy          float64           `json:"best_accuracy,omitempty"`
+	LastValidated        string            `json:"last_validated,omitempty"`
+	SelectionReasoning   string            `json:"selection_reasoning,omitempty"`
 	SystemPrompt          string            `json:"system_prompt,omitempty"`
 	SystemPromptExtension string            `json:"system_prompt_extension,omitempty"`
 }

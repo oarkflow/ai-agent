@@ -56,6 +56,8 @@ import (
 
 var (
 	configPath = flag.String("config", "./config", "Path to configuration directory")
+	domainID   = flag.String("domain", "", "Domain ID to use for the request")
+	userPrompt = flag.String("prompt", "", "Prompt to execute (if provided, demos are skipped)")
 )
 
 func main() {
@@ -79,8 +81,46 @@ func main() {
 		log.Fatalf("Failed to initialize agent: %v", err)
 	}
 
-	// Run demo scenarios
+	// If prompt is provided, run just that request
+	if *userPrompt != "" {
+		runSingleRequest(ctx, app, *userPrompt, *domainID)
+		return
+	}
+
+	// Otherwise run demo scenarios
 	runDemos(ctx, app)
+}
+
+// runSingleRequest executes a single prompt, optionally using a specific domain.
+func runSingleRequest(ctx context.Context, app *AIAgentApp, promptStr string, dID string) {
+	fmt.Printf("🚀 Executing request...\n")
+
+	if dID != "" {
+		fmt.Printf("🎯 Using domain: %s\n", dID)
+		app.Agent.SetDomain(dID)
+
+		// If domain has a preferred model, use it
+		if app.Config.Domains != nil {
+			if d, ok := app.Config.Domains.Domains[dID]; ok && d.PreferredModel != "" {
+				fmt.Printf("🤖 Using champion model for domain: %s\n", d.PreferredModel)
+				app.Agent.Config.DefaultModel = d.PreferredModel
+
+				// Apply optimal hyperparameters if available
+				app.Agent.Config.Temperature = d.Temperature
+				app.Agent.Config.TopP = d.TopP
+				app.Agent.Config.MaxTokens = d.MaxTokens
+				fmt.Printf("⚙️  Applied optimal hyperparameters: Temp=%.1f, TopP=%.1f, MaxTokens=%d\n", d.Temperature, d.TopP, d.MaxTokens)
+			}
+		}
+	}
+
+	resp, err := app.Agent.Chat(ctx, promptStr)
+	if err != nil {
+		log.Fatalf("Error: %v", err)
+	}
+
+	fmt.Printf("\n--- Response ---\n%s\n----------------\n", resp.Message.GetText())
+	fmt.Printf("Model: %s\n", resp.Model)
 }
 
 // AIAgentApp is the main application container.
