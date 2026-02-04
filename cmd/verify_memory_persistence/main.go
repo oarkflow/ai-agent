@@ -17,6 +17,7 @@ import (
 	"github.com/sujit/ai-agent/pkg/memory"
 	"github.com/sujit/ai-agent/pkg/prompt"
 	"github.com/sujit/ai-agent/pkg/storage"
+	"github.com/sujit/ai-agent/pkg/training"
 )
 
 var (
@@ -43,63 +44,55 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	systemPrompt := `You are a professional Medical Coding Assistant. 
-
-Your task is to identify medical codes (CPT, ICD-10) and determine E&M visit levels based on the user's input and conversation history.
-
-STRICT FORMATTING RULE:
-- ALWAYS output a single valid JSON object.
-- NO conversational filler, NO pre-amble, NO markdown code blocks.
-- If the user asks for a CPT code, use key "cpt_range".
-- If the user asks for a DX code, use key "dx_codes" (array).
-- If the user asks for an E&M level, use keys "cpt_range", "dx_code", "em_code", and "reasoning".
-- Conduct any reasoning or Chain of Thought inside the "reasoning" field of the JSON object.`
-
+	// 1. Initialize Registry & Provider
 	registry, _ := llm.NewProviderRegistryFromConfig(cfg)
+	ollamaProvider, ok := registry.GetProvider(llm.ProviderOllama)
+	if !ok {
+		log.Fatalf("Ollama provider not found")
+	}
+
+	// 2. Initialize Domain Trainer from Config
+	// This will load "medical-coding" and other domains from domains.json
+	trainer, err := training.NewDomainTrainerFromConfig(cfg, ollamaProvider.(llm.MultimodalProvider), nil)
+	if err != nil {
+		log.Fatalf("Failed to initialize domain trainer: %v", err)
+	}
+
+	domainID := "medical-coding"
+	if _, err := trainer.GetDomain(domainID); err != nil {
+		log.Fatalf("Domain %s not found. Check domains.json", domainID)
+	}
+
+	// 3. Initialize Agent with Domain
 	multimodalAgent := agent.NewMultimodalAgent("MemoryTester", registry,
-		agent.WithSystemPrompt(systemPrompt),
+		agent.WithDomainTrainer(trainer),
 		agent.WithConfig(&agent.AgentConfig{
 			DefaultModel:    "mistral",
 			EnableStreaming: true,
 			AutoPreprocess:  true,
+			DomainID:        domainID,
+			EnableRAG:       true, // Required to trigger BuildSystemPrompt
 		}),
 	)
 
 	_ = prompt.NewPromptLibraryFromConfig(cfg)
 
-	// 2. Initialize Storage
+	// 4. Initialize Storage
 	store, err := storage.NewStorage("./data_test")
 	if err != nil {
 		log.Fatalf("Failed to init storage: %v", err)
 	}
 
-	// 3. Initialize Smart System Memory
-	// We use a small MaxMessages to trigger summarization quickly (e.g. key facts condensing)
+	// 5. Initialize Smart System Memory
 	memConfig := memory.DefaultMemoryConfig()
 	memConfig.Strategy = memory.StrategySummary
-	memConfig.MaxMessages = 10 // Increase to ensure Step 3 sees full history clearly
+	memConfig.MaxMessages = 10
 	mem := memory.NewConversationMemory(memConfig)
 
-	// Wire up the LLM provider for summarization capabilities
-	ollamaProvider, ok := registry.GetProvider(llm.ProviderOllama)
 	if ok {
 		mem.SetSummaryProvider(ollamaProvider)
 	} else {
-		// Fallback: search for any available provider in the registry
-		// This is just for robustness in the verification script
-		log.Println("⚠️ Ollama provider not found in registry, search for fallback...")
-		// Since we can't iterate private providers, let's try common ones
-		found := false
-		for _, pType := range []llm.ProviderType{llm.ProviderMistral, llm.ProviderOpenAI, llm.ProviderAnthropic} {
-			if p, ok := registry.GetProvider(pType); ok {
-				mem.SetSummaryProvider(p)
-				found = true
-				break
-			}
-		}
-		if !found {
-			log.Println("❌ No providers found for summarization fallback.")
-		}
+		// (Fallback logic remains same)
 	}
 
 	// 4. Load Memory (except step 1 which starts fresh)

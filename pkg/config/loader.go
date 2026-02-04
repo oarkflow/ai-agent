@@ -325,6 +325,7 @@ type DomainCfg struct {
 	Terminology           map[string]string `json:"terminology"`
 	Guidelines            []string          `json:"guidelines"`
 	PreferredModel        string            `json:"preferred_model,omitempty"`
+	SystemPrompt          string            `json:"system_prompt,omitempty"`
 	SystemPromptExtension string            `json:"system_prompt_extension,omitempty"`
 }
 

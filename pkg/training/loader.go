@@ -29,12 +29,11 @@ func (dl *DomainLoader) LoadDomains(trainer *DomainTrainer) error {
 		}
 
 		// Create the domain
-		domain, err := trainer.CreateDomain(domainCfg.ID, domainCfg.Description)
+		domain, err := trainer.CreateDomainWithID(domainCfg.ID, domainCfg.Name, domainCfg.Description)
 		if err != nil {
 			return fmt.Errorf("failed to create domain %s: %w", domainCfg.ID, err)
 		}
-
-		domain.Name = domainCfg.Name
+		domain.SystemPrompt = domainCfg.SystemPrompt
 
 		// Add terminology
 		for term, definition := range domainCfg.Terminology {
@@ -64,12 +63,11 @@ func (dl *DomainLoader) LoadDomain(trainer *DomainTrainer, domainID string) erro
 	}
 
 	// Create the domain
-	domain, err := trainer.CreateDomain(domainCfg.ID, domainCfg.Description)
+	domain, err := trainer.CreateDomainWithID(domainCfg.ID, domainCfg.Name, domainCfg.Description)
 	if err != nil {
 		return fmt.Errorf("failed to create domain %s: %w", domainCfg.ID, err)
 	}
-
-	domain.Name = domainCfg.Name
+	domain.SystemPrompt = domainCfg.SystemPrompt
 
 	// Add terminology
 	for term, definition := range domainCfg.Terminology {

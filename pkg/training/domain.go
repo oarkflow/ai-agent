@@ -20,16 +20,17 @@ import (
 //
 
 type DomainKnowledge struct {
-	ID          string            `json:"id"`
-	Name        string            `json:"name"`
-	Description string            `json:"description"`
-	Documents   []Document        `json:"documents"`
-	Examples    []TrainingExample `json:"examples"`
-	Guidelines  []string          `json:"guidelines"`
-	Terminology map[string]string `json:"terminology"`
-	Metadata    map[string]any    `json:"metadata"`
-	CreatedAt   time.Time         `json:"created_at"`
-	UpdatedAt   time.Time         `json:"updated_at"`
+	ID           string            `json:"id"`
+	Name         string            `json:"name"`
+	Description  string            `json:"description"`
+	SystemPrompt string            `json:"system_prompt"`
+	Documents    []Document        `json:"documents"`
+	Examples     []TrainingExample `json:"examples"`
+	Guidelines   []string          `json:"guidelines"`
+	Terminology  map[string]string `json:"terminology"`
+	Metadata     map[string]any    `json:"metadata"`
+	CreatedAt    time.Time         `json:"created_at"`
+	UpdatedAt    time.Time         `json:"updated_at"`
 }
 
 type Document struct {
@@ -144,10 +145,13 @@ func WithChunkOverlap(overlap int) TrainerOption {
 //
 
 func (t *DomainTrainer) CreateDomain(name, description string) (*DomainKnowledge, error) {
+	return t.CreateDomainWithID(generateID(name), name, description)
+}
+
+func (t *DomainTrainer) CreateDomainWithID(id, name, description string) (*DomainKnowledge, error) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
-	id := generateID(name)
 	if _, exists := t.domains[id]; exists {
 		return nil, fmt.Errorf("domain already exists")
 	}
@@ -209,6 +213,21 @@ func (t *DomainTrainer) AddGuideline(domainID, guideline string) error {
 	}
 
 	domain.Guidelines = append(domain.Guidelines, guideline)
+	domain.UpdatedAt = time.Now()
+	return nil
+}
+
+// SetSystemPrompt sets the system prompt for a domain.
+func (t *DomainTrainer) SetSystemPrompt(domainID, prompt string) error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	domain, ok := t.domains[domainID]
+	if !ok {
+		return fmt.Errorf("domain not found")
+	}
+
+	domain.SystemPrompt = prompt
 	domain.UpdatedAt = time.Now()
 	return nil
 }
@@ -354,16 +373,23 @@ func (t *DomainTrainer) BuildSystemPrompt(
 		return "", err
 	}
 
+	// If explicit system prompt is set, use it.
+	// We can still append RAG context if userQuery is provided.
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("You are an AI assistant specialized in %s.\n\n", domain.Name))
-	sb.WriteString(fmt.Sprintf("Domain Description: %s\n\n", domain.Description))
+	if domain.SystemPrompt != "" {
+		sb.WriteString(domain.SystemPrompt)
+		sb.WriteString("\n\n")
+	} else {
+		sb.WriteString(fmt.Sprintf("You are an AI assistant specialized in %s.\n\n", domain.Name))
+		sb.WriteString(fmt.Sprintf("Domain Description: %s\n\n", domain.Description))
 
-	if len(domain.Guidelines) > 0 {
-		sb.WriteString("Guidelines:\n")
-		for _, g := range domain.Guidelines {
-			sb.WriteString("- " + g + "\n")
+		if len(domain.Guidelines) > 0 {
+			sb.WriteString("Guidelines:\n")
+			for _, g := range domain.Guidelines {
+				sb.WriteString("- " + g + "\n")
+			}
+			sb.WriteString("\n")
 		}
-		sb.WriteString("\n")
 	}
 
 	if userQuery != "" && t.vectorStore != nil {
@@ -377,7 +403,9 @@ func (t *DomainTrainer) BuildSystemPrompt(
 		}
 	}
 
-	sb.WriteString("Provide accurate, domain-specific responses.")
+	if domain.SystemPrompt == "" {
+		sb.WriteString("Provide accurate, domain-specific responses.")
+	}
 	return sb.String(), nil
 }
 
