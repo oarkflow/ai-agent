@@ -43,8 +43,21 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
+	systemPrompt := `You are a professional Medical Coding Assistant. 
+
+Your task is to identify medical codes (CPT, ICD-10) and determine E&M visit levels based on the user's input and conversation history.
+
+STRICT FORMATTING RULE:
+- ALWAYS output a single valid JSON object.
+- NO conversational filler, NO pre-amble, NO markdown code blocks.
+- If the user asks for a CPT code, use key "cpt_range".
+- If the user asks for a DX code, use key "dx_codes" (array).
+- If the user asks for an E&M level, use keys "cpt_range", "dx_code", "em_code", and "reasoning".
+- Conduct any reasoning or Chain of Thought inside the "reasoning" field of the JSON object.`
+
 	registry, _ := llm.NewProviderRegistryFromConfig(cfg)
 	multimodalAgent := agent.NewMultimodalAgent("MemoryTester", registry,
+		agent.WithSystemPrompt(systemPrompt),
 		agent.WithConfig(&agent.AgentConfig{
 			DefaultModel:    "mistral",
 			EnableStreaming: true,
@@ -64,7 +77,7 @@ func main() {
 	// We use a small MaxMessages to trigger summarization quickly (e.g. key facts condensing)
 	memConfig := memory.DefaultMemoryConfig()
 	memConfig.Strategy = memory.StrategySummary
-	memConfig.MaxMessages = 4 // Low limit to force "condensing" if conversation grows
+	memConfig.MaxMessages = 10 // Increase to ensure Step 3 sees full history clearly
 	mem := memory.NewConversationMemory(memConfig)
 
 	// Wire up the LLM provider for summarization capabilities
@@ -148,22 +161,19 @@ func main() {
 
 // Step 1: Get CPT Code
 func runStep1(ctx context.Context, a *agent.MultimodalAgent, mem *memory.ConversationMemory) {
-	fmt.Println("\n--- STEP 1: CPT Code Acquisition (Strict JSON) ---")
-	input := "Established patient presenting for a standard office consultation."
+	fmt.Println("\n--- STEP 1: CPT Code Acquisition (Clean Prompt) ---")
+	input := "What is the CPT code range for an established patient presenting for a standard office consultation?"
 	fmt.Printf("User: %s\n", input)
 
-	// Sync Mem -> Agent
+	// Sync Mem -> Agent (System prompt is handled via MultimodalAgent config)
 	a.Conversation.Messages = mem.Get()
 
-	// Strict instruction for single JSON response
-	query := input + ` Identification task: Return ONLY a single JSON object with the key "cpt_range". No pre-amble, no markdown.
-Example Output: {"cpt_range": "99211-99215"}`
-
-	respStr, usage := streamChat(ctx, a, query)
+	// Simple prompt - formatting enforced by SystemPrompt
+	respStr, usage := streamChat(ctx, a, input)
 	printUsage(usage, a, "mistral")
 
 	// Sync Agent -> Mem
-	mem.Add(content.NewUserMessage(query))
+	mem.Add(content.NewUserMessage(input))
 	mem.Add(content.NewAssistantMessage(respStr))
 
 	fmt.Println("\n[End of Step 1]")
@@ -171,22 +181,19 @@ Example Output: {"cpt_range": "99211-99215"}`
 
 // Step 2: Get DX Code
 func runStep2(ctx context.Context, a *agent.MultimodalAgent, mem *memory.ConversationMemory) {
-	fmt.Println("\n--- STEP 2: Diagnosis (DX) Code Acquisition (Strict JSON) ---")
-	input := "Type 2 diabetes mellitus with high blood pressure and hypertension."
+	fmt.Println("\n--- STEP 2: Diagnosis (DX) Code Acquisition (Clean Prompt) ---")
+	input := "The patient also has type 2 diabetes mellitus with high blood pressure and hypertension. What are the ICD-10 codes?"
 	fmt.Printf("User: %s\n", input)
 
 	// Sync Mem -> Agent
 	a.Conversation.Messages = mem.Get()
 
-	// Strict instruction for single JSON response
-	query := input + ` Identification task: Return ONLY a single JSON object with the key "dx_codes" (array). No pre-amble, no markdown.
-Example Output: {"dx_codes": ["E11.9", "I10"]}`
-
-	respStr, usage := streamChat(ctx, a, query)
+	// Simple prompt
+	respStr, usage := streamChat(ctx, a, input)
 	printUsage(usage, a, "mistral")
 
 	// Sync Agent -> Mem
-	mem.Add(content.NewUserMessage(query))
+	mem.Add(content.NewUserMessage(input))
 	mem.Add(content.NewAssistantMessage(respStr))
 
 	fmt.Println("\n[End of Step 2]")
@@ -194,27 +201,18 @@ Example Output: {"dx_codes": ["E11.9", "I10"]}`
 
 // Step 3: E&M Visit (CoT + JSON)
 func runStep3(ctx context.Context, a *agent.MultimodalAgent, mem *memory.ConversationMemory) {
-	fmt.Println("\n--- STEP 3: E&M Visit Level (Strict JSON) ---")
+	fmt.Println("\n--- STEP 3: E&M Visit Level (Clean Prompt) ---")
 
 	// Sync Mem -> Agent
 	a.Conversation.Messages = mem.Get()
 
-	// Strict instruction for single JSON response
-	input := `Based on the conversation context, identify the CPT range and DX codes, then determine the E&M visit level (99213/99214).
-Output ONLY a single valid JSON object. No conversational text, no pre-amble, no markdown blocks.
-
-Required JSON Structure:
-{
-  "cpt_range": "STRING",
-  "dx_code": ["ARRAY", "OF", "STRINGS"],
-  "em_code": "STRING",
-  "reasoning": "STRING (include your Chain of Thought analysis here)"
-}`
+	// Simple requirement - formatting and reasoning enforced by SystemPrompt
+	input := "Based on all the information provided so far, what is the appropriate E&M visit level code? Provide full reasoning."
 	fmt.Printf("User: %s\n", input)
 
 	respStr, usage := streamChat(ctx, a, input)
 	printUsage(usage, a, "mistral")
-	_ = respStr // Capture but ignore for now in step 3 as it prints to console
+	_ = respStr
 
 	fmt.Println("\n[End of Step 3]")
 }
