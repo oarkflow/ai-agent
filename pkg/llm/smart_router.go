@@ -241,8 +241,10 @@ type ScoredModel struct {
 func (r *ProviderRegistry) analyzeRequirements(messages []*content.Message, req *ModelRequirements) []Capability {
 	caps := make(map[Capability]bool)
 
-	// Always need text capability
-	caps[CapText] = true
+	// Always need text capability unless it's pure image generation
+	if req.TaskType != TaskImageGeneration {
+		caps[CapText] = true
+	}
 
 	// Add explicitly requested capabilities
 	for _, c := range req.Capabilities {
@@ -399,6 +401,10 @@ func (r *ProviderRegistry) scoreModels(candidates []*RegisteredModel, req *Model
 			// o1, o3 models get bonus
 			if strings.HasPrefix(model.Info.ID, "o1") || strings.HasPrefix(model.Info.ID, "o3") {
 				score += 30
+			}
+		case TaskImageGeneration:
+			if model.Info.HasCapability(CapImageGen) {
+				score += 50
 			}
 		}
 

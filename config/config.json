@@ -590,6 +590,7 @@
                     "capabilities": [
                         "text",
                         "chat",
+                        "code_generation",
                         "function_calling"
                     ],
                     "context_window": 128000,

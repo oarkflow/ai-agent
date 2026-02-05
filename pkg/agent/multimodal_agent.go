@@ -2,13 +2,12 @@ package agent
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"strings"
 	"sync"
 	"time"
 
 	"github.com/oarkflow/ai-agent/pkg/content"
+	"github.com/oarkflow/ai-agent/pkg/intent"
 	"github.com/oarkflow/ai-agent/pkg/llm"
 	"github.com/oarkflow/ai-agent/pkg/training"
 )
@@ -20,6 +19,7 @@ type MultimodalAgent struct {
 	SystemPrompt   string
 	Router         *llm.SmartRouter
 	Registry       *llm.ProviderRegistry
+	Classifier     *intent.Classifier
 	DomainTrainer  *training.DomainTrainer
 	Conversation   *content.Conversation
 	Config         *AgentConfig
@@ -119,6 +119,11 @@ func NewMultimodalAgent(name string, registry *llm.ProviderRegistry, opts ...Age
 		Tools:          make([]llm.Tool, 0),
 		EventHandlers:  make(map[AgentEvent][]EventHandler),
 	}
+
+	// Initialize Intent Classifier (uses Router with 'Fast' speed preference)
+	agent.Classifier = intent.NewClassifier(agent.Router, intent.ClassifierConfig{
+		Temperature: 0.0,
+	})
 
 	for _, opt := range opts {
 		opt(agent)
@@ -290,21 +295,26 @@ func (a *MultimodalAgent) Send(ctx context.Context, msg *content.Message) (*llm.
 		}
 	}
 
-	// SMART Analysis: Detect Domain & Memory
-	var detectedIntent string
+	// SMART Analysis: Detect Domain & Intent
+	var detectedIntent intent.IntentType
 	if msg.Role == content.RoleUser && len(msg.Contents) > 0 && msg.Contents[0].Type == content.TypeText {
-		var domain string
-		var memoryKeys []string
-		domain, detectedIntent, memoryKeys = a.analyzeRequest(ctx, msg.GetText())
-		if domain != "general" && domain != "" {
-			fmt.Printf("🔍 Detected Domain: %s\n", domain)
-			a.Config.DomainID = domain
-		}
-		if len(memoryKeys) > 0 {
-			fmt.Printf("🧠 Detected Memory Keys: %v\n", memoryKeys)
-		}
-		if detectedIntent != "" {
-			fmt.Printf("🎯 Detected Intent: %s\n", detectedIntent)
+		intentRes, err := a.Classifier.Classify(ctx, msg.GetText())
+		if err == nil {
+			if intentRes.Domain != "general" && intentRes.Domain != "" {
+				fmt.Printf("🔍 Detected Domain: %s\n", intentRes.Domain)
+				a.Config.DomainID = intentRes.Domain
+			}
+
+			// Map specific memory keys from entities if present (assuming entities contain them or we just log them)
+			if len(intentRes.Entities) > 0 {
+				fmt.Printf("🧠 Extracted Entities: %v\n", intentRes.Entities)
+			}
+
+			detectedIntent = intentRes.Intent
+			fmt.Printf("🎯 Detected Intent: %s (Confidence: %.2f)\n", detectedIntent, intentRes.Confidence)
+		} else {
+			// Log warning but continue
+			fmt.Printf("⚠️ Intent classification failed: %v\n", err)
 		}
 	}
 
@@ -336,9 +346,12 @@ func (a *MultimodalAgent) Send(ctx context.Context, msg *content.Message) (*llm.
 	requirements := a.buildRequirements(msg)
 
 	// Apply detected intent
-	if detectedIntent == "image_generation" {
+	if detectedIntent == intent.IntentImageGeneration {
 		requirements.Capabilities = append(requirements.Capabilities, llm.CapImageGen)
 		requirements.TaskType = llm.TaskImageGeneration
+	} else if detectedIntent == intent.IntentCodeGeneration {
+		requirements.Capabilities = append(requirements.Capabilities, llm.CapCodeGeneration)
+		requirements.TaskType = llm.TaskCoding
 	}
 
 	// Route and generate
@@ -698,35 +711,4 @@ func truncateText(s string, maxLen int) string {
 		return s
 	}
 	return s[:maxLen] + "..."
-}
-
-func (a *MultimodalAgent) analyzeRequest(ctx context.Context, input string) (string, string, []string) {
-	prompt := fmt.Sprintf(`Analyze the following request.
-1. Identify the Domain (e.g. healthcare, workflow, coding, general).
-2. Identify the Intent (e.g. chat, image_generation, analysis).
-3. Identify Memory Keys (key entities to track).
-Output JSON: {"domain": "...", "intent": "...", "memory_keys": ["..."]}
-Request: %s`, input)
-
-	req := &llm.ModelRequirements{Speed: llm.SpeedFast, TaskType: llm.TaskAnalysis, CheckHealth: true}
-	resp, err := a.Router.Route(ctx, []*content.Message{content.NewUserMessage(prompt)}, nil, req)
-	if err != nil {
-		// Silent fail for analysis
-		return "", "chat", nil
-	}
-
-	cleanResp := strings.TrimSpace(resp.Message.GetText())
-	cleanResp = strings.TrimPrefix(cleanResp, "```json")
-	cleanResp = strings.TrimPrefix(cleanResp, "```")
-	cleanResp = strings.TrimSuffix(cleanResp, "```")
-
-	var result struct {
-		Domain     string   `json:"domain"`
-		Intent     string   `json:"intent"`
-		MemoryKeys []string `json:"memory_keys"`
-	}
-	if err := json.Unmarshal([]byte(cleanResp), &result); err != nil {
-		return "", "chat", nil
-	}
-	return result.Domain, result.Intent, result.MemoryKeys
 }

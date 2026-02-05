@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/oarkflow/ai-agent/pkg/content"
@@ -338,9 +339,19 @@ func (p *OllamaProvider) ListModels(ctx context.Context) ([]ModelInfo, error) {
 
 	var modelInfos []ModelInfo
 	for _, m := range resp.Models {
-		// Check if we have config override
+		// Check if we have config override for full name or short name
 		if info, ok := p.Models[m.Name]; ok {
 			modelInfos = append(modelInfos, *info)
+			continue
+		}
+
+		// Try matching without tag (e.g. "llama3:latest" -> "llama3")
+		shortName := strings.Split(m.Name, ":")[0]
+		if info, ok := p.Models[shortName]; ok {
+			// Create a copy with the actual ID from Ollama
+			infoCopy := *info
+			infoCopy.ID = m.Name
+			modelInfos = append(modelInfos, infoCopy)
 			continue
 		}
 
