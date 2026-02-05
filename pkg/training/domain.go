@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sujit/ai-agent/pkg/content"
-	"github.com/sujit/ai-agent/pkg/llm"
+	"github.com/oarkflow/ai-agent/pkg/content"
+	"github.com/oarkflow/ai-agent/pkg/llm"
 )
 
 // RAGConfig defines parameters for RAG optimization experiments.

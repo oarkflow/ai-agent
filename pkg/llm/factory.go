@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/sujit/ai-agent/pkg/config"
-	"github.com/sujit/ai-agent/pkg/content"
+	"github.com/oarkflow/ai-agent/pkg/config"
+	"github.com/oarkflow/ai-agent/pkg/content"
 )
 
 // ProviderFactory creates providers from configuration.

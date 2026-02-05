@@ -7,14 +7,14 @@ import (
 	"log"
 	"os"
 
-	"github.com/sujit/ai-agent/pkg/agent"
-	"github.com/sujit/ai-agent/pkg/chain"
-	"github.com/sujit/ai-agent/pkg/cot"
-	"github.com/sujit/ai-agent/pkg/llm"
-	"github.com/sujit/ai-agent/pkg/memory"
-	"github.com/sujit/ai-agent/pkg/orchestrator"
-	"github.com/sujit/ai-agent/pkg/prompt"
-	"github.com/sujit/ai-agent/pkg/tot"
+	"github.com/oarkflow/ai-agent/pkg/agent"
+	"github.com/oarkflow/ai-agent/pkg/chain"
+	"github.com/oarkflow/ai-agent/pkg/cot"
+	"github.com/oarkflow/ai-agent/pkg/llm"
+	"github.com/oarkflow/ai-agent/pkg/memory"
+	"github.com/oarkflow/ai-agent/pkg/orchestrator"
+	"github.com/oarkflow/ai-agent/pkg/prompt"
+	"github.com/oarkflow/ai-agent/pkg/tot"
 )
 
 func main() {

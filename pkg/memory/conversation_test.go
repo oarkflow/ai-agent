@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sujit/ai-agent/pkg/content"
-	"github.com/sujit/ai-agent/pkg/llm"
-	"github.com/sujit/ai-agent/pkg/training"
+	"github.com/oarkflow/ai-agent/pkg/content"
+	"github.com/oarkflow/ai-agent/pkg/llm"
+	"github.com/oarkflow/ai-agent/pkg/training"
 )
 
 // mockProvider implements a minimal MultimodalProvider for tests.

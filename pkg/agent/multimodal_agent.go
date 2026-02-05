@@ -2,13 +2,15 @@ package agent
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
-	"github.com/sujit/ai-agent/pkg/content"
-	"github.com/sujit/ai-agent/pkg/llm"
-	"github.com/sujit/ai-agent/pkg/training"
+	"github.com/oarkflow/ai-agent/pkg/content"
+	"github.com/oarkflow/ai-agent/pkg/llm"
+	"github.com/oarkflow/ai-agent/pkg/training"
 )
 
 // MultimodalAgent is an advanced agent that handles all content types.
@@ -176,6 +178,56 @@ func (a *MultimodalAgent) Chat(ctx context.Context, input string) (*llm.Generati
 	return a.Send(ctx, msg)
 }
 
+// ChatStateless sends a message without using or updating conversation history.
+func (a *MultimodalAgent) ChatStateless(ctx context.Context, input string) (*llm.GenerationResponse, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	msg := content.NewUserMessage(input)
+
+	// Preprocess (optional for stateless, but good to have)
+	if a.Config.AutoPreprocess {
+		if err := a.preprocessMessage(ctx, msg); err != nil {
+			return nil, err
+		}
+	}
+
+	// Build messages (System + User ONLY)
+	var messages []*content.Message
+	if a.SystemPrompt != "" {
+		messages = append(messages, content.NewSystemMessage(a.SystemPrompt))
+	}
+	// Add Domain RAG if needed?
+	// For stateless, we might still want RAG.
+	if a.Config.EnableRAG && a.DomainTrainer != nil && a.Config.DomainID != "" {
+		// Quick RAG
+		domainPrompt, _ := a.DomainTrainer.BuildSystemPrompt(ctx, a.Config.DomainID, msg.GetText())
+		if domainPrompt != "" {
+			// Append to system prompt or add new system message
+			if len(messages) > 0 {
+				messages[0] = content.NewSystemMessage(messages[0].GetText() + "\n\n" + domainPrompt)
+			} else {
+				messages = append(messages, content.NewSystemMessage(domainPrompt))
+			}
+		}
+	}
+
+	messages = append(messages, msg)
+
+	// Gen Config
+	genConfig := &llm.GenerationConfig{
+		Model:       a.Config.DefaultModel,
+		Temperature: a.Config.Temperature,
+		MaxTokens:   a.Config.MaxTokens,
+		TopP:        a.Config.TopP,
+	}
+
+	requirements := a.buildRequirements(msg)
+
+	// Route
+	return a.Router.Route(ctx, messages, genConfig, requirements)
+}
+
 // ChatWithImage sends a text message with an image.
 func (a *MultimodalAgent) ChatWithImage(ctx context.Context, text, imagePath string) (*llm.GenerationResponse, error) {
 	msg := content.NewUserMessage(text)
@@ -238,6 +290,24 @@ func (a *MultimodalAgent) Send(ctx context.Context, msg *content.Message) (*llm.
 		}
 	}
 
+	// SMART Analysis: Detect Domain & Memory
+	var detectedIntent string
+	if msg.Role == content.RoleUser && len(msg.Contents) > 0 && msg.Contents[0].Type == content.TypeText {
+		var domain string
+		var memoryKeys []string
+		domain, detectedIntent, memoryKeys = a.analyzeRequest(ctx, msg.GetText())
+		if domain != "general" && domain != "" {
+			fmt.Printf("🔍 Detected Domain: %s\n", domain)
+			a.Config.DomainID = domain
+		}
+		if len(memoryKeys) > 0 {
+			fmt.Printf("🧠 Detected Memory Keys: %v\n", memoryKeys)
+		}
+		if detectedIntent != "" {
+			fmt.Printf("🎯 Detected Intent: %s\n", detectedIntent)
+		}
+	}
+
 	// Build messages
 	messages := a.buildMessages(ctx, msg)
 
@@ -264,6 +334,12 @@ func (a *MultimodalAgent) Send(ctx context.Context, msg *content.Message) (*llm.
 
 	// Determine requirements based on content
 	requirements := a.buildRequirements(msg)
+
+	// Apply detected intent
+	if detectedIntent == "image_generation" {
+		requirements.Capabilities = append(requirements.Capabilities, llm.CapImageGen)
+		requirements.TaskType = llm.TaskImageGeneration
+	}
 
 	// Route and generate
 	response, err := a.Router.Route(ctx, messages, genConfig, requirements)
@@ -449,7 +525,8 @@ func (a *MultimodalAgent) buildMessages(ctx context.Context, userMsg *content.Me
 
 func (a *MultimodalAgent) buildRequirements(msg *content.Message) *llm.ModelRequirements {
 	req := &llm.ModelRequirements{
-		Speed: llm.SpeedBalanced,
+		Speed:       llm.SpeedBalanced,
+		CheckHealth: true, // Ensure we pick an alive model
 	}
 
 	// Detect required capabilities
@@ -621,4 +698,35 @@ func truncateText(s string, maxLen int) string {
 		return s
 	}
 	return s[:maxLen] + "..."
+}
+
+func (a *MultimodalAgent) analyzeRequest(ctx context.Context, input string) (string, string, []string) {
+	prompt := fmt.Sprintf(`Analyze the following request.
+1. Identify the Domain (e.g. healthcare, workflow, coding, general).
+2. Identify the Intent (e.g. chat, image_generation, analysis).
+3. Identify Memory Keys (key entities to track).
+Output JSON: {"domain": "...", "intent": "...", "memory_keys": ["..."]}
+Request: %s`, input)
+
+	req := &llm.ModelRequirements{Speed: llm.SpeedFast, TaskType: llm.TaskAnalysis, CheckHealth: true}
+	resp, err := a.Router.Route(ctx, []*content.Message{content.NewUserMessage(prompt)}, nil, req)
+	if err != nil {
+		// Silent fail for analysis
+		return "", "chat", nil
+	}
+
+	cleanResp := strings.TrimSpace(resp.Message.GetText())
+	cleanResp = strings.TrimPrefix(cleanResp, "```json")
+	cleanResp = strings.TrimPrefix(cleanResp, "```")
+	cleanResp = strings.TrimSuffix(cleanResp, "```")
+
+	var result struct {
+		Domain     string   `json:"domain"`
+		Intent     string   `json:"intent"`
+		MemoryKeys []string `json:"memory_keys"`
+	}
+	if err := json.Unmarshal([]byte(cleanResp), &result); err != nil {
+		return "", "chat", nil
+	}
+	return result.Domain, result.Intent, result.MemoryKeys
 }

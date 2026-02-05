@@ -3,7 +3,7 @@ package memory
 import (
 	"testing"
 
-	"github.com/sujit/ai-agent/pkg/content"
+	"github.com/oarkflow/ai-agent/pkg/content"
 )
 
 func TestConversationMemory_DefaultsToCachedLLMScorer(t *testing.T) {

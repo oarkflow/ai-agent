@@ -6,9 +6,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/sujit/ai-agent/pkg/domains"
-	"github.com/sujit/ai-agent/pkg/llm"
-	"github.com/sujit/ai-agent/pkg/storage"
+	"github.com/oarkflow/ai-agent/pkg/domains"
+	"github.com/oarkflow/ai-agent/pkg/llm"
+	"github.com/oarkflow/ai-agent/pkg/storage"
 )
 
 // This file demonstrates how to use the domain training system.

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/sujit/ai-agent/pkg/training"
+	"github.com/oarkflow/ai-agent/pkg/training"
 )
 
 // TrainingVectorStoreAdapter adapts a training.VectorStore to the memory.VectorStore interface.

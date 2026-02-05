@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/sujit/ai-agent/pkg/storage"
+	"github.com/oarkflow/ai-agent/pkg/storage"
 )
 
 func TestPersistentSemanticMemoryIntegration(t *testing.T) {

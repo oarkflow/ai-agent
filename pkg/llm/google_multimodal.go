@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sujit/ai-agent/pkg/content"
+	"github.com/oarkflow/ai-agent/pkg/content"
 )
 
 // GoogleMultimodalProvider implements MultimodalProvider for Google Gemini.

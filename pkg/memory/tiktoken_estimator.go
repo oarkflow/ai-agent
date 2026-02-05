@@ -1,8 +1,8 @@
 package memory
 
 import (
+	"github.com/oarkflow/ai-agent/pkg/content"
 	"github.com/pkoukk/tiktoken-go"
-	"github.com/sujit/ai-agent/pkg/content"
 )
 
 // TiktokenEstimator uses the tiktoken library to estimate tokens.

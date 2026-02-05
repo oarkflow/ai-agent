@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/sujit/ai-agent/pkg/llm"
-	"github.com/sujit/ai-agent/pkg/memory"
+	"github.com/oarkflow/ai-agent/pkg/llm"
+	"github.com/oarkflow/ai-agent/pkg/memory"
 )
 
 // Agent represents an AI agent with memory and a specific role.

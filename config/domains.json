@@ -73,12 +73,13 @@
                 "Prioritize patient privacy and data protection in all discussions",
                 "Use evidence-based information from reputable medical sources",
                 "Acknowledge limitations in medical knowledge and uncertainty when appropriate",
-                "Be sensitive to the emotional nature of health-related topics"
+                "Be sensitive to the emotional nature of health-related topics",
+                "When asked for codes (ICD, CPT, etc.), provide structured JSON output including code, description, and key notes if applicable."
             ],
             "id": "healthcare",
             "name": "Healthcare",
-            "preferred_model": "claude-opus-4-20250514",
-            "system_prompt_extension": "When discussing healthcare topics, prioritize accuracy, patient safety, and privacy. Do not provide specific medical advice.",
+            "preferred_model": "mistral",
+            "system_prompt_extension": "When discussing healthcare topics, prioritize accuracy. For coding inquiries (ICD-10, CPT), output strictly in JSON format: {\"code\": \"...\", \"description\": \"...\", \"category\": \"...\", \"notes\": \"...\"}.",
             "terminology": {
                 "CPT": "Current Procedural Terminology - codes for medical procedures and services",
                 "EHR": "Electronic Health Record - comprehensive digital health records that can be shared across healthcare systems",

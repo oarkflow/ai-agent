@@ -1,6 +1,6 @@
 package memory
 
-import "github.com/sujit/ai-agent/pkg/llm"
+import "github.com/oarkflow/ai-agent/pkg/llm"
 
 // SimpleMemory holds all messages indefinitely.
 type SimpleMemory struct {

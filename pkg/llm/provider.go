@@ -3,7 +3,7 @@ package llm
 import (
 	"context"
 
-	"github.com/sujit/ai-agent/pkg/content"
+	"github.com/oarkflow/ai-agent/pkg/content"
 )
 
 // Capability represents what a model can do.
@@ -306,6 +306,7 @@ type MultimodalProvider interface {
 	GetProviderType() ProviderType
 	GetModelInfo(model string) (*ModelInfo, error)
 	ListModels(ctx context.Context) ([]ModelInfo, error)
+	CheckHealth(ctx context.Context) error
 
 	// Capabilities
 	GetCapabilities() []Capability
@@ -332,6 +333,13 @@ func (b *BaseProvider) GetModelInfo(model string) (*ModelInfo, error) {
 		return info, nil
 	}
 	return nil, ErrModelNotFound
+}
+
+// CheckHealth performs a basic health check on the provider.
+// This default implementation returns nil (healthy).
+// Specific providers should override this to perform actual API checks.
+func (b *BaseProvider) CheckHealth(ctx context.Context) error {
+	return nil
 }
 
 // Common errors

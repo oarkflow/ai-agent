@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/sujit/ai-agent/pkg/llm"
-	"github.com/sujit/ai-agent/pkg/storage"
+	"github.com/oarkflow/ai-agent/pkg/llm"
+	"github.com/oarkflow/ai-agent/pkg/storage"
 )
 
 // StorageVectorStoreAdapter adapts storage.PersistentVectorStore to memory.VectorStore.

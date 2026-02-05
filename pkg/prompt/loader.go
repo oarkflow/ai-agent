@@ -6,8 +6,8 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/sujit/ai-agent/pkg/config"
-	"github.com/sujit/ai-agent/pkg/llm"
+	"github.com/oarkflow/ai-agent/pkg/config"
+	"github.com/oarkflow/ai-agent/pkg/llm"
 )
 
 // PromptLoader loads prompt templates from configuration.

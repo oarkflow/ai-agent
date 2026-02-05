@@ -19,15 +19,15 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/sujit/ai-agent/pkg/agent"
-	"github.com/sujit/ai-agent/pkg/config"
-	"github.com/sujit/ai-agent/pkg/content"
-	"github.com/sujit/ai-agent/pkg/llm"
-	"github.com/sujit/ai-agent/pkg/memory"
-	"github.com/sujit/ai-agent/pkg/processor"
-	"github.com/sujit/ai-agent/pkg/prompt"
-	"github.com/sujit/ai-agent/pkg/tools"
-	"github.com/sujit/ai-agent/pkg/training"
+	"github.com/oarkflow/ai-agent/pkg/agent"
+	"github.com/oarkflow/ai-agent/pkg/config"
+	"github.com/oarkflow/ai-agent/pkg/content"
+	"github.com/oarkflow/ai-agent/pkg/llm"
+	"github.com/oarkflow/ai-agent/pkg/memory"
+	"github.com/oarkflow/ai-agent/pkg/processor"
+	"github.com/oarkflow/ai-agent/pkg/prompt"
+	"github.com/oarkflow/ai-agent/pkg/tools"
+	"github.com/oarkflow/ai-agent/pkg/training"
 )
 
 var configPath = flag.String("config", "./config", "Path to configuration directory")

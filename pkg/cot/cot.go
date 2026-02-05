@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sujit/ai-agent/pkg/agent"
+	"github.com/oarkflow/ai-agent/pkg/agent"
 )
 
 // CoTAgent wraps a standard agent to enforce Chain of Thought reasoning.

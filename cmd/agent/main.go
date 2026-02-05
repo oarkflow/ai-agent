@@ -35,29 +35,34 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"syscall"
+	"time"
 
-	"github.com/sujit/ai-agent/pkg/agent"
-	"github.com/sujit/ai-agent/pkg/config"
-	"github.com/sujit/ai-agent/pkg/content"
-	"github.com/sujit/ai-agent/pkg/llm"
-	"github.com/sujit/ai-agent/pkg/memory"
-	"github.com/sujit/ai-agent/pkg/processor"
-	"github.com/sujit/ai-agent/pkg/prompt"
-	"github.com/sujit/ai-agent/pkg/tools"
-	"github.com/sujit/ai-agent/pkg/training"
+	"github.com/oarkflow/ai-agent/pkg/agent"
+	"github.com/oarkflow/ai-agent/pkg/config"
+	"github.com/oarkflow/ai-agent/pkg/content"
+	"github.com/oarkflow/ai-agent/pkg/llm"
+	"github.com/oarkflow/ai-agent/pkg/memory"
+	"github.com/oarkflow/ai-agent/pkg/processor"
+	"github.com/oarkflow/ai-agent/pkg/prompt"
+	"github.com/oarkflow/ai-agent/pkg/tools"
+	"github.com/oarkflow/ai-agent/pkg/training"
 )
 
 var (
 	configPath = flag.String("config", "./config", "Path to configuration directory")
 	domainID   = flag.String("domain", "", "Domain ID to use for the request")
 	userPrompt = flag.String("prompt", "", "Prompt to execute (if provided, demos are skipped)")
+	serverMode = flag.Bool("server", false, "Run in server mode")
+	port       = flag.String("port", "8080", "Port to listen on (server mode)")
 )
 
 func main() {
@@ -79,6 +84,12 @@ func main() {
 	app, err := initializeFromConfig(*configPath)
 	if err != nil {
 		log.Fatalf("Failed to initialize agent: %v", err)
+	}
+
+	// Server mode
+	if *serverMode {
+		runServer(ctx, app, *port)
+		return
 	}
 
 	// If prompt is provided, run just that request
@@ -502,6 +513,152 @@ func demo6_MultimodalMessage(ctx context.Context, app *AIAgentApp) {
 	fmt.Printf("Model: %s\n", resp.Model)
 	fmt.Printf("Response:\n%s\n\n", truncateText(resp.Message.GetText(), 600))
 }
+
+// -----------------------------------------------------------------------------
+// Server Mode Implementation
+// -----------------------------------------------------------------------------
+
+func runServer(ctx context.Context, app *AIAgentApp, port string) {
+	mux := http.NewServeMux()
+
+	// 1. POST /chat (Non-streaming, returns JSON)
+	mux.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var req struct {
+			Prompt    string `json:"prompt"`
+			Domain    string `json:"domain"`
+			Stateless bool   `json:"stateless"` // Optional: Don't use memory
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		if req.Domain != "" {
+			app.Agent.SetDomain(req.Domain)
+		}
+
+		// Handle stateless request
+		var resp *llm.GenerationResponse
+		var err error
+
+		start := time.Now()
+		if req.Stateless {
+			resp, err = app.Agent.ChatStateless(ctx, req.Prompt)
+		} else {
+			resp, err = app.Agent.Chat(ctx, req.Prompt)
+		}
+		duration := time.Since(start)
+
+		w.Header().Set("Content-Type", "application/json")
+		if err != nil {
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"response": resp.Message.GetText(),
+			"model":    resp.Model,
+			"usage":    resp.Usage,
+			"duration": duration.String(),
+		})
+	})
+
+	// 2. POST /chat/stream (Streaming SSE)
+	mux.HandleFunc("/chat/stream", func(w http.ResponseWriter, r *http.Request) {
+		// ... existing stream handler ...
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		// (Same implementation as below, just ensure it matches)
+		var req struct {
+			Prompt string `json:"prompt"`
+			Domain string `json:"domain"`
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		if req.Domain != "" {
+			app.Agent.SetDomain(req.Domain)
+		}
+
+		w.Header().Set("Content-Type", "text/event-stream")
+		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("Connection", "keep-alive")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
+		flusher, ok := w.(http.Flusher)
+		if !ok {
+			http.Error(w, "Streaming not supported", http.StatusInternalServerError)
+			return
+		}
+
+		msg := content.NewUserMessage(req.Prompt)
+		streamCh, err := app.Agent.Stream(r.Context(), msg)
+		if err != nil {
+			fmt.Fprintf(w, "data: {\"error\": \"%s\"}\n\n", err.Error())
+			return
+		}
+
+		for chunk := range streamCh {
+			if chunk.Error != nil {
+				fmt.Fprintf(w, "data: {\"error\": \"%s\"}\n\n", chunk.Error.Error())
+				flusher.Flush()
+				break
+			}
+			data, _ := json.Marshal(map[string]string{
+				"content":       chunk.Delta,
+				"finish_reason": chunk.FinishReason,
+			})
+			fmt.Fprintf(w, "data: %s\n\n", data)
+			flusher.Flush()
+		}
+	})
+
+	// 3. POST /reset (Clear Memory)
+	mux.HandleFunc("/reset", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		app.Agent.ClearConversation()
+		fmt.Println("🧹 Server: Conversation memory cleared")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status": "memory_cleared"}`))
+	})
+
+	srv := &http.Server{
+		Addr:    ":" + port,
+		Handler: mux,
+	}
+
+	go func() {
+		fmt.Printf("🚀 Server listening on http://localhost:%s\n", port)
+		fmt.Println("   Endpoints:")
+		fmt.Println("   - POST /chat (Normal JSON)")
+		fmt.Println("   - POST /chat/stream (SSE Streaming)")
+		fmt.Println("   - POST /reset (Clear Memory)")
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Server failed: %v", err)
+		}
+	}()
+
+	<-ctx.Done()
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	srv.Shutdown(shutdownCtx)
+}
+
 
 func truncateText(s string, maxLen int) string {
 	if len(s) <= maxLen {

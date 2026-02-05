@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/sujit/ai-agent/pkg/content"
+	"github.com/oarkflow/ai-agent/pkg/content"
 )
 
 // OllamaProvider implements MultimodalProvider for local Ollama instance.
@@ -294,6 +294,12 @@ func (p *OllamaProvider) GenerateImage(ctx context.Context, req *ImageGeneration
 
 func (p *OllamaProvider) GenerateSpeech(ctx context.Context, req *SpeechRequest) (*SpeechResponse, error) {
 	return nil, ErrCapabilityNotSupported
+}
+
+func (p *OllamaProvider) CheckHealth(ctx context.Context) error {
+	// Simple check to version endpoint to see if Ollama is running
+	_, err := p.doRequest(ctx, "GET", "/api/version", nil)
+	return err
 }
 
 func (p *OllamaProvider) ListModels(ctx context.Context) ([]ModelInfo, error) {

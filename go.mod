@@ -1,4 +1,4 @@
-module github.com/sujit/ai-agent
+module github.com/oarkflow/ai-agent
 
 go 1.25.5
 

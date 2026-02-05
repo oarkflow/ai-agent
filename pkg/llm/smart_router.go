@@ -2,13 +2,40 @@ package llm
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"sort"
 	"strings"
 	"sync"
 
-	"github.com/sujit/ai-agent/pkg/content"
+	"github.com/oarkflow/ai-agent/pkg/content"
 )
+
+// ResponseCache maps a hash key to a GenerationResponse.
+type ResponseCache struct {
+	mu    sync.RWMutex
+	items map[string]*GenerationResponse
+}
+
+func NewResponseCache() *ResponseCache {
+	return &ResponseCache{
+		items: make(map[string]*GenerationResponse),
+	}
+}
+
+func (c *ResponseCache) Get(key string) (*GenerationResponse, bool) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	resp, ok := c.items[key]
+	return resp, ok
+}
+
+func (c *ResponseCache) Set(key string, resp *GenerationResponse) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.items[key] = resp
+}
 
 // ProviderRegistry manages multiple AI providers and routes requests.
 type ProviderRegistry struct {
@@ -140,7 +167,7 @@ func (r *ProviderRegistry) ListModels() []string {
 }
 
 // SelectModel automatically selects the best model for the given request.
-func (r *ProviderRegistry) SelectModel(messages []*content.Message, requirements *ModelRequirements) (*RegisteredModel, error) {
+func (r *ProviderRegistry) SelectModel(ctx context.Context, messages []*content.Message, requirements *ModelRequirements) (*RegisteredModel, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
@@ -152,7 +179,7 @@ func (r *ProviderRegistry) SelectModel(messages []*content.Message, requirements
 	requiredCaps := r.analyzeRequirements(messages, requirements)
 
 	// Find compatible models
-	candidates := r.findCompatibleModels(requiredCaps, requirements)
+	candidates := r.findCompatibleModels(ctx, requiredCaps, requirements)
 	if len(candidates) == 0 {
 		return nil, fmt.Errorf("no model found with required capabilities: %v", requiredCaps)
 	}
@@ -177,6 +204,7 @@ type ModelRequirements struct {
 	Domain            string // For domain-specific routing
 	TaskType          TaskType
 	Speed             SpeedPreference
+	CheckHealth       bool // Verify model is alive before selecting
 }
 
 // TaskType represents the type of task.
@@ -190,6 +218,7 @@ const (
 	TaskAnalysis     TaskType = "analysis"
 	TaskSummary      TaskType = "summary"
 	TaskTranslation  TaskType = "translation"
+	TaskImageGeneration TaskType = "image_generation"
 	TaskConversation TaskType = "conversation"
 )
 
@@ -258,8 +287,10 @@ func (r *ProviderRegistry) analyzeRequirements(messages []*content.Message, req 
 }
 
 // findCompatibleModels finds models with required capabilities.
-func (r *ProviderRegistry) findCompatibleModels(requiredCaps []Capability, req *ModelRequirements) []*RegisteredModel {
+func (r *ProviderRegistry) findCompatibleModels(ctx context.Context, requiredCaps []Capability, req *ModelRequirements) []*RegisteredModel {
 	var candidates []*RegisteredModel
+	checkedProviders := make(map[ProviderType]bool)
+	healthyProviders := make(map[ProviderType]bool)
 
 	for _, rm := range r.models {
 		// Check if model has all required capabilities
@@ -287,6 +318,24 @@ func (r *ProviderRegistry) findCompatibleModels(requiredCaps []Capability, req *
 		// Check deprecated
 		if rm.Info.Deprecated {
 			continue
+		}
+
+		// Check Only Alive Models
+		if req.CheckHealth {
+			pType := rm.Provider.GetProviderType()
+			_, checked := checkedProviders[pType]
+			if !checked {
+				if err := rm.Provider.CheckHealth(ctx); err == nil {
+					healthyProviders[pType] = true
+					checkedProviders[pType] = true
+				} else {
+					checkedProviders[pType] = true
+					// Log error?
+				}
+			}
+			if !healthyProviders[pType] {
+				continue
+			}
 		}
 
 		candidates = append(candidates, rm)
@@ -394,17 +443,31 @@ func (r *ProviderRegistry) scoreModels(candidates []*RegisteredModel, req *Model
 // SmartRouter provides high-level routing for multimodal requests.
 type SmartRouter struct {
 	Registry *ProviderRegistry
+	Cache    *ResponseCache
 }
 
 // NewSmartRouter creates a new smart router.
 func NewSmartRouter(registry *ProviderRegistry) *SmartRouter {
-	return &SmartRouter{Registry: registry}
+	return &SmartRouter{
+		Registry: registry,
+		Cache:    NewResponseCache(),
+	}
 }
 
 // Route selects the best model and generates a response.
 func (sr *SmartRouter) Route(ctx context.Context, messages []*content.Message, config *GenerationConfig, requirements *ModelRequirements) (*GenerationResponse, error) {
+	// Generate cache key
+	cacheKey := generateCacheKey(messages, config)
+
+	// Check cache
+	if resp, ok := sr.Cache.Get(cacheKey); ok {
+		// Return cached response (clone it to be safe?)
+		// For now returning direct pointer, assume immutable usage
+		return resp, nil
+	}
+
 	// Select best model
-	model, err := sr.Registry.SelectModel(messages, requirements)
+	model, err := sr.Registry.SelectModel(ctx, messages, requirements)
 	if err != nil {
 		return nil, fmt.Errorf("model selection failed: %w", err)
 	}
@@ -416,12 +479,54 @@ func (sr *SmartRouter) Route(ctx context.Context, messages []*content.Message, c
 	config.Model = model.Info.ID
 
 	// Generate response
-	return model.Provider.Generate(ctx, messages, config)
+	resp, err := model.Provider.Generate(ctx, messages, config)
+	if err != nil {
+		return nil, err
+	}
+
+	// Cache successful response
+	sr.Cache.Set(cacheKey, resp)
+
+	return resp, nil
+}
+
+func generateCacheKey(messages []*content.Message, config *GenerationConfig) string {
+	h := sha256.New()
+	for _, m := range messages {
+		h.Write([]byte(m.Role))
+		for _, c := range m.Contents {
+			h.Write([]byte(c.Type))
+			h.Write([]byte(c.Text))
+			// Simplify: For large binary data, we might not want to hash everything,
+			// but for cache correctness we must.
+			// Assuming Text/Image keys are enough for now.
+			if c.Type == content.TypeImage && len(c.Data) > 0 {
+				h.Write(c.Data)
+			}
+		}
+	}
+	if config != nil {
+		h.Write([]byte(config.Model))
+		h.Write([]byte(fmt.Sprintf("%.5f", config.Temperature)))
+		h.Write([]byte(fmt.Sprintf("%d", config.MaxTokens)))
+		h.Write([]byte(fmt.Sprintf("%.5f", config.TopP)))
+		for _, t := range config.Tools {
+			h.Write([]byte(t.Function.Name))
+			// Ideally hash tool definition too, but name is a good proxy for now
+		}
+		// Include json format flag if it exists in config
+		if len(config.StopSequences) > 0 {
+			for _, s := range config.StopSequences {
+				h.Write([]byte(s))
+			}
+		}
+	}
+	return hex.EncodeToString(h.Sum(nil))
 }
 
 // RouteStream selects the best model and streams a response.
 func (sr *SmartRouter) RouteStream(ctx context.Context, messages []*content.Message, config *GenerationConfig, requirements *ModelRequirements) (<-chan StreamChunk, *RegisteredModel, error) {
-	model, err := sr.Registry.SelectModel(messages, requirements)
+	model, err := sr.Registry.SelectModel(ctx, messages, requirements)
 	if err != nil {
 		return nil, nil, fmt.Errorf("model selection failed: %w", err)
 	}

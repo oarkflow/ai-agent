@@ -6,18 +6,20 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sujit/ai-agent/pkg/agent"
-	"github.com/sujit/ai-agent/pkg/cot"
-	"github.com/sujit/ai-agent/pkg/llm"
-	"github.com/sujit/ai-agent/pkg/prompt"
-	"github.com/sujit/ai-agent/pkg/tot"
+	"github.com/oarkflow/ai-agent/pkg/agent"
+	"github.com/oarkflow/ai-agent/pkg/cot"
+	"github.com/oarkflow/ai-agent/pkg/llm"
+	"github.com/oarkflow/ai-agent/pkg/prompt"
+	"github.com/oarkflow/ai-agent/pkg/tot"
 )
 
 // AnalysisResult represents the decision made by the orchestrator.
 type AnalysisResult struct {
-	Complexity string `json:"complexity"` // "high" or "low"
-	Strategy   string `json:"strategy"`   // "direct", "cot", "tot"
-	Reasoning  string `json:"reasoning"`
+	Complexity string   `json:"complexity"` // "high", "low", "coding", "reasoning"
+	Strategy   string   `json:"strategy"`   // "direct", "cot", "tot"
+	Reasoning  string   `json:"reasoning"`
+	Domain     string   `json:"domain"`      // e.g. "healthcare", "coding", "general"
+	MemoryKeys []string `json:"memory_keys"` // Key entities for context
 }
 
 // Orchestrator analyzes requests and executes them using the best strategy.
@@ -32,24 +34,30 @@ func NewOrchestrator(router *llm.Router) *Orchestrator {
 // Analyze uses a fast model to determine the best strategy.
 func (o *Orchestrator) Analyze(ctx context.Context, input string) (*AnalysisResult, error) {
 	// Meta-prompt for analysis
-	metaPrompt := `Analyze the following user request and determine the best AI processing strategy.
+	metaPrompt := `Analyze the following user request.
 Output strictly in JSON format.
 
-Strategies:
-- "direct": Simple questions, lookups, creative writing (low complexity).
+1. Strategy:
+- "direct": Simple questions, lookups (low complexity).
 - "cot": Logic puzzles, math, multi-step reasoning (medium/high complexity).
-- "tot": Complex planning, finding best paths, scenario analysis, creative exploration (high complexity).
+- "tot": Complex planning, finding best paths, scenario analysis (high complexity).
 
-Complexity (Intent):
+2. Complexity (Intent):
 - "low": Simple q&a.
 - "high": General complex tasks.
 - "coding": specifically for writing, debugging, or explaining code.
 - "reasoning": specifically for math, hard logic, or deep research.
 
+3. Domain:
+- Identify the subject matter (e.g., "healthcare", "workflow", "coding", "finance", "general").
+
+4. Memory Keys:
+- List key entities or concepts to track (e.g., specific names, project IDs, specialized terms).
+
 User Request: %s
 
 JSON Output format:
-{"complexity": "...", "strategy": "...", "reasoning": "..."}
+{"complexity": "...", "strategy": "...", "reasoning": "...", "domain": "...", "memory_keys": ["..."]}
 `
 	// Use the Fast provider for analysis to save cost/time
 	fastProv := o.Router.GetProvider(llm.TierFast)

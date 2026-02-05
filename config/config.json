@@ -352,9 +352,23 @@
                     "input_cost_per_1k": 0.002,
                     "output_cost_per_1k": 0.006
                 },
-                "codestral-latest": {
-                    "id": "codestral-latest",
-                    "name": "Codestral",
+                "mistral-small-latest": {
+                    "id": "mistral-small-latest",
+                    "name": "Mistral Small",
+                    "capabilities": [
+                        "text",
+                        "code_generation",
+                        "function_calling",
+                        "streaming"
+                    ],
+                    "context_window": 32000,
+                    "max_output_tokens": 8192,
+                    "input_cost_per_1k": 0.0002,
+                    "output_cost_per_1k": 0.0006
+                },
+                "ministral-8b-latest": {
+                    "id": "ministral-8b-latest",
+                    "name": "Ministral 8B",
                     "capabilities": [
                         "text",
                         "code_generation",
@@ -362,8 +376,20 @@
                     ],
                     "context_window": 32000,
                     "max_output_tokens": 8192,
-                    "input_cost_per_1k": 0.001,
-                    "output_cost_per_1k": 0.003
+                    "input_cost_per_1k": 0.0001,
+                    "output_cost_per_1k": 0.0001
+                },
+                "ministral-3b-latest": {
+                    "id": "ministral-3b-latest",
+                    "name": "Ministral 3B",
+                    "capabilities": [
+                        "text",
+                        "streaming"
+                    ],
+                    "context_window": 32000,
+                    "max_output_tokens": 8192,
+                    "input_cost_per_1k": 0.00004,
+                    "output_cost_per_1k": 0.00004
                 },
                 "pixtral-large-latest": {
                     "id": "pixtral-large-latest",
@@ -385,6 +411,77 @@
                         "image/gif",
                         "image/webp"
                     ]
+                },
+                "pixtral-12b-2409": {
+                    "id": "pixtral-12b-2409",
+                    "name": "Pixtral 12B",
+                    "capabilities": [
+                        "text",
+                        "vision",
+                        "streaming"
+                    ],
+                    "context_window": 128000,
+                    "max_output_tokens": 4096,
+                    "input_cost_per_1k": 0.00015,
+                    "output_cost_per_1k": 0.00015,
+                    "supported_formats": [
+                        "image/jpeg",
+                        "image/png",
+                        "image/gif",
+                        "image/webp"
+                    ]
+                },
+                "open-mistral-nemo": {
+                    "id": "open-mistral-nemo",
+                    "name": "Mistral Nemo",
+                    "capabilities": [
+                        "text",
+                        "code_generation",
+                        "function_calling",
+                        "streaming"
+                    ],
+                    "context_window": 128000,
+                    "max_output_tokens": 128000,
+                    "input_cost_per_1k": 0.00015,
+                    "output_cost_per_1k": 0.00015
+                },
+                "open-mixtral-8x7b": {
+                    "id": "open-mixtral-8x7b",
+                    "name": "Mixtral 8x7B",
+                    "capabilities": [
+                        "text",
+                        "streaming"
+                    ],
+                    "context_window": 32000,
+                    "max_output_tokens": 8192,
+                    "input_cost_per_1k": 0.0007,
+                    "output_cost_per_1k": 0.0007
+                },
+                "open-mixtral-8x22b": {
+                    "id": "open-mixtral-8x22b",
+                    "name": "Mixtral 8x22B",
+                    "capabilities": [
+                        "text",
+                        "function_calling",
+                        "streaming"
+                    ],
+                    "context_window": 64000,
+                    "max_output_tokens": 8192,
+                    "input_cost_per_1k": 0.002,
+                    "output_cost_per_1k": 0.006
+                },
+                "codestral-latest": {
+                    "id": "codestral-latest",
+                    "name": "Codestral",
+                    "capabilities": [
+                        "text",
+                        "code_generation",
+                        "streaming"
+                    ],
+                    "context_window": 32000,
+                    "max_output_tokens": 8192,
+                    "input_cost_per_1k": 0.001,
+                    "output_cost_per_1k": 0.003
                 },
                 "mistral-embed": {
                     "id": "mistral-embed",
@@ -478,6 +575,42 @@
                 "mistral": {
                     "id": "mistral",
                     "name": "Mistral (Local)",
+                    "capabilities": [
+                        "text",
+                        "chat"
+                    ],
+                    "context_window": 32000,
+                    "max_output_tokens": 4096,
+                    "input_cost_per_1k": 0.0,
+                    "output_cost_per_1k": 0.0
+                },
+                "mistral-nemo": {
+                    "id": "mistral-nemo",
+                    "name": "Mistral Nemo (Local)",
+                    "capabilities": [
+                        "text",
+                        "chat",
+                        "function_calling"
+                    ],
+                    "context_window": 128000,
+                    "max_output_tokens": 8192,
+                    "input_cost_per_1k": 0.0,
+                    "output_cost_per_1k": 0.0
+                },
+                "x/z-image-turbo": {
+                    "id": "x/z-image-turbo",
+                    "name": "X Z-Image Turbo",
+                    "capabilities": [
+                        "image_generation"
+                    ],
+                    "context_window": 8192,
+                    "max_output_tokens": 4096,
+                    "input_cost_per_1k": 0.0,
+                    "output_cost_per_1k": 0.0
+                },
+                "llama": {
+                    "id": "llama",
+                    "name": "Llama (Local)",
                     "capabilities": [
                         "text",
                         "chat"

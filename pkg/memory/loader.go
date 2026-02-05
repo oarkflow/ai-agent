@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"github.com/sujit/ai-agent/pkg/config"
+	"github.com/oarkflow/ai-agent/pkg/config"
 )
 
 // MemoryLoader loads memory configuration.

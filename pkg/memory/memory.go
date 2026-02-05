@@ -1,6 +1,6 @@
 package memory
 
-import "github.com/sujit/ai-agent/pkg/llm"
+import "github.com/oarkflow/ai-agent/pkg/llm"
 
 // Memory defines the interface for managing agent conversation history.
 type Memory interface {

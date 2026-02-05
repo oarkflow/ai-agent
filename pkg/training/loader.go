@@ -3,8 +3,8 @@ package training
 import (
 	"fmt"
 
-	"github.com/sujit/ai-agent/pkg/config"
-	"github.com/sujit/ai-agent/pkg/llm"
+	"github.com/oarkflow/ai-agent/pkg/config"
+	"github.com/oarkflow/ai-agent/pkg/llm"
 )
 
 // DomainLoader loads domain configurations.

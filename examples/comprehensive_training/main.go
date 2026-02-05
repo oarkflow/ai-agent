@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sujit/ai-agent/pkg/training"
+	"github.com/oarkflow/ai-agent/pkg/training"
 )
 
 func main() {

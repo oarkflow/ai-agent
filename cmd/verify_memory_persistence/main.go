@@ -10,14 +10,14 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/sujit/ai-agent/pkg/agent"
-	"github.com/sujit/ai-agent/pkg/config"
-	"github.com/sujit/ai-agent/pkg/content"
-	"github.com/sujit/ai-agent/pkg/llm"
-	"github.com/sujit/ai-agent/pkg/memory"
-	"github.com/sujit/ai-agent/pkg/prompt"
-	"github.com/sujit/ai-agent/pkg/storage"
-	"github.com/sujit/ai-agent/pkg/training"
+	"github.com/oarkflow/ai-agent/pkg/agent"
+	"github.com/oarkflow/ai-agent/pkg/config"
+	"github.com/oarkflow/ai-agent/pkg/content"
+	"github.com/oarkflow/ai-agent/pkg/llm"
+	"github.com/oarkflow/ai-agent/pkg/memory"
+	"github.com/oarkflow/ai-agent/pkg/prompt"
+	"github.com/oarkflow/ai-agent/pkg/storage"
+	"github.com/oarkflow/ai-agent/pkg/training"
 )
 
 var (

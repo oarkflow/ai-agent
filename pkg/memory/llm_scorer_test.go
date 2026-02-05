@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/sujit/ai-agent/pkg/content"
-	"github.com/sujit/ai-agent/pkg/llm"
+	"github.com/oarkflow/ai-agent/pkg/content"
+	"github.com/oarkflow/ai-agent/pkg/llm"
 )
 
 // mockForLLMScorer returns simple numeric strings based on message content.
